@@ -1,24 +1,23 @@
 import type { Metadata } from "next";
-import { Figtree, Syne } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { Nav } from "@/components/Nav";
 import "./globals.css";
 
-const syne = Syne({
-  variable: "--font-syne",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-});
-
-const figtree = Figtree({
-  variable: "--font-figtree",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
-  title: "FlipOn — Casser la routine à deux",
+  title: {
+    default: "FlipOn — Sortir de la routine à deux",
+    template: "%s · FlipOn",
+  },
   description:
-    "FlipOn matche un seul plan pour votre couple, en moins d’une minute. Fini le « on verra ».",
+    "Une petite app pour couples qui veulent faire autre chose que d’habitude. Vous votez, FlipOn sort une idée d’activité.",
 };
 
 export default function RootLayout({
@@ -27,7 +26,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${syne.variable} ${figtree.variable} h-full`}>
+    <html lang="fr" className={`${jakarta.variable} h-full`}>
+      <head>
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+      </head>
       <body className="min-h-full font-sans antialiased">
         <Nav />
         {children}

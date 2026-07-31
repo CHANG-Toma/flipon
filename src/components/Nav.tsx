@@ -6,43 +6,65 @@ import { usePathname } from "next/navigation";
 const links = [
   { href: "/", label: "Accueil" },
   { href: "/presentation", label: "Présentation" },
-  { href: "/test", label: "Tester" },
+  { href: "/test", label: "Essayer" },
 ];
 
 export function Nav() {
   const pathname = usePathname();
-  const onHero = pathname === "/";
+  const onHome = pathname === "/";
 
   return (
-    <header className="absolute inset-x-0 top-0 z-40">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+    <header
+      className={[
+        "sticky top-0 z-50 border-b backdrop-blur-md",
+        onHome
+          ? "border-white/10 bg-[#121212]/80"
+          : "border-line/80 bg-petal/90",
+      ].join(" ")}
+    >
+      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-5 sm:px-8">
         <Link
           href="/"
           className={[
-            "font-[family-name:var(--font-syne)] text-xl font-bold tracking-tight sm:text-2xl",
-            onHero ? "text-white" : "text-ink",
+            "font-[family-name:var(--font-display)] text-lg font-extrabold tracking-tight",
+            onHome ? "text-white" : "text-ink",
           ].join(" ")}
         >
           Flip<span className="text-coral">On</span>
         </Link>
 
-        <nav className="flex items-center gap-0.5 sm:gap-1">
+        <nav className="flex items-center gap-0.5" aria-label="Principal">
           {links.map((link) => {
             const active = pathname === link.href;
+            const isTry = link.href === "/test";
+            if (isTry) {
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={[
+                    "ml-1 rounded-[var(--radius-ui)] bg-coral px-3.5 py-2 text-sm font-bold text-white transition-colors hover:bg-coral-deep",
+                  ].join(" ")}
+                >
+                  {link.label}
+                </Link>
+              );
+            }
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={[
-                  "px-2.5 py-2 text-sm font-medium transition-colors sm:px-3.5 sm:text-[15px]",
-                  active
-                    ? onHero
+                  "rounded-[var(--radius-ui)] px-3 py-2 text-sm font-medium transition-colors",
+                  onHome
+                    ? active
                       ? "text-white"
-                      : "text-coral"
-                    : onHero
-                      ? "text-white/65 hover:text-white"
-                      : "text-ink-soft hover:text-ink",
+                      : "text-white/60 hover:text-white"
+                    : active
+                      ? "bg-sky text-coral-deep"
+                      : "text-ink-soft hover:bg-foam hover:text-ink",
                 ].join(" ")}
+                aria-current={active ? "page" : undefined}
               >
                 {link.label}
               </Link>

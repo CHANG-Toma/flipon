@@ -1,10 +1,11 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useId, useState } from "react";
 
-export function WaitlistForm({ light = false }: { light?: boolean }) {
+export function WaitlistForm() {
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
+  const id = useId();
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -14,13 +15,8 @@ export function WaitlistForm({ light = false }: { light?: boolean }) {
 
   if (done) {
     return (
-      <p
-        className={[
-          "animate-rise text-base font-medium",
-          light ? "text-white" : "text-teal",
-        ].join(" ")}
-      >
-        Merci — on vous prévient dès que FlipOn ouvre.
+      <p className="animate-rise rounded-[var(--radius-ui)] border border-coral/25 bg-sky px-4 py-3 text-sm font-medium text-coral-deep" role="status">
+        Merci — on t’écrit dès que c’est prêt.
       </p>
     );
   }
@@ -28,35 +24,25 @@ export function WaitlistForm({ light = false }: { light?: boolean }) {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex w-full max-w-md flex-col gap-3 sm:flex-row"
+      className="flex w-full max-w-md flex-col gap-2 sm:flex-row sm:items-stretch"
     >
-      <label className="sr-only" htmlFor="waitlist-email">
-        Email
-      </label>
-      <input
-        id="waitlist-email"
-        type="email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="votre@email.fr"
-        className={[
-          "h-12 flex-1 border px-4 text-[15px] outline-none transition focus:ring-2",
-          light
-            ? "border-white/25 bg-white/10 text-white placeholder:text-white/50 focus:ring-white/30"
-            : "border-ink/15 bg-white text-ink placeholder:text-ink-soft/60 focus:ring-teal/30",
-        ].join(" ")}
-      />
-      <button
-        type="submit"
-        className={[
-          "h-12 px-6 text-[15px] font-semibold transition-colors",
-          light
-            ? "bg-coral text-white hover:bg-coral-deep"
-            : "bg-ink text-white hover:bg-ink-soft",
-        ].join(" ")}
-      >
-        Rejoindre la waitlist
+      <div className="flex-1">
+        <label htmlFor={id} className="sr-only">
+          Adresse e-mail
+        </label>
+        <input
+          id={id}
+          type="email"
+          required
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="ton@email.fr"
+          className="h-11 w-full rounded-[var(--radius-ui)] border border-line bg-white px-3.5 text-[15px] text-ink outline-none transition placeholder:text-ink-soft/50 focus:border-coral"
+        />
+      </div>
+      <button type="submit" className="btn-primary shrink-0 sm:min-w-[9.5rem]">
+        Me prévenir
       </button>
     </form>
   );
