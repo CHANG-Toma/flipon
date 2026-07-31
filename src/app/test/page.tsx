@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { FlipDemo } from "@/components/FlipDemo";
 
 export default function TestPage() {
@@ -9,12 +10,18 @@ export default function TestPage() {
             Essayer FlipOn
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-            Démo solo : tu votes pour les deux. Plus tard, chacun aura son
-            côté.
+            Solo ou à deux sur deux téléphones. Votes privés, une idée en
+            commun. Sur la vraie app, chacun ouvre FlipOn directement.
           </p>
         </header>
 
-        <FlipDemo />
+        <Suspense
+          fallback={
+            <div className="mx-auto h-40 w-full max-w-md animate-pulse rounded-[var(--radius-ui)] bg-foam" />
+          }
+        >
+          <FlipDemo />
+        </Suspense>
       </div>
     </main>
   );

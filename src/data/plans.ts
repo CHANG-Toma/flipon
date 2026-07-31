@@ -244,3 +244,17 @@ export function filterPlans(c: Constraints): Plan[] {
     return true;
   }).slice(0, 8);
 }
+
+/** Deck partagé solo / duo (même logique côté client et API). */
+export function buildDeck(constraints: Constraints): Plan[] {
+  const filtered = filterPlans(constraints);
+  const pool =
+    filtered.length >= 3
+      ? filtered
+      : filterPlans({
+          ...constraints,
+          place: "peu-importe",
+          budget: "80+",
+        });
+  return pool.slice(0, 6);
+}
