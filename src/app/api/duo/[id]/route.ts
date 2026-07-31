@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, ctx: Ctx) {
     return NextResponse.json({ error: "role invalide" }, { status: 400 });
   }
 
-  const room = getRoom(id);
+  const room = await getRoom(id);
   if (!room) {
     return NextResponse.json({ error: "Session introuvable" }, { status: 404 });
   }

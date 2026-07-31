@@ -19,7 +19,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
     return NextResponse.json({ error: "role invalide" }, { status: 400 });
   }
 
-  const room = setReady(id, body.role);
+  const room = await setReady(id, body.role);
   if (!room) {
     return NextResponse.json(
       { error: "Session introuvable ou invité manquant" },

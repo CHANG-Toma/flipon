@@ -1,3 +1,4 @@
+import { Redis } from "@upstash/redis";
 import { buildDeck, type Constraints, type Plan } from "@/data/plans";
 import type { DuoPublicSnapshot, DuoRole } from "@/lib/duo-types";
 
@@ -16,17 +17,50 @@ export type DuoRoom = {
 };
 
 const TTL_MS = 45 * 60 * 1000;
+const TTL_SEC = Math.floor(TTL_MS / 1000);
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const KEY_PREFIX = "flipon:duo:";
 
 const globalStore = globalThis as typeof globalThis & {
   __fliponDuoRooms?: Map<string, DuoRoom>;
+  __fliponRedis?: Redis | null;
+  __fliponRedisChecked?: boolean;
 };
 
-function rooms(): Map<string, DuoRoom> {
+function memoryRooms(): Map<string, DuoRoom> {
   if (!globalStore.__fliponDuoRooms) {
     globalStore.__fliponDuoRooms = new Map();
   }
   return globalStore.__fliponDuoRooms;
+}
+
+function getRedis(): Redis | null {
+  if (globalStore.__fliponRedisChecked) {
+    return globalStore.__fliponRedis ?? null;
+  }
+  globalStore.__fliponRedisChecked = true;
+
+  const url =
+    process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token =
+    process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    globalStore.__fliponRedis = null;
+    return null;
+  }
+
+  globalStore.__fliponRedis = new Redis({ url, token });
+  return globalStore.__fliponRedis;
+}
+
+/** True when a shared store is available (required on Vercel multi-instance). */
+export function hasDurableStore(): boolean {
+  return getRedis() !== null;
+}
+
+function roomKey(id: string) {
+  return `${KEY_PREFIX}${id.toUpperCase()}`;
 }
 
 function makeCode(): string {
@@ -37,19 +71,41 @@ function makeCode(): string {
   return code;
 }
 
-function purgeExpired() {
+function purgeExpiredMemory() {
   const now = Date.now();
-  const map = rooms();
+  const map = memoryRooms();
   for (const [id, room] of map) {
     if (now - room.createdAt > TTL_MS) map.delete(id);
   }
 }
 
-export function createRoom(constraints: Constraints): DuoRoom {
-  purgeExpired();
-  const map = rooms();
+async function saveRoom(room: DuoRoom): Promise<void> {
+  const redis = getRedis();
+  if (redis) {
+    await redis.set(roomKey(room.id), room, { ex: TTL_SEC });
+    return;
+  }
+  memoryRooms().set(room.id, room);
+}
+
+async function loadRoom(id: string): Promise<DuoRoom | undefined> {
+  const code = id.toUpperCase();
+  const redis = getRedis();
+  if (redis) {
+    const data = await redis.get<DuoRoom>(roomKey(code));
+    return data ?? undefined;
+  }
+  purgeExpiredMemory();
+  return memoryRooms().get(code);
+}
+
+export async function createRoom(constraints: Constraints): Promise<DuoRoom> {
   let id = makeCode();
-  while (map.has(id)) id = makeCode();
+  for (let i = 0; i < 8; i++) {
+    const existing = await loadRoom(id);
+    if (!existing) break;
+    id = makeCode();
+  }
 
   const room: DuoRoom = {
     id,
@@ -62,56 +118,60 @@ export function createRoom(constraints: Constraints): DuoRoom {
     hostLikes: null,
     guestLikes: null,
   };
-  map.set(id, room);
+  await saveRoom(room);
   return room;
 }
 
-export function getRoom(id: string): DuoRoom | undefined {
-  purgeExpired();
-  return rooms().get(id.toUpperCase());
+export async function getRoom(id: string): Promise<DuoRoom | undefined> {
+  return loadRoom(id);
 }
 
-export function joinRoom(id: string): DuoRoom | null {
-  const room = getRoom(id);
+export async function joinRoom(id: string): Promise<DuoRoom | null> {
+  const room = await loadRoom(id);
   if (!room) return null;
   room.guestJoined = true;
+  await saveRoom(room);
   return room;
 }
 
-export function setReady(id: string, role: DuoRole): DuoRoom | null {
-  const room = getRoom(id);
+export async function setReady(
+  id: string,
+  role: DuoRole,
+): Promise<DuoRoom | null> {
+  const room = await loadRoom(id);
   if (!room) return null;
   if (role === "host") room.hostReady = true;
   else {
     if (!room.guestJoined) return null;
     room.guestReady = true;
   }
+  await saveRoom(room);
   return room;
 }
 
-export function submitVotes(
+export async function submitVotes(
   id: string,
   role: DuoRole,
   likedIds: string[],
-): DuoRoom | null {
-  const room = getRoom(id);
+): Promise<DuoRoom | null> {
+  const room = await loadRoom(id);
   if (!room) return null;
   if (!room.hostReady || !room.guestReady) return null;
   if (role === "host") room.hostLikes = likedIds;
   else room.guestLikes = likedIds;
+  await saveRoom(room);
   return room;
 }
 
 export function computeMatch(room: DuoRoom): Plan | null {
   if (!room.hostLikes || !room.guestLikes) return null;
   const guestSet = new Set(room.guestLikes);
-  const intersection = room.hostLikes.filter((id) => guestSet.has(id));
+  const intersection = room.hostLikes.filter((planId) => guestSet.has(planId));
   const byId = new Map(room.deck.map((p) => [p.id, p]));
-  for (const id of intersection) {
-    const plan = byId.get(id);
+  for (const planId of intersection) {
+    const plan = byId.get(planId);
     if (plan) return plan;
   }
-  // Fallback: first deck item both saw if intersection empty — return null
   return null;
 }
 
@@ -139,4 +199,3 @@ export function toPublicSnapshot(
     match: bothVoted ? computeMatch(room) : null,
   };
 }
-

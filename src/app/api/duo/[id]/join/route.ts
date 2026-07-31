@@ -8,7 +8,7 @@ type Ctx = { params: Promise<{ id: string }> };
 
 export async function POST(_req: Request, ctx: Ctx) {
   const { id } = await ctx.params;
-  const room = joinRoom(id);
+  const room = await joinRoom(id);
   if (!room) {
     return NextResponse.json({ error: "Session introuvable" }, { status: 404 });
   }

@@ -22,7 +22,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
     return NextResponse.json({ error: "likedIds requis" }, { status: 400 });
   }
 
-  const room = submitVotes(id, body.role, body.likedIds);
+  const room = await submitVotes(id, body.role, body.likedIds);
   if (!room) {
     return NextResponse.json(
       { error: "Session introuvable ou vote trop tôt" },
