@@ -111,40 +111,40 @@ export function LandingHero() {
       <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-r from-black/80 via-black/55 to-black/25" />
       <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-t from-black/70 via-transparent to-black/35" />
 
-      <div className="relative z-10 mx-auto grid min-h-[92svh] max-w-6xl items-center gap-10 px-5 pb-14 pt-24 sm:px-8 sm:pb-16 lg:grid-cols-2 lg:gap-12 lg:pb-20">
+      <div className="relative z-10 mx-auto grid min-h-[92svh] max-w-6xl items-center gap-8 page-gutter pb-12 pt-20 sm:gap-10 sm:pb-16 sm:pt-24 lg:grid-cols-2 lg:gap-12 lg:pb-20">
         <div className="max-w-xl">
-          <p className="font-[family-name:var(--font-display)] text-5xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl">
+          <p className="font-[family-name:var(--font-display)] text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl">
             Flip<span className="text-coral">On</span>
           </p>
 
-          <div className="mt-5">
+          <div className="mt-4 sm:mt-5">
             <BlurText
               text="« On devrait faire un truc… » — et vous restez au canapé."
               delay={60}
               animateBy="words"
               direction="bottom"
-              className="text-2xl font-bold leading-snug tracking-tight text-white sm:text-3xl md:text-[2.15rem]"
+              className="text-xl font-bold leading-snug tracking-tight text-white sm:text-3xl md:text-[2.15rem]"
               stepDuration={0.28}
             />
           </div>
 
-          <p className="mt-4 max-w-md text-base leading-relaxed text-white/70 sm:text-lg">
+          <p className="mt-3 max-w-md text-[15px] leading-relaxed text-white/70 sm:mt-4 sm:text-lg">
             Une idée d’activité à deux. Pas une liste. Vous votez chacun de
             votre côté — FlipOn garde celle qui passe pour les deux.
           </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="mt-6 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:items-center sm:gap-3">
             <Link
               href="/test"
               prefetch
-              className="btn-primary min-h-12 px-7 text-base shadow-[0_10px_40px_rgb(255_92_122/0.4)]"
+              className="btn-primary w-full min-h-12 px-7 text-base shadow-[0_10px_40px_rgb(255_92_122/0.4)] sm:w-auto"
             >
               Essayer maintenant
             </Link>
             <Link
               href="/presentation"
               prefetch
-              className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-ui)] border border-white/30 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-white/10"
+              className="inline-flex min-h-12 w-full items-center justify-center rounded-[var(--radius-ui)] border border-white/30 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-white/10 sm:w-auto"
             >
               Comment ça marche
             </Link>
@@ -156,7 +156,7 @@ export function LandingHero() {
             <DuoDemo />
           ) : (
             <div
-              className="mx-auto flex h-[280px] w-full max-w-xl items-center justify-center rounded-[var(--radius-ui)] border border-white/10 bg-white/5"
+              className="mx-auto flex h-[220px] w-full max-w-xl items-center justify-center rounded-[var(--radius-ui)] border border-white/10 bg-white/5 sm:h-[280px]"
               aria-hidden
             >
               <div className="h-8 w-8 animate-pulse rounded-full bg-coral/40" />

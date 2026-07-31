@@ -49,12 +49,47 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-jakarta), system-ui, sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* Mobile-first page gutters + notch / home indicator */
+.page-gutter {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+@media (min-width: 640px) {
+  .page-gutter {
+    padding-left: max(2rem, env(safe-area-inset-left));
+    padding-right: max(2rem, env(safe-area-inset-right));
+  }
+}
+
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.vote-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
+  padding: 0.75rem 0.25rem max(0.75rem, env(safe-area-inset-bottom));
+  background: linear-gradient(
+    to top,
+    var(--background) 55%,
+    color-mix(in srgb, var(--background) 70%, transparent)
+  );
 }
 
 ::selection {
@@ -308,7 +343,7 @@ body {
 
 .btn-primary {
   display: inline-flex;
-  min-height: 44px;
+  min-height: 48px;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius);
@@ -317,6 +352,8 @@ body {
   font-size: 0.9375rem;
   font-weight: 700;
   color: white;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: background 0.15s ease, transform 0.15s ease;
 }
 
@@ -324,9 +361,13 @@ body {
   background: var(--coral-deep);
 }
 
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
 .btn-secondary {
   display: inline-flex;
-  min-height: 44px;
+  min-height: 48px;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius);
@@ -336,6 +377,8 @@ body {
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--ink);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
@@ -344,16 +387,30 @@ body {
   border-color: color-mix(in srgb, var(--ink) 18%, white);
 }
 
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
 .chip {
-  min-height: 40px;
+  min-height: 44px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
   background: white;
-  padding: 0.5rem 0.85rem;
-  font-size: 0.875rem;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: var(--ink);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+@media (min-width: 640px) {
+  .chip {
+    min-height: 40px;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.875rem;
+  }
 }
 
 .chip[data-active="true"] {
@@ -393,6 +450,22 @@ body {
   box-shadow:
     0 18px 40px rgb(0 0 0 / 45%),
     inset 0 0 0 1px rgb(255 255 255 / 12%);
+}
+
+@media (max-width: 379px) {
+  .duo-phone-body {
+    padding: 6px;
+    border-radius: 16px;
+  }
+
+  .duo-phone-screen {
+    padding: 0.55rem 0.45rem 0.6rem !important;
+  }
+
+  .duo-stage > p:first-child {
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .duo-phone-notch {

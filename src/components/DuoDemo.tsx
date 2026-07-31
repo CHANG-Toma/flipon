@@ -4,7 +4,7 @@ export function DuoDemo() {
       className="duo-stage relative mx-auto w-full max-w-xl px-1"
       aria-label="Démonstration : Zoé et Max votent chacun de leur côté"
     >
-      <p className="mb-6 text-center text-sm font-medium text-white/75">
+      <p className="mb-4 text-center text-xs font-medium text-white/75 sm:mb-6 sm:text-sm">
         Chacun son téléphone — les votes restent privés
       </p>
 
@@ -15,7 +15,7 @@ export function DuoDemo() {
           </span>
         </div>
 
-        <div className="grid grid-cols-2 items-start gap-3 sm:gap-5">
+        <div className="grid grid-cols-2 items-start gap-2 sm:gap-5">
           {/* Zoé */}
           <div className="duo-phone duo-phone-left">
             <div className="duo-phone-body">

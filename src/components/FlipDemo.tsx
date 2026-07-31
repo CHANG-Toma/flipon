@@ -69,15 +69,18 @@ function Stepper({
   currentIndex: number;
 }) {
   return (
-    <ol className="mb-8 flex items-center gap-2" aria-label="Étapes">
+    <ol className="mb-6 flex items-start gap-1 sm:mb-8 sm:items-center sm:gap-2" aria-label="Étapes">
       {labels.map((label, i) => {
         const done = i < currentIndex;
         const active = i === currentIndex;
         return (
-          <li key={label} className="flex flex-1 items-center gap-2">
+          <li
+            key={label}
+            className="flex min-w-0 flex-1 flex-col items-center gap-1.5 sm:flex-row sm:items-center sm:gap-2"
+          >
             <div
               className={[
-                "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold sm:h-7 sm:w-7",
                 active
                   ? "bg-coral text-white"
                   : done
@@ -90,7 +93,7 @@ function Stepper({
             </div>
             <span
               className={[
-                "hidden text-sm font-medium sm:inline",
+                "max-w-full truncate text-center text-[10px] font-medium leading-tight sm:text-left sm:text-sm",
                 active ? "text-ink" : "text-ink-soft",
               ].join(" ")}
             >
@@ -137,7 +140,7 @@ function ChoiceGroup<T extends string>({
   return (
     <fieldset className="space-y-2.5" disabled={disabled}>
       <legend className="text-sm font-semibold text-ink">{label}</legend>
-      <div className={`grid gap-2 ${grid}`} role="radiogroup" aria-label={label}>
+      <div className={`grid gap-1.5 sm:gap-2 ${grid}`} role="radiogroup" aria-label={label}>
         {options.map((opt) => {
           const active = value === opt.value;
           return (
@@ -149,7 +152,7 @@ function ChoiceGroup<T extends string>({
               data-active={active}
               disabled={disabled}
               onClick={() => onChange(opt.value)}
-              className="chip w-full text-center disabled:opacity-60"
+              className="chip w-full text-center leading-snug disabled:opacity-60"
             >
               {opt.label}
             </button>
@@ -191,7 +194,7 @@ function ConstraintsForm({
   readOnly?: boolean;
 }) {
   return (
-    <div className="surface space-y-5 p-5">
+    <div className="surface space-y-4 p-4 sm:space-y-5 sm:p-5">
       <ChoiceGroup
         label="Durée"
         options={durationOptions}
@@ -256,17 +259,20 @@ function VoteCard({
   privateLabel?: string;
 }) {
   return (
-    <div className="animate-rise space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-ink">
-            Ça vous dit ?
-          </h2>
-          <p className="mt-1 text-sm text-ink-soft">
-            Idée {index + 1} sur {total}
-            {privateLabel ? ` · ${privateLabel}` : ""}
-          </p>
-        </div>
+    <div className="animate-rise space-y-4 pb-2">
+      <div>
+        <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
+          Ça vous dit ?
+        </h2>
+        <p className="mt-1 text-sm text-ink-soft">
+          Idée {index + 1} sur {total}
+          {privateLabel ? (
+            <>
+              <span className="hidden sm:inline">{` · ${privateLabel}`}</span>
+              <span className="mt-0.5 block text-xs sm:hidden">{privateLabel}</span>
+            </>
+          ) : null}
+        </p>
       </div>
 
       <div
@@ -285,38 +291,40 @@ function VoteCard({
 
       <div
         className={[
-          "surface min-h-[280px] p-5 transition-all duration-200",
+          "surface min-h-[240px] p-4 transition-all duration-200 sm:min-h-[280px] sm:p-5",
           fly === "right" ? "translate-x-6 opacity-0" : "",
           fly === "left" ? "-translate-x-6 opacity-0" : "",
         ].join(" ")}
       >
         <p className="text-xs font-semibold text-coral">{current.category}</p>
-        <h3 className="mt-2 text-xl font-bold leading-snug text-ink">
+        <h3 className="mt-2 text-lg font-bold leading-snug text-ink sm:text-xl">
           {current.title}
         </h3>
-        <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">
+        <p className="mt-3 text-sm leading-relaxed text-ink-soft sm:text-[15px]">
           {current.blurb}
         </p>
         <MetaTags plan={current} />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 pt-1">
-        <button
-          type="button"
-          onClick={() => onVote(false)}
-          className="btn-secondary"
-          disabled={!!fly}
-        >
-          Passer
-        </button>
-        <button
-          type="button"
-          onClick={() => onVote(true)}
-          className="btn-primary"
-          disabled={!!fly}
-        >
-          Oui
-        </button>
+      <div className="vote-dock">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+          <button
+            type="button"
+            onClick={() => onVote(false)}
+            className="btn-secondary w-full"
+            disabled={!!fly}
+          >
+            Passer
+          </button>
+          <button
+            type="button"
+            onClick={() => onVote(true)}
+            className="btn-primary w-full"
+            disabled={!!fly}
+          >
+            Oui
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -335,23 +343,23 @@ function MatchView({
     <div className="animate-rise space-y-5">
       <div>
         <p className="text-sm font-semibold text-coral">C’est bon</p>
-        <h2 className="mt-1 text-2xl font-bold tracking-tight text-ink">
+        <h2 className="mt-1 text-xl font-bold tracking-tight text-ink sm:text-2xl">
           Votre idée
         </h2>
         <p className="mt-1.5 text-sm text-ink-soft">{subtitle}</p>
       </div>
 
       {matched ? (
-        <div className="surface p-5">
+        <div className="surface p-4 sm:p-5">
           <p className="text-xs font-semibold text-coral">{matched.category}</p>
-          <h3 className="mt-2 text-xl font-bold text-ink">{matched.title}</h3>
-          <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">
+          <h3 className="mt-2 text-lg font-bold text-ink sm:text-xl">{matched.title}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-ink-soft sm:text-[15px]">
             {matched.blurb}
           </p>
           <MetaTags plan={matched} />
           <ol className="mt-5 space-y-3 border-t border-line pt-5">
             {matched.steps.map((s, i) => (
-              <li key={s} className="flex gap-3 text-[15px] text-ink">
+              <li key={s} className="flex gap-3 text-sm text-ink sm:text-[15px]">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky text-xs font-bold text-coral-deep">
                   {i + 1}
                 </span>
@@ -706,9 +714,9 @@ export function FlipDemo() {
   /* ——— Mode pick ——— */
   if (mode === "pick") {
     return (
-      <div className="mx-auto w-full max-w-md animate-rise space-y-5">
+      <div className="mx-auto w-full max-w-md animate-rise space-y-4 sm:space-y-5">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-ink">
+          <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
             Comment vous testez ?
           </h2>
           <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
@@ -722,7 +730,7 @@ export function FlipDemo() {
             setMode("solo");
             setSoloStep("constraints");
           }}
-          className="surface w-full p-5 text-left transition-colors hover:border-coral/40"
+          className="surface w-full p-4 text-left transition-colors hover:border-coral/40 active:scale-[0.99] sm:p-5"
         >
           <p className="font-bold text-ink">Solo</p>
           <p className="mt-1 text-sm text-ink-soft">
@@ -738,7 +746,7 @@ export function FlipDemo() {
             setRole(null);
             setRoomId(null);
           }}
-          className="surface w-full p-5 text-left transition-colors hover:border-coral/40"
+          className="surface w-full p-4 text-left transition-colors hover:border-coral/40 active:scale-[0.99] sm:p-5"
         >
           <p className="font-bold text-ink">À deux · deux téléphones</p>
           <p className="mt-1 text-sm text-ink-soft">
@@ -767,9 +775,9 @@ export function FlipDemo() {
         />
 
         {soloStep === "constraints" && (
-          <div className="animate-rise space-y-6">
+          <div className="animate-rise space-y-5 sm:space-y-6">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-ink">
+              <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
                 Qu’est-ce qui est jouable ?
               </h2>
               <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
@@ -843,9 +851,9 @@ export function FlipDemo() {
       )}
 
       {duoPhase === "constraints" && !role && (
-        <div className="animate-rise space-y-6">
+        <div className="animate-rise space-y-5 sm:space-y-6">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-ink">
+            <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
               Créer ou rejoindre
             </h2>
             <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
@@ -878,19 +886,22 @@ export function FlipDemo() {
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <input
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
               placeholder="CODE"
               maxLength={6}
-              className="min-h-11 flex-1 rounded-[var(--radius-ui)] border border-line bg-white px-3 text-center font-bold tracking-[0.2em] text-ink outline-none focus:border-coral"
+              inputMode="text"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              className="min-h-12 w-full flex-1 rounded-[var(--radius-ui)] border border-line bg-white px-3 text-center text-lg font-bold tracking-[0.2em] text-ink outline-none focus:border-coral sm:text-base"
               aria-label="Code de session"
             />
             <button
               type="button"
               onClick={joinWithCode}
-              className="btn-secondary shrink-0 px-4"
+              className="btn-secondary w-full shrink-0 sm:w-auto sm:px-4"
               disabled={busy}
             >
               Rejoindre
@@ -908,9 +919,9 @@ export function FlipDemo() {
       )}
 
       {duoPhase === "lobby" && role && snapshot && (
-        <div className="animate-rise space-y-5">
+        <div className="animate-rise space-y-4 sm:space-y-5">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-ink">
+            <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
               {role === "host" ? "Invite l’autre" : "Tu as rejoint"}
             </h2>
             <p className="mt-1.5 text-sm text-ink-soft">
@@ -922,11 +933,11 @@ export function FlipDemo() {
 
           <RealAppNote />
 
-          <div className="surface p-5 text-center">
+          <div className="surface p-4 text-center sm:p-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
               Code
             </p>
-            <p className="mt-2 font-[family-name:var(--font-display)] text-4xl font-extrabold tracking-[0.25em] text-ink">
+            <p className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-[0.2em] text-ink sm:text-4xl sm:tracking-[0.25em]">
               {snapshot.id}
             </p>
             {shareUrl && role === "host" && (
@@ -935,18 +946,41 @@ export function FlipDemo() {
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(shareUrl)}`}
                   alt="QR code pour rejoindre la session"
-                  width={160}
-                  height={160}
-                  className="mx-auto mt-4 rounded-lg border border-line bg-white p-2"
+                  width={140}
+                  height={140}
+                  className="mx-auto mt-4 h-[140px] w-[140px] rounded-lg border border-line bg-white p-2 sm:h-[160px] sm:w-[160px]"
                 />
-                <p className="mt-3 break-all text-xs text-ink-soft">{shareUrl}</p>
-                <button
-                  type="button"
-                  onClick={copyLink}
-                  className="btn-secondary mt-3 w-full"
-                >
-                  {copied ? "Lien copié" : "Copier le lien"}
-                </button>
+                <p className="mt-3 break-all px-1 text-[11px] leading-relaxed text-ink-soft sm:text-xs">
+                  {shareUrl}
+                </p>
+                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={copyLink}
+                    className="btn-secondary w-full"
+                  >
+                    {copied ? "Lien copié" : "Copier le lien"}
+                  </button>
+                  {"share" in navigator && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          await navigator.share({
+                            title: "FlipOn — rejoins la session",
+                            text: `Code ${snapshot.id}`,
+                            url: shareUrl,
+                          });
+                        } catch {
+                          /* dismissed */
+                        }
+                      }}
+                      className="btn-primary w-full"
+                    >
+                      Partager
+                    </button>
+                  )}
+                </div>
               </>
             )}
           </div>

@@ -25,38 +25,38 @@ export default function HomePage() {
     <main>
       <LandingHero />
 
-      <section className="border-b border-line bg-petal px-5 py-10 sm:px-8 content-auto">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+      <section className="content-auto border-b border-line bg-petal page-gutter py-8 sm:py-10">
+        <div className="mx-auto flex max-w-6xl flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <p className="text-lg font-bold text-ink">
+            <p className="text-base font-bold text-ink sm:text-lg">
               Teste le vrai flux en 30 secondes.
             </p>
             <p className="mt-1 text-sm text-ink-soft">
               Cadre → vote → une idée. Sans créer de compte.
             </p>
           </div>
-          <Link href="/test" prefetch className="btn-primary shrink-0">
+          <Link href="/test" prefetch className="btn-primary w-full shrink-0 sm:w-auto">
             Lancer la démo
           </Link>
         </div>
       </section>
 
-      <section className="content-auto px-5 py-16 sm:px-8 sm:py-20">
+      <section className="content-auto page-gutter py-12 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-lg">
             <h2 className="sr-only">Le problème, c’est pas le manque d’idées.</h2>
             <AnimatedHeading
               text="Le problème, c’est pas le manque d’idées."
-              className="text-2xl font-bold tracking-tight text-ink sm:text-3xl"
+              className="text-xl font-bold tracking-tight text-ink sm:text-3xl"
             />
-            <p className="mt-3 text-base leading-relaxed text-ink-soft sm:text-lg">
+            <p className="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-lg">
               C’est le moment où personne ne tranche. FlipOn coupe court :
               chacun dit oui ou non de son côté, et on garde celle qui passe
               pour les deux.
             </p>
           </div>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-3 sm:gap-4">
             {[
               {
                 t: "Cadre",
@@ -71,7 +71,7 @@ export default function HomePage() {
                 d: "Une seule proposition, avec les prochaines étapes.",
               },
             ].map((item) => (
-              <div key={item.t} className="surface p-5">
+              <div key={item.t} className="surface p-4 sm:p-5">
                 <h3 className="font-bold text-ink">{item.t}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-ink-soft">
                   {item.d}
@@ -82,24 +82,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="content-auto border-y border-line bg-sky/50 px-5 py-14 sm:px-8">
+      <section className="content-auto border-y border-line bg-sky/50 page-gutter py-10 sm:py-14">
         <div className="mx-auto max-w-xl">
           <AnimatedHeading
             text="Pas une app de rencontres. Pas un coach de couple."
-            className="text-2xl font-bold text-ink"
+            className="text-xl font-bold text-ink sm:text-2xl"
           />
-          <p className="mt-2 text-base leading-relaxed text-ink-soft">
+          <p className="mt-2 text-[15px] leading-relaxed text-ink-soft sm:text-base">
             Juste pour varier un peu quand vous tournez en boucle.
           </p>
         </div>
       </section>
 
-      <section className="content-auto px-5 py-16 sm:px-8 sm:py-20">
+      <section className="content-auto page-gutter py-12 sm:py-20">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-sm">
             <AnimatedHeading
               text="On construit encore."
-              className="text-2xl font-bold text-ink"
+              className="text-xl font-bold text-ink sm:text-2xl"
             />
             <p className="mt-2 text-sm leading-relaxed text-ink-soft">
               Laisse ton mail si tu veux qu’on te prévienne. Pas de newsletter
@@ -110,8 +110,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="border-t border-line px-5 py-5 text-sm text-ink-soft sm:px-8">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
+      <footer className="safe-bottom border-t border-line page-gutter py-5 text-sm text-ink-soft">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
           <p className="font-bold text-ink">
             Flip<span className="text-coral">On</span>
           </p>

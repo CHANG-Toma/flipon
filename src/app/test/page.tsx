@@ -3,10 +3,10 @@ import { FlipDemo } from "@/components/FlipDemo";
 
 export default function TestPage() {
   return (
-    <main className="min-h-[100svh] pb-20 pt-8">
-      <div className="mx-auto max-w-5xl px-5 sm:px-8">
-        <header className="mx-auto mb-8 max-w-md animate-rise text-center sm:text-left">
-          <h1 className="text-3xl font-bold tracking-tight text-ink">
+    <main className="safe-bottom min-h-[100dvh] pb-10 pt-5 sm:pb-20 sm:pt-8">
+      <div className="page-gutter mx-auto max-w-5xl">
+        <header className="mx-auto mb-6 max-w-md animate-rise text-left sm:mb-8">
+          <h1 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">
             Essayer FlipOn
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-ink-soft">

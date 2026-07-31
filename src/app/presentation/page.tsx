@@ -29,20 +29,20 @@ const sections = [
 
 export default function PresentationPage() {
   return (
-    <main className="min-h-[100svh] pb-20 pt-10">
-      <div className="mx-auto max-w-5xl px-5 sm:px-8">
+    <main className="safe-bottom min-h-[100dvh] pb-12 pt-6 sm:pb-20 sm:pt-10">
+      <div className="page-gutter mx-auto max-w-5xl">
         <header className="max-w-xl animate-rise">
-          <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+          <h1 className="text-2xl font-bold tracking-tight text-ink sm:text-4xl">
             FlipOn en une page
           </h1>
-          <p className="mt-2 text-base text-ink-soft">
+          <p className="mt-2 text-[15px] text-ink-soft sm:text-base">
             Couper le débat, pas remplir un catalogue.
           </p>
         </header>
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-12">
+        <div className="mt-8 grid gap-6 sm:mt-10 sm:gap-8 lg:grid-cols-12">
           <aside className="lg:col-span-4">
-            <div className="surface sticky top-20 space-y-4 p-5">
+            <div className="surface space-y-4 p-4 sm:sticky sm:top-20 sm:p-5">
               <p className="text-sm font-bold text-ink">En gros</p>
               <ul className="space-y-2 text-sm text-ink-soft">
                 <li>
@@ -62,11 +62,13 @@ export default function PresentationPage() {
             </div>
           </aside>
 
-          <div className="space-y-4 lg:col-span-8">
+          <div className="space-y-3 sm:space-y-4 lg:col-span-8">
             {sections.map((s) => (
-              <article key={s.title} className="surface p-5">
-                <h2 className="text-lg font-bold text-ink">{s.title}</h2>
-                <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">
+              <article key={s.title} className="surface p-4 sm:p-5">
+                <h2 className="text-base font-bold text-ink sm:text-lg">
+                  {s.title}
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-ink-soft sm:text-[15px]">
                   {s.body}
                 </p>
               </article>
