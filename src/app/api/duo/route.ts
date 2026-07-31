@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error:
-          "Stockage duo manquant sur Vercel. Ajoute Upstash Redis / Vercel KV (KV_REST_API_URL + KV_REST_API_TOKEN), puis redéploie.",
+          "Redis non configuré. Connecte la base Redis au projet flipon (REDIS_URL), puis redéploie.",
       },
       { status: 503 },
     );

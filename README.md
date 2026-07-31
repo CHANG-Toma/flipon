@@ -16,14 +16,13 @@ Ouvrir [http://localhost:3000](http://localhost:3000).
 
 - `/` — Landing + waitlist
 - `/presentation` — Présentation produit
+- `/tarifs` — Basique (gratuit) et Boost IA
 - `/test` — Démo interactive (solo ou duo 2 téléphones)
 
 ## Déploiement Vercel (duo)
 
-Le mode **À deux** a besoin d’un Redis partagé (les fonctions serverless ne partagent pas la mémoire).
+1. Crée un **Redis Free** (Storage)
+2. **Connect to Project** → projet `flipon` (ajoute `REDIS_URL`)
+3. Push le code à jour + **Redeploy**
 
-1. Sur [vercel.com](https://vercel.com) → ton projet → **Storage** → crée **Upstash Redis** (ou Vercel KV)
-2. Relie-le au projet (ça ajoute `KV_REST_API_URL` + `KV_REST_API_TOKEN`)
-3. **Redeploy**
-
-En local, sans Redis, le duo marche quand même (Map en mémoire, un seul process).
+Sessions : TTL 24 h en cours, ~15 min après le match, max 2 jours.

@@ -23,7 +23,7 @@ const sections = [
   },
   {
     title: "Modèle",
-    body: "Freemium + premium couple (~6 €/mois) — un abo pour deux comptes.",
+    body: "Freemium + Boost IA (~6 €/mois pour le couple) — idées plus précises selon lieu, météo, moment. Voir les tarifs.",
   },
 ];
 
@@ -58,6 +58,12 @@ export default function PresentationPage() {
               </ul>
               <Link href="/test" className="btn-primary w-full">
                 Essayer
+              </Link>
+              <Link
+                href="/tarifs"
+                className="block text-center text-sm font-medium text-coral hover:text-coral-deep"
+              >
+                Voir les tarifs
               </Link>
             </div>
           </aside>

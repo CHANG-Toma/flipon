@@ -534,6 +534,11 @@ export function FlipDemo() {
   ]);
 
   function resetAll() {
+    if (roomId) {
+      void fetch(`/api/duo/${roomId}/close`, { method: "POST" }).catch(
+        () => undefined,
+      );
+    }
     setMode("pick");
     setSoloStep("constraints");
     setDuoPhase("constraints");
