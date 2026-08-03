@@ -1,8 +1,10 @@
 # FlipOn
 
-MVP web — application couple anti-routine.
+Site MVP pour tester FlipOn : voter en privé et trouver une activité que tout le groupe accepte.
 
-## Lancer
+Le vrai produit sera l’app mobile. Ici = landing + démo web.
+
+## Lancer en local
 
 ```bash
 cd flipon
@@ -10,32 +12,28 @@ npm install
 npm run dev
 ```
 
-Ouvrir [http://localhost:3000](http://localhost:3000).
+→ [http://localhost:3000](http://localhost:3000)
 
 ## Pages
 
-- `/` — Landing + waitlist
-- `/presentation` — Présentation produit
-- `/tarifs` — Basique (gratuit) et Boost IA
-- `/test` — Démo interactive (solo ou duo 2 téléphones)
+| Route | Contenu |
+|-------|---------|
+| `/` | Accueil + waitlist |
+| `/presentation` | Le produit en une page |
+| `/tarifs` | Basique / Boost |
+| `/test` | Démo solo ou duo (2 téléphones) |
 
-## Déploiement Vercel (duo)
+## Variables d’environnement
 
-1. Crée un **Redis Free** (Storage)
-2. **Connect to Project** → projet `flipon` (ajoute `REDIS_URL`)
-3. Push le code à jour + **Redeploy**
+Voir `.env.example`.
 
-Sessions : TTL 24 h en cours, ~15 min après le match, max 2 jours.
+- `REDIS_URL` — obligatoire en prod pour le duo (Vercel Redis / Upstash)
+- `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` — pour recevoir les retours du formulaire `/test`
 
-## Feedback e-mail (page /test)
+## Déploiement (Vercel)
 
-1. Va sur [web3forms.com](https://web3forms.com), entre **ton e-mail**, récupère l’`access_key`
-2. Dans Vercel → Environment Variables, ajoute :
-   - `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` = ta clé  
-   (le préfixe `NEXT_PUBLIC_` est **obligatoire**)
-3. Tu peux garder ou supprimer l’ancienne `WEB3FORMS_ACCESS_KEY` (plus utilisée)
-4. **Redeploy**
+1. Brancher Redis au projet (`REDIS_URL`)
+2. Ajouter `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` si tu veux le feedback
+3. Push / redeploy — et **Promote to Production** si besoin
 
-En local : `.env.local` avec la même variable.
-
-
+Les sessions duo durent ~24 h (plus court après un match).
