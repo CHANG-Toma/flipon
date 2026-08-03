@@ -20,8 +20,8 @@ export function Nav() {
         "sticky top-0 z-50 border-b backdrop-blur-md",
         "pt-[env(safe-area-inset-top)]",
         onHome
-          ? "border-white/10 bg-[#121212]/80"
-          : "border-line/80 bg-petal/90",
+          ? "border-white/10 bg-[#0a0a0a]/90"
+          : "border-line/80 bg-petal/95",
       ].join(" ")}
     >
       <div className="page-gutter mx-auto flex h-12 max-w-5xl items-center justify-between gap-2 sm:h-14 sm:gap-4">
@@ -47,6 +47,7 @@ export function Nav() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  prefetch
                   className="ml-1 inline-flex min-h-10 items-center rounded-[var(--radius-ui)] bg-coral px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-coral-deep sm:min-h-9 sm:px-3.5"
                 >
                   {link.label}

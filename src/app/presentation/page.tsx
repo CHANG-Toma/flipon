@@ -3,27 +3,27 @@ import Link from "next/link";
 const sections = [
   {
     title: "Le problème",
-    body: "Les couples tombent dans la routine. Chercher une idée sur internet crée de la fatigue de décision, et la charge de « trouver un plan » tombe souvent sur une seule personne.",
+    body: "On veut faire un truc, personne ne tranche. Chercher sur internet fatigue, et la charge tombe souvent sur une seule personne.",
   },
   {
     title: "La promesse",
-    body: "Sortir du mode automatique à deux. FlipOn sort une activité que vous avez tous les deux validée, selon le temps, le budget, l’énergie et dedans / dehors.",
+    body: "Chacun vote de son côté. FlipOn sort une activité validée par tout le monde — selon le temps, le budget, l’énergie, le lieu et l’ambiance.",
   },
   {
     title: "Comment ça marche",
-    body: "Comptes liés → cadre rapide → vote privé → une idée avec des étapes → un petit check-in après.",
+    body: "Cadre rapide → vote privé → une idée avec des étapes. Plus tard : sessions à plus de 2 personnes.",
   },
   {
     title: "Ce que ce n’est pas",
-    body: "Pas de quiz coquin, pas d’annuaire de restos, pas de réseau social, pas de thérapie.",
+    body: "Pas une app de rencontres, pas un annuaire de restos, pas un réseau social. Un outil pour trancher.",
   },
   {
     title: "Pour qui",
-    body: "Couples qui se disent « on devrait varier » et qui finissent encore sur le canapé. Ça ne marche qu’à deux.",
+    body: "Couples, potes, colloc, groupe du soir — dès que vous êtes plusieurs et que « on verra » bloque. Le mode Date n’est qu’une ambiance d’idées.",
   },
   {
     title: "Modèle",
-    body: "Freemium + Boost IA (~6 €/mois pour le couple) — idées plus précises selon lieu, météo, moment. Voir les tarifs.",
+    body: "Freemium + Boost IA (~6 €/mois) — idées plus précises selon lieu, météo, moment. Voir les tarifs.",
   },
 ];
 
@@ -46,14 +46,16 @@ export default function PresentationPage() {
               <p className="text-sm font-bold text-ink">En gros</p>
               <ul className="space-y-2 text-sm text-ink-soft">
                 <li>
-                  <span className="font-medium text-ink">Quiz</span> → parler
+                  <span className="font-medium text-ink">Listes</span> → trop
+                  d’options
                 </li>
                 <li>
-                  <span className="font-medium text-ink">Lieux</span> → listes
+                  <span className="font-medium text-ink">Débat</span> → personne
+                  ne tranche
                 </li>
                 <li>
                   <span className="font-medium text-ink">FlipOn</span> → une idée
-                  validée
+                  commune
                 </li>
               </ul>
               <Link href="/test" className="btn-primary w-full">

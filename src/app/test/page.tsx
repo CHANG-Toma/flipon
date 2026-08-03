@@ -1,5 +1,19 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { FlipDemo } from "@/components/FlipDemo";
+
+export const metadata: Metadata = {
+  title: "Essayer",
+  description:
+    "Teste FlipOn en solo ou à deux téléphones : cadre (ambiance, temps, budget), vote privé, une idée commune.",
+  alternates: { canonical: "/test" },
+  openGraph: {
+    title: "Essayer FlipOn",
+    description:
+      "Cadre → vote privé → une idée. Solo ou duo sur deux téléphones.",
+    url: "/test",
+  },
+};
 
 export default function TestPage() {
   return (
@@ -10,14 +24,17 @@ export default function TestPage() {
             Essayer FlipOn
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-            Solo ou à deux sur deux téléphones. Votes privés, une idée en
-            commun. Sur la vraie app, chacun ouvre FlipOn directement.
+            Solo pour tester, ou avec un ami sur deux téléphones. Choisis
+            l’ambiance, fixe le cadre, vote en privé — une idée en ressort.
           </p>
         </header>
 
         <Suspense
           fallback={
-            <div className="mx-auto h-40 w-full max-w-md animate-pulse rounded-[var(--radius-ui)] bg-foam" />
+            <div
+              className="mx-auto h-40 w-full max-w-md animate-pulse rounded-[var(--radius-ui)] bg-foam"
+              aria-label="Chargement"
+            />
           }
         >
           <FlipDemo />

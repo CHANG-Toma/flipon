@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { Constraints } from "@/data/plans";
+import { normalizeConstraints } from "@/data/plans";
 import {
   createRoom,
   hasDurableStore,
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { constraints?: Constraints };
+  let body: { constraints?: Parameters<typeof normalizeConstraints>[0] };
   try {
     body = await req.json();
   } catch {
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "constraints requis" }, { status: 400 });
   }
 
-  const room = await createRoom(body.constraints);
+  const room = await createRoom(normalizeConstraints(body.constraints));
   return NextResponse.json({
     role: "host" as const,
     room: toPublicSnapshot(room, "host"),

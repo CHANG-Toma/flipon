@@ -6,10 +6,13 @@ import {
   Constraints,
   Plan,
   buildDeck,
+  countMatchingPlans,
+  vibeLabel,
   type Budget,
   type Duration,
   type Energy,
   type Place,
+  type Vibe,
 } from "@/data/plans";
 import type { DuoPublicSnapshot, DuoRole } from "@/lib/duo-types";
 
@@ -54,11 +57,19 @@ const placeOptions: { value: Place; label: string }[] = [
   { value: "peu-importe", label: "Peu importe" },
 ];
 
+const vibeOptions: { value: Vibe; label: string }[] = [
+  { value: "potes", label: "Potes" },
+  { value: "groupe", label: "Groupe" },
+  { value: "date", label: "Date" },
+  { value: "peu-importe", label: "Peu importe" },
+];
+
 const DEFAULT_CONSTRAINTS: Constraints = {
   duration: "60",
   budget: "20",
   energy: "moyenne",
   place: "peu-importe",
+  vibe: "potes",
 };
 
 function Stepper({
@@ -163,12 +174,35 @@ function ChoiceGroup<T extends string>({
   );
 }
 
+function placeLabel(p: Plan["place"]): string {
+  return p === "dedans" ? "Dedans" : "Dehors";
+}
+
+function energyLabel(e: Energy): string {
+  switch (e) {
+    case "basse":
+      return "Tranquille";
+    case "haute":
+      return "Dynamique";
+    default:
+      return "Normal";
+  }
+}
+
 function MetaTags({ plan }: { plan: Plan }) {
+  const vibeHint =
+    plan.vibes.length === 1
+      ? vibeLabel(plan.vibes[0])
+      : plan.vibes.includes("date") && plan.vibes.length <= 2
+        ? "idéal à deux"
+        : null;
+
   const tags = [
     `~${plan.durationMin} min`,
     plan.budgetMax === 0 ? "Gratuit" : `≤ ${plan.budgetMax} €`,
-    plan.place,
-    `Énergie ${plan.energy}`,
+    placeLabel(plan.place),
+    energyLabel(plan.energy),
+    ...(vibeHint ? [vibeHint] : []),
   ];
   return (
     <ul className="mt-4 flex flex-wrap gap-2">
@@ -188,46 +222,96 @@ function ConstraintsForm({
   constraints,
   setConstraints,
   readOnly = false,
+  showCount = true,
 }: {
   constraints: Constraints;
   setConstraints: (fn: (c: Constraints) => Constraints) => void;
   readOnly?: boolean;
+  showCount?: boolean;
 }) {
+  const matchCount = countMatchingPlans(constraints);
+
   return (
-    <div className="surface space-y-4 p-4 sm:space-y-5 sm:p-5">
-      <ChoiceGroup
-        label="Durée"
-        options={durationOptions}
-        value={constraints.duration}
-        onChange={(duration) => setConstraints((c) => ({ ...c, duration }))}
-        columns={4}
-        disabled={readOnly}
-      />
-      <ChoiceGroup
-        label="Budget"
-        options={budgetOptions}
-        value={constraints.budget}
-        onChange={(budget) => setConstraints((c) => ({ ...c, budget }))}
-        columns={4}
-        disabled={readOnly}
-      />
-      <ChoiceGroup
-        label="Énergie"
-        options={energyOptions}
-        value={constraints.energy}
-        onChange={(energy) => setConstraints((c) => ({ ...c, energy }))}
-        columns={3}
-        disabled={readOnly}
-      />
-      <ChoiceGroup
-        label="Lieu"
-        options={placeOptions}
-        value={constraints.place}
-        onChange={(place) => setConstraints((c) => ({ ...c, place }))}
-        columns={3}
-        disabled={readOnly}
-      />
+    <div className="space-y-4">
+      <div className="surface space-y-4 p-4 sm:space-y-5 sm:p-5">
+        <ChoiceGroup
+          label="Ambiance"
+          options={vibeOptions}
+          value={constraints.vibe}
+          onChange={(vibe) => setConstraints((c) => ({ ...c, vibe }))}
+          columns={4}
+          disabled={readOnly}
+        />
+        <p className="-mt-2 text-xs leading-relaxed text-ink-soft">
+          {constraints.vibe === "date"
+            ? "Idées plus calmes / à deux — pas un feed de rencontres."
+            : constraints.vibe === "groupe"
+              ? "Plans qui marchent à plusieurs autour d’une table ou dehors."
+              : constraints.vibe === "potes"
+                ? "Sorties et défis simples entre amis."
+                : "On mélange toutes les ambiances."}
+        </p>
+        <ChoiceGroup
+          label="Durée"
+          options={durationOptions}
+          value={constraints.duration}
+          onChange={(duration) => setConstraints((c) => ({ ...c, duration }))}
+          columns={4}
+          disabled={readOnly}
+        />
+        <ChoiceGroup
+          label="Budget"
+          options={budgetOptions}
+          value={constraints.budget}
+          onChange={(budget) => setConstraints((c) => ({ ...c, budget }))}
+          columns={4}
+          disabled={readOnly}
+        />
+        <ChoiceGroup
+          label="Énergie"
+          options={energyOptions}
+          value={constraints.energy}
+          onChange={(energy) => setConstraints((c) => ({ ...c, energy }))}
+          columns={3}
+          disabled={readOnly}
+        />
+        <ChoiceGroup
+          label="Lieu"
+          options={placeOptions}
+          value={constraints.place}
+          onChange={(place) => setConstraints((c) => ({ ...c, place }))}
+          columns={3}
+          disabled={readOnly}
+        />
+      </div>
+
+      {showCount && !readOnly && (
+        <p className="text-center text-sm text-ink-soft" aria-live="polite">
+          {matchCount === 0
+            ? "Aucun plan avec ce cadre — élargis un critère."
+            : matchCount <= 6
+              ? `${matchCount} idée${matchCount > 1 ? "s" : ""} à voter · ${vibeLabel(constraints.vibe)}`
+              : `Jusqu’à 6 idées à voter · ${matchCount} collent · ${vibeLabel(constraints.vibe)}`}
+        </p>
+      )}
     </div>
+  );
+}
+
+function ConstraintsSummary({ constraints }: { constraints: Constraints }) {
+  const bits = [
+    vibeLabel(constraints.vibe),
+    durationOptions.find((o) => o.value === constraints.duration)?.label,
+    budgetOptions.find((o) => o.value === constraints.budget)?.label,
+    energyOptions.find((o) => o.value === constraints.energy)?.label,
+    placeOptions.find((o) => o.value === constraints.place)?.label,
+  ];
+  return (
+    <p className="surface px-4 py-3 text-sm leading-relaxed text-ink-soft">
+      <span className="font-semibold text-ink">Cadre</span>
+      {" · "}
+      {bits.join(" · ")}
+    </p>
   );
 }
 
@@ -370,7 +454,8 @@ function MatchView({
         </div>
       ) : (
         <p className="surface p-5 text-sm text-ink-soft">
-          Aucune idée en commun cette fois. Élargissez le cadre et réessayez.
+          Aucune idée retenue cette fois. Élargis le cadre ou dis oui à au moins
+          une proposition, puis réessaie.
         </p>
       )}
 
@@ -559,6 +644,11 @@ export function FlipDemo() {
 
   function startSoloSwipe() {
     const pool = buildDeck(constraints);
+    if (!pool.length) {
+      setError("Aucun plan pour ce cadre — élargis un critère.");
+      return;
+    }
+    setError(null);
     setDeck(pool);
     setIndex(0);
     setLiked([]);
@@ -567,7 +657,7 @@ export function FlipDemo() {
   }
 
   function finishSolo(likes: Plan[]) {
-    setMatched(likes[0] ?? deck[0] ?? null);
+    setMatched(likes[0] ?? null);
     setSoloStep("match");
   }
 
@@ -725,7 +815,7 @@ export function FlipDemo() {
             Comment vous testez ?
           </h2>
           <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-            Solo pour un aperçu rapide, ou à deux sur deux téléphones.
+            Solo pour tester vite, ou avec quelqu’un d’autre sur 2 téléphones.
           </p>
         </div>
 
@@ -753,10 +843,10 @@ export function FlipDemo() {
           }}
           className="surface w-full p-4 text-left transition-colors hover:border-coral/40 active:scale-[0.99] sm:p-5"
         >
-          <p className="font-bold text-ink">À deux · deux téléphones</p>
+          <p className="font-bold text-ink">Avec quelqu’un · 2 téléphones</p>
           <p className="mt-1 text-sm text-ink-soft">
-            Un crée la session, l’autre rejoint. Votes privés, puis une idée en
-            commun.
+            Tu crées la session, l’autre rejoint avec le code. Chacun vote en
+            privé, puis une idée commune.
           </p>
         </button>
 
@@ -786,17 +876,24 @@ export function FlipDemo() {
                 Qu’est-ce qui est jouable ?
               </h2>
               <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-                Choisis le cadre. Ensuite tu votes sur quelques idées.
+                Ambiance d’abord, puis le cadre. Les idées suivent tes choix —
+                pas une liste générique.
               </p>
             </div>
             <ConstraintsForm
               constraints={constraints}
               setConstraints={setConstraints}
             />
+            {error && (
+              <p className="text-sm font-medium text-coral" role="alert">
+                {error}
+              </p>
+            )}
             <button
               type="button"
               onClick={startSoloSwipe}
               className="btn-primary w-full"
+              disabled={countMatchingPlans(constraints) === 0}
             >
               Voir des idées
             </button>
@@ -818,13 +915,25 @@ export function FlipDemo() {
             progress={progress}
             fly={fly}
             onVote={voteSolo}
+            privateLabel={`Cadre ${vibeLabel(constraints.vibe)}`}
           />
+        )}
+
+        {soloStep === "swipe" && !current && (
+          <div className="animate-rise space-y-4">
+            <p className="text-sm text-ink-soft">
+              Plus d’idées dans ce deck. Recadre ou recommence.
+            </p>
+            <button type="button" onClick={resetAll} className="btn-secondary w-full">
+              Recommencer
+            </button>
+          </div>
         )}
 
         {soloStep === "match" && (
           <MatchView
             matched={matched}
-            subtitle="En mode solo, c’est ta première idée « oui ». À deux, ce serait le croisement de vos votes."
+            subtitle={`En solo (${vibeLabel(constraints.vibe)}) : ta première idée « oui ». À plusieurs, ce serait le croisement de vos votes.`}
             onReset={resetAll}
           />
         )}
@@ -878,7 +987,7 @@ export function FlipDemo() {
             type="button"
             onClick={createDuoSession}
             className="btn-primary w-full"
-            disabled={busy}
+            disabled={busy || countMatchingPlans(constraints) === 0}
           >
             {busy ? "Création…" : "Créer la session"}
           </button>
@@ -938,6 +1047,8 @@ export function FlipDemo() {
 
           <RealAppNote />
 
+          <ConstraintsSummary constraints={constraints} />
+
           <div className="surface p-4 text-center sm:p-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
               Code
@@ -991,11 +1102,9 @@ export function FlipDemo() {
           </div>
 
           {role === "guest" && (
-            <ConstraintsForm
-              constraints={constraints}
-              setConstraints={setConstraints}
-              readOnly
-            />
+            <p className="text-center text-xs text-ink-soft">
+              Cadre fixé par l’hôte — tu ne peux pas le modifier.
+            </p>
           )}
 
           <ul className="space-y-2 text-sm">
@@ -1071,7 +1180,7 @@ export function FlipDemo() {
       {duoPhase === "match" && (
         <MatchView
           matched={matched}
-          subtitle="Intersection de vos deux votes privés."
+          subtitle={`Intersection de vos votes privés · cadre ${vibeLabel(constraints.vibe)}.`}
           onReset={resetAll}
         />
       )}

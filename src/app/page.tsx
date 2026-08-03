@@ -15,9 +15,10 @@ const WaitlistForm = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "FlipOn — Sortir de la routine à deux",
+  title: "FlipOn — Une idée pour tout le monde",
   description:
-    "FlipOn, c’est une petite app pour couples qui en ont marre de toujours faire la même chose. Vous votez chacun de votre côté, et vous repartez avec une idée d’activité.",
+    "Chacun vote de son côté. FlipOn sort l’idée d’activité qui passe pour le groupe — potes, couple ou soirée entre amis.",
+  alternates: { canonical: "/" },
 };
 
 export default function HomePage() {
@@ -29,14 +30,14 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-6xl flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <p className="text-base font-bold text-ink sm:text-lg">
-              Teste le vrai flux en 30 secondes.
+              Teste le flux en 30 secondes.
             </p>
             <p className="mt-1 text-sm text-ink-soft">
-              Cadre → vote → une idée. Sans créer de compte.
+              Ambiance → cadre → vote → une idée. Sans compte.
             </p>
           </div>
           <Link href="/test" prefetch className="btn-primary w-full shrink-0 sm:w-auto">
-            Lancer la démo
+            Essayer maintenant
           </Link>
         </div>
       </section>
@@ -52,7 +53,7 @@ export default function HomePage() {
             <p className="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-lg">
               C’est le moment où personne ne tranche. FlipOn coupe court :
               chacun dit oui ou non de son côté, et on garde celle qui passe
-              pour les deux.
+              pour tout le monde.
             </p>
           </div>
 
@@ -60,14 +61,14 @@ export default function HomePage() {
             {[
               {
                 t: "Cadre",
-                d: "Temps, budget, énergie, dedans ou dehors — en quelques taps.",
+                d: "Ambiance, temps, budget, énergie — en quelques taps.",
               },
               {
-                t: "Vote",
+                t: "Vote privé",
                 d: "Chacun de son côté. Plus de « comme tu veux ».",
               },
               {
-                t: "Idée",
+                t: "Idée commune",
                 d: "Une seule proposition, avec les prochaines étapes.",
               },
             ].map((item) => (
@@ -82,14 +83,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="content-auto border-y border-line bg-sky/50 page-gutter py-10 sm:py-14">
+      <section className="content-auto border-y border-line page-gutter py-10 sm:py-14">
         <div className="mx-auto max-w-xl">
           <AnimatedHeading
-            text="Pas une app de rencontres. Pas un coach de couple."
+            text="Pas une app de rencontres. Un outil pour trancher."
             className="text-xl font-bold text-ink sm:text-2xl"
           />
           <p className="mt-2 text-[15px] leading-relaxed text-ink-soft sm:text-base">
-            Juste pour varier un peu quand vous tournez en boucle.
+            Couple, potes, colloc, soirée — même mécanique. Le mode Date n’est
+            qu’une ambiance d’idées, pas un feed de profils.
           </p>
         </div>
       </section>

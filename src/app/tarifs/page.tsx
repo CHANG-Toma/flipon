@@ -4,19 +4,24 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Tarifs",
   description:
-    "FlipOn gratuit pour le flux duo de base. FlipOn Boost : idées plus précises grâce à l’IA, selon le lieu, la météo et le moment.",
+    "FlipOn gratuit pour le flux de base. FlipOn Boost (~6 €/mois) : idées plus précises grâce à l’IA, selon le lieu, la météo et le moment.",
+  alternates: { canonical: "/tarifs" },
+  openGraph: {
+    title: "Tarifs FlipOn",
+    description: "Basique 0 € · Boost ~6 €/mois pour des idées calées sur le contexte.",
+    url: "/tarifs",
+  },
 };
 
 const freeFeatures = [
-  "Cadre rapide (temps, budget, énergie, lieu)",
-  "Vote privé à deux",
-  "Une idée validée par les deux",
+  "Vote privé (chacun de son côté)",
+  "Une idée validée par le groupe",
+  "Ambiances : potes, groupe, date…",
   "Catalogue d’activités FlipOn",
-  "Un abo = deux personnes",
 ];
 
 const boostFeatures = [
-  "Tout le plan gratuit",
+  "Tout le plan Basique",
   "Idées boostées à l’IA, plus spécifiques",
   "Selon votre lieu actuel",
   "Selon la météo du moment",
@@ -31,7 +36,7 @@ export default function TarifsPage() {
         <header className="mx-auto max-w-xl animate-rise text-center sm:text-left">
           <p className="text-sm font-semibold text-coral">Tarifs</p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-4xl">
-            Simple. Un abo pour deux.
+            Simple. Vote privé, idée commune.
           </h1>
           <p className="mt-2 text-[15px] leading-relaxed text-ink-soft sm:text-base">
             Commence gratuit. Passe à Boost quand tu veux des idées calées sur
@@ -75,9 +80,9 @@ export default function TarifsPage() {
           </section>
 
           {/* Boost IA */}
-          <section className="relative flex flex-col overflow-hidden rounded-[var(--radius-ui)] border border-coral/30 bg-gradient-to-b from-sky to-petal p-5 shadow-[var(--shadow-soft)] sm:p-6">
-            <p className="absolute right-4 top-4 rounded-md bg-coral px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
-              IA
+          <section className="relative flex flex-col rounded-[var(--radius-ui)] border border-ink bg-petal p-5 sm:p-6">
+            <p className="absolute right-4 top-4 text-[10px] font-bold uppercase tracking-wide text-coral">
+              Boost
             </p>
             <div>
               <h2 className="text-lg font-bold text-ink sm:text-xl">
@@ -90,7 +95,7 @@ export default function TarifsPage() {
                 <span className="font-[family-name:var(--font-display)] text-4xl font-extrabold tracking-tight text-ink">
                   6 €
                 </span>
-                <span className="text-sm text-ink-soft">/ mois · couple</span>
+                <span className="text-sm text-ink-soft">/ mois</span>
               </p>
             </div>
 

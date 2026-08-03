@@ -7,6 +7,7 @@ const BlurText = dynamic(() => import("@/components/react-bits/BlurText"), {
   ssr: false,
 });
 
+/** Titres : texte net d’abord, animation optionnelle au scroll (discret). */
 export function AnimatedHeading({
   text,
   className,
@@ -16,8 +17,13 @@ export function AnimatedHeading({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(true);
 
   useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduceMotion(mq.matches);
+    if (mq.matches) return;
+
     const el = ref.current;
     if (!el) return;
 
@@ -28,23 +34,22 @@ export function AnimatedHeading({
           io.disconnect();
         }
       },
-      { rootMargin: "120px 0px", threshold: 0.05 },
+      { rootMargin: "80px 0px", threshold: 0.1 },
     );
-
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
   return (
     <div ref={ref}>
-      {visible ? (
+      {visible && !reduceMotion ? (
         <BlurText
           text={text}
-          delay={50}
+          delay={30}
           animateBy="words"
           direction="bottom"
           className={className}
-          stepDuration={0.3}
+          stepDuration={0.22}
         />
       ) : (
         <h2 className={className}>{text}</h2>
