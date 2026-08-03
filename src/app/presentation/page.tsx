@@ -23,7 +23,7 @@ const sections = [
   },
   {
     title: "Modèle",
-    body: "Freemium + Boost IA (~6 €/mois) — idées plus précises selon lieu, météo, moment. Voir les tarifs.",
+    body: "Freemium + Boost (3,99 €/mois) — idées plus précises selon lieu, météo, moment. Voir les tarifs.",
   },
 ];
 
