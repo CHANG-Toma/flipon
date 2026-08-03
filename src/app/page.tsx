@@ -96,7 +96,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="content-auto page-gutter py-12 sm:py-20">
+      <section
+        id="waitlist"
+        className="content-auto scroll-mt-20 page-gutter py-12 sm:py-20"
+      >
         <div className="mx-auto flex max-w-6xl flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-sm">
             <AnimatedHeading
@@ -104,8 +107,8 @@ export default function HomePage() {
               className="text-xl font-bold text-ink sm:text-2xl"
             />
             <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-              Laisse ton mail si tu veux qu’on te prévienne. Pas de newsletter
-              toutes les semaines.
+              Laisse ton mail si tu veux qu’on te prévienne — ou un retour après
+              la démo. Pas de newsletter toutes les semaines.
             </p>
           </div>
           <WaitlistForm />

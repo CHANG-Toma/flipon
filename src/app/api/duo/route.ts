@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error:
-          "Redis non configuré. Connecte la base Redis au projet flipon (REDIS_URL), puis redéploie.",
+          "Le duo n’est pas disponible pour le moment. Réessaie plus tard, ou teste en solo.",
       },
       { status: 503 },
     );

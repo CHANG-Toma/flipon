@@ -15,6 +15,7 @@ import {
   type Vibe,
 } from "@/data/plans";
 import type { DuoPublicSnapshot, DuoRole } from "@/lib/duo-types";
+import { FeedbackForm } from "@/components/FeedbackForm";
 
 type Mode = "pick" | "solo" | "duo";
 type SoloStep = "constraints" | "swipe" | "match";
@@ -251,6 +252,12 @@ function ConstraintsForm({
                 ? "Sorties et défis simples entre amis."
                 : "On mélange toutes les ambiances."}
         </p>
+        {constraints.vibe === "date" && (
+          <p className="-mt-1 text-xs font-medium text-ink">
+            Rappel : ce n’est pas une app de rencontres — juste une ambiance
+            d’idées.
+          </p>
+        )}
         <ChoiceGroup
           label="Durée"
           options={durationOptions}
@@ -298,6 +305,16 @@ function ConstraintsForm({
   );
 }
 
+function DemoBanner() {
+  return (
+    <p className="rounded-[var(--radius-ui)] border border-line bg-foam px-3.5 py-2.5 text-center text-xs leading-relaxed text-ink-soft">
+      <span className="font-semibold text-ink">Démo web</span>
+      {" — "}
+      même logique que l’app (Basique). La vraie version arrivera sur mobile.
+    </p>
+  );
+}
+
 function ConstraintsSummary({ constraints }: { constraints: Constraints }) {
   const bits = [
     vibeLabel(constraints.vibe),
@@ -318,11 +335,28 @@ function ConstraintsSummary({ constraints }: { constraints: Constraints }) {
 function RealAppNote() {
   return (
     <p className="rounded-[var(--radius-ui)] border border-line bg-foam px-3.5 py-3 text-xs leading-relaxed text-ink-soft">
-      <span className="font-semibold text-ink">Démo :</span> vous partagez un
-      lien ou un code. Sur la vraie application, les deux devront ouvrir FlipOn
-      directement (duo lié) — pas besoin de lien.
+      <span className="font-semibold text-ink">À deux :</span> partage le code
+      ou le lien. Sur la vraie app, chacun ouvrira FlipOn directement — sans
+      lien.
     </p>
   );
+}
+
+function humanizeDuoError(raw: string): string {
+  const t = raw.toLowerCase();
+  if (t.includes("redis") || t.includes("503")) {
+    return "Le duo n’est pas dispo pour le moment (serveur). Réessaie dans un instant, ou teste en solo.";
+  }
+  if (t.includes("introuvable") || t.includes("404") || t.includes("code")) {
+    return "Code invalide ou session expirée. Demande un nouveau code à l’autre.";
+  }
+  if (t.includes("expir") || t.includes("ferm")) {
+    return "Cette session est terminée. Crée-en une nouvelle.";
+  }
+  if (t.includes("network") || t.includes("fetch")) {
+    return "Pas de réseau. Vérifie ta connexion et réessaie.";
+  }
+  return raw;
 }
 
 function VoteCard({
@@ -395,7 +429,7 @@ function VoteCard({
           <button
             type="button"
             onClick={() => onVote(false)}
-            className="btn-secondary w-full"
+            className="btn-secondary min-h-12 w-full touch-manipulation"
             disabled={!!fly}
           >
             Passer
@@ -403,7 +437,7 @@ function VoteCard({
           <button
             type="button"
             onClick={() => onVote(true)}
-            className="btn-primary w-full"
+            className="btn-primary min-h-12 w-full touch-manipulation"
             disabled={!!fly}
           >
             Oui
@@ -454,10 +488,12 @@ function MatchView({
         </div>
       ) : (
         <p className="surface p-5 text-sm text-ink-soft">
-          Aucune idée retenue cette fois. Élargis le cadre ou dis oui à au moins
-          une proposition, puis réessaie.
+          Aucune idée en commun / retenue cette fois. Élargis le cadre, ou dis
+          oui à au moins une proposition, puis réessaie.
         </p>
       )}
+
+      <FeedbackForm />
 
       <button type="button" onClick={onReset} className="btn-secondary w-full">
         Recommencer
@@ -499,6 +535,23 @@ export function FlipDemo() {
     if (!deck.length) return 0;
     return Math.min(100, Math.round(((index + 1) / deck.length) * 100));
   }, [deck.length, index]);
+
+  const inActiveFlow =
+    (mode === "solo" && soloStep === "swipe") ||
+    (mode === "duo" &&
+      (duoPhase === "swipe" ||
+        duoPhase === "waiting" ||
+        duoPhase === "lobby"));
+
+  useEffect(() => {
+    if (!inActiveFlow) return;
+    const onLeave = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onLeave);
+    return () => window.removeEventListener("beforeunload", onLeave);
+  }, [inActiveFlow]);
 
   const persistRole = useCallback((id: string, r: DuoRole) => {
     try {
@@ -600,7 +653,11 @@ export function FlipDemo() {
         setJoinBootstrapped(true);
       } catch (e) {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : "Erreur");
+          setError(
+            humanizeDuoError(
+              e instanceof Error ? e.message : "Erreur réseau",
+            ),
+          );
           setMode("pick");
         }
       } finally {
@@ -694,7 +751,9 @@ export function FlipDemo() {
       setDuoPhase("lobby");
       router.replace(`/test?room=${data.room.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
+      setError(
+        humanizeDuoError(e instanceof Error ? e.message : "Erreur réseau"),
+      );
     } finally {
       setBusy(false);
     }
@@ -703,7 +762,7 @@ export function FlipDemo() {
   async function joinWithCode() {
     const code = joinCode.trim().toUpperCase();
     if (code.length < 4) {
-      setError("Entre le code à 4 caractères");
+      setError("Entre le code à 4 caractères affiché sur l’autre téléphone");
       return;
     }
     setBusy(true);
@@ -721,7 +780,9 @@ export function FlipDemo() {
       setJoinBootstrapped(true);
       router.replace(`/test?room=${data.room.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
+      setError(
+        humanizeDuoError(e instanceof Error ? e.message : "Erreur réseau"),
+      );
     } finally {
       setBusy(false);
     }
@@ -747,7 +808,9 @@ export function FlipDemo() {
         setDuoPhase("swipe");
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
+      setError(
+        humanizeDuoError(e instanceof Error ? e.message : "Erreur réseau"),
+      );
     } finally {
       setBusy(false);
     }
@@ -773,7 +836,10 @@ export function FlipDemo() {
         setDuoPhase("match");
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
+      setError(
+        humanizeDuoError(e instanceof Error ? e.message : "Erreur réseau"),
+      );
+      setDuoPhase("swipe");
     }
   }
 
@@ -810,12 +876,15 @@ export function FlipDemo() {
   if (mode === "pick") {
     return (
       <div className="mx-auto w-full max-w-md animate-rise space-y-4 sm:space-y-5">
+        <DemoBanner />
+
         <div>
           <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
-            Comment vous testez ?
+            Comment tu testes ?
           </h2>
           <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-            Solo pour tester vite, ou avec quelqu’un d’autre sur 2 téléphones.
+            Même logique que l’app : cadre → vote privé → une idée. Choisis
+            ton mode.
           </p>
         </div>
 
@@ -827,9 +896,9 @@ export function FlipDemo() {
           }}
           className="surface w-full p-4 text-left transition-colors hover:border-coral/40 active:scale-[0.99] sm:p-5"
         >
-          <p className="font-bold text-ink">Solo</p>
+          <p className="font-bold text-ink">Solo · découvrir</p>
           <p className="mt-1 text-sm text-ink-soft">
-            Tu votes seul·e pour voir le flux.
+            2 minutes seul·e pour voir le flux. Idéal pour comprendre.
           </p>
         </button>
 
@@ -841,12 +910,12 @@ export function FlipDemo() {
             setRole(null);
             setRoomId(null);
           }}
-          className="surface w-full p-4 text-left transition-colors hover:border-coral/40 active:scale-[0.99] sm:p-5"
+          className="surface w-full border-coral/30 p-4 text-left transition-colors hover:border-coral/50 active:scale-[0.99] sm:p-5"
         >
-          <p className="font-bold text-ink">Avec quelqu’un · 2 téléphones</p>
+          <p className="font-bold text-ink">Duo · le vrai test</p>
           <p className="mt-1 text-sm text-ink-soft">
-            Tu crées la session, l’autre rejoint avec le code. Chacun vote en
-            privé, puis une idée commune.
+            2 téléphones. Un crée la session, l’autre entre le code. Chacun
+            vote en privé → une idée commune.
           </p>
         </button>
 
@@ -871,13 +940,13 @@ export function FlipDemo() {
 
         {soloStep === "constraints" && (
           <div className="animate-rise space-y-5 sm:space-y-6">
+            <DemoBanner />
             <div>
               <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
                 Qu’est-ce qui est jouable ?
               </h2>
               <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-                Ambiance d’abord, puis le cadre. Les idées suivent tes choix —
-                pas une liste générique.
+                Ambiance d’abord, puis le cadre. Les idées suivent tes choix.
               </p>
             </div>
             <ConstraintsForm
@@ -1077,14 +1146,14 @@ export function FlipDemo() {
                   >
                     {copied ? "Lien copié" : "Copier le lien"}
                   </button>
-                  {"share" in navigator && (
+                  {"share" in navigator ? (
                     <button
                       type="button"
                       onClick={async () => {
                         try {
                           await navigator.share({
                             title: "FlipOn — rejoins la session",
-                            text: `Code ${snapshot.id}`,
+                            text: `Rejoins ma session FlipOn. Code ${snapshot.id}`,
                             url: shareUrl,
                           });
                         } catch {
@@ -1095,6 +1164,15 @@ export function FlipDemo() {
                     >
                       Partager
                     </button>
+                  ) : (
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(`Rejoins ma session FlipOn ! Code ${snapshot.id} — ${shareUrl}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary w-full text-center"
+                    >
+                      WhatsApp
+                    </a>
                   )}
                 </div>
               </>
@@ -1142,15 +1220,28 @@ export function FlipDemo() {
           )}
 
           {youReady && !partnerReady && (
-            <p className="text-center text-sm font-medium text-ink-soft">
-              En attente de l’autre…
-            </p>
+            <div className="rounded-[var(--radius-ui)] border border-line bg-foam px-4 py-4 text-center">
+              <div className="mx-auto h-8 w-8 animate-pulse rounded-full bg-coral/35" />
+              <p className="mt-3 text-sm font-semibold text-ink">
+                En attente de l’autre…
+              </p>
+              <p className="mt-1 text-xs text-ink-soft">
+                Garde cet écran ouvert. Dès que l’autre est prêt·e, le vote
+                démarre.
+              </p>
+            </div>
           )}
 
           {role === "host" && !snapshot.guestJoined && (
-            <p className="text-center text-sm font-medium text-ink-soft">
-              En attente que l’autre rejoigne…
-            </p>
+            <div className="rounded-[var(--radius-ui)] border border-line bg-foam px-4 py-4 text-center">
+              <p className="text-sm font-semibold text-ink">
+                En attente que l’autre rejoigne…
+              </p>
+              <p className="mt-1 text-xs text-ink-soft">
+                Envoie le code <span className="font-bold text-ink">{snapshot.id}</span>{" "}
+                ou le lien. L’écran se met à jour tout seul.
+              </p>
+            </div>
           )}
         </div>
       )}
@@ -1163,7 +1254,7 @@ export function FlipDemo() {
           progress={progress}
           fly={fly}
           onVote={voteDuo}
-          privateLabel="l’autre ne voit pas"
+          privateLabel="l’autre ne voit pas tes choix"
         />
       )}
 
@@ -1171,8 +1262,9 @@ export function FlipDemo() {
         <div className="animate-rise space-y-4 py-8 text-center">
           <div className="mx-auto h-10 w-10 animate-pulse rounded-full bg-coral/40" />
           <h2 className="text-xl font-bold text-ink">Votes envoyés</h2>
-          <p className="text-sm text-ink-soft">
-            En attente que l’autre finisse… FlipOn croisera vos oui.
+          <p className="mx-auto max-w-xs text-sm text-ink-soft">
+            En attente que l’autre finisse… FlipOn croisera vos oui. Garde
+            cet écran ouvert.
           </p>
         </div>
       )}

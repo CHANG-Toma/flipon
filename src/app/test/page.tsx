@@ -20,12 +20,17 @@ export default function TestPage() {
     <main className="safe-bottom min-h-[100dvh] pb-10 pt-5 sm:pb-20 sm:pt-8">
       <div className="page-gutter mx-auto max-w-5xl">
         <header className="mx-auto mb-6 max-w-md animate-rise text-left sm:mb-8">
+          <p className="mb-3 rounded-[var(--radius-ui)] border border-line bg-foam px-3.5 py-2.5 text-center text-xs leading-relaxed text-ink-soft">
+            <span className="font-semibold text-ink">Démo web</span>
+            {" — "}
+            teste le vrai flux FlipOn. L’app mobile arrivera ensuite.
+          </p>
           <h1 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">
             Essayer FlipOn
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-            Solo pour tester, ou avec un ami sur deux téléphones. Choisis
-            l’ambiance, fixe le cadre, vote en privé — une idée en ressort.
+            Solo pour découvrir, ou duo sur deux téléphones. Cadre → vote
+            privé → une idée. Sans compte.
           </p>
         </header>
 
