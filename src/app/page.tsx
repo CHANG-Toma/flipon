@@ -15,9 +15,9 @@ const WaitlistForm = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "FlipOn — Une idée pour tout le monde",
+  title: "FlipOn — Une activité validée par tout le groupe",
   description:
-    "Chacun vote de son côté. FlipOn sort l’idée d’activité qui passe pour le groupe — potes, couple ou soirée entre amis.",
+    "Cadre, vote privé, une idée : FlipOn sort l’activité où tout le monde a dit oui — potes, couple, colloc.",
   alternates: { canonical: "/" },
 };
 
@@ -30,10 +30,10 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-6xl flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <p className="text-base font-bold text-ink sm:text-lg">
-              Teste le flux en 30 secondes.
+              Cadre → vote privé → idée commune.
             </p>
             <p className="mt-1 text-sm text-ink-soft">
-              Ambiance → cadre → vote → une idée. Sans compte.
+              Le vrai flux FlipOn, en 30 secondes. Sans compte.
             </p>
           </div>
           <Link href="/test" prefetch className="btn-primary w-full shrink-0 sm:w-auto">
@@ -45,31 +45,32 @@ export default function HomePage() {
       <section className="content-auto page-gutter py-12 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-lg">
-            <h2 className="sr-only">Le problème, c’est pas le manque d’idées.</h2>
+            <h2 className="sr-only">
+              FlipOn sert à trancher une activité en groupe.
+            </h2>
             <AnimatedHeading
-              text="Le problème, c’est pas le manque d’idées."
+              text="Le frein, c’est pas le manque d’idées."
               className="text-xl font-bold tracking-tight text-ink sm:text-3xl"
             />
             <p className="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-lg">
-              C’est le moment où personne ne tranche. FlipOn coupe court :
-              chacun dit oui ou non de son côté, et on garde celle qui passe
-              pour tout le monde.
+              C’est quand personne n’ose choisir. FlipOn enlève la pression :
+              chacun répond de son côté, sans influencer l’autre.
             </p>
           </div>
 
           <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-3 sm:gap-4">
             {[
               {
-                t: "Cadre",
-                d: "Ambiance, temps, budget, énergie — en quelques taps.",
+                t: "1. Cadre",
+                d: "Ce soir : temps, budget, ambiance.",
               },
               {
-                t: "Vote privé",
-                d: "Chacun de son côté. Plus de « comme tu veux ».",
+                t: "2. Vote",
+                d: "Oui ou passer — l’autre ne voit pas.",
               },
               {
-                t: "Idée commune",
-                d: "Une seule proposition, avec les prochaines étapes.",
+                t: "3. Go",
+                d: "Une idée + les prochaines étapes.",
               },
             ].map((item) => (
               <div key={item.t} className="surface p-4 sm:p-5">
@@ -86,12 +87,12 @@ export default function HomePage() {
       <section className="content-auto border-y border-line page-gutter py-10 sm:py-14">
         <div className="mx-auto max-w-xl">
           <AnimatedHeading
-            text="Pas une app de rencontres. Un outil pour trancher."
+            text="Pas une app de rencontres. Un outil pour décider."
             className="text-xl font-bold text-ink sm:text-2xl"
           />
           <p className="mt-2 text-[15px] leading-relaxed text-ink-soft sm:text-base">
-            Couple, potes, colloc, soirée — même mécanique. Le mode Date n’est
-            qu’une ambiance d’idées, pas un feed de profils.
+            Potes, couple, colloc ou soirée : même usage. « Date » filtre juste
+            le type d’idées — rien à voir avec des profils.
           </p>
         </div>
       </section>

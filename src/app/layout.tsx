@@ -18,11 +18,11 @@ const siteUrl =
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "FlipOn — Une idée pour tout le monde",
+    default: "FlipOn — Fini le « on fait quoi ? »",
     template: "%s · FlipOn",
   },
   description:
-    "Chacun vote de son côté. FlipOn sort l’idée d’activité qui passe pour le groupe — potes, couple ou soirée entre amis. Sans liste interminable.",
+    "Votez en privé sur votre téléphone. FlipOn sort l’activité que tout le monde accepte — potes, couple ou groupe.",
   applicationName: "FlipOn",
   authors: [{ name: "FlipOn" }],
   creator: "FlipOn",
@@ -44,15 +44,15 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: siteUrl,
     siteName: "FlipOn",
-    title: "FlipOn — Une idée pour tout le monde",
+    title: "FlipOn — Fini le « on fait quoi ? »",
     description:
-      "Chacun vote de son côté. FlipOn croise vos oui et propose une activité.",
+      "Votes privés. Une activité que tout le monde accepte.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "FlipOn — Une idée pour tout le monde",
+    title: "FlipOn — Fini le « on fait quoi ? »",
     description:
-      "Chacun vote de son côté. FlipOn croise vos oui et propose une activité.",
+      "Votes privés. Une activité que tout le monde accepte.",
   },
   robots: {
     index: true,

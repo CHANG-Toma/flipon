@@ -56,14 +56,14 @@ export function LandingHero() {
           </p>
 
           <h1 className="mt-5 text-xl font-bold leading-snug text-white sm:text-3xl md:text-[2.1rem]">
-            Chacun vote de son côté.
+            Une activité validée
             <br />
-            Une idée pour tout le monde.
+            par tout le groupe.
           </h1>
 
-          <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/70 sm:text-base">
-            Plus de « on verra ». FlipOn croise vos oui et sort une activité —
-            potes, couple ou petit groupe.
+          <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/75 sm:text-base">
+            Fini les 40 minutes à tourner en rond entre potes. Vous tranchez,
+            et vous y allez.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">

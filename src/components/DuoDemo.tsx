@@ -5,7 +5,7 @@ export function DuoDemo() {
       aria-label="Démonstration : Alex et Sam votent chacun de leur côté"
     >
       <p className="mb-4 text-center text-xs font-medium text-white/70 sm:mb-6 sm:text-sm">
-        Chacun vote de son côté
+        Votes privés → idée validée
       </p>
 
       <div className="duo-scene relative mx-auto">
