@@ -22,8 +22,22 @@ export function FeedbackForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ clear, friction, withWho, email }),
       });
-      const data = (await res.json()) as { error?: string };
-      if (!res.ok) throw new Error(data.error ?? "Envoi impossible");
+      const text = await res.text();
+      let data: { error?: string; ok?: boolean } = {};
+      if (text.trim()) {
+        try {
+          data = JSON.parse(text) as { error?: string; ok?: boolean };
+        } catch {
+          throw new Error(
+            res.ok
+              ? "Réponse serveur invalide"
+              : `Erreur ${res.status} — redeploy le site avec le code feedback.`,
+          );
+        }
+      }
+      if (!res.ok) {
+        throw new Error(data.error ?? `Envoi impossible (${res.status})`);
+      }
       setDone(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur");
