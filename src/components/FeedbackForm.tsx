@@ -2,6 +2,10 @@
 
 import { FormEvent, useId, useState } from "react";
 
+/**
+ * Envoi direct navigateur → Web3Forms (évite le challenge Cloudflare
+ * quand Vercel appelle l’API côté serveur).
+ */
 export function FeedbackForm() {
   const baseId = useId();
   const [clear, setClear] = useState("");
@@ -16,27 +20,65 @@ export function FeedbackForm() {
     e.preventDefault();
     setBusy(true);
     setError(null);
+
+    const accessKey =
+      process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() ||
+      process.env.NEXT_PUBLIC_WEB3FORMS_KEY?.trim();
+
+    if (!clear.trim() && !friction.trim() && !withWho.trim()) {
+      setError("Écris au moins un retour dans un des champs.");
+      setBusy(false);
+      return;
+    }
+
+    if (!accessKey) {
+      setError(
+        "Feedback non configuré. Ajoute NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY sur Vercel.",
+      );
+      setBusy(false);
+      return;
+    }
+
+    const message = [
+      "Retour démo FlipOn (/test)",
+      "",
+      `Ce qui était clair : ${clear.trim() || "—"}`,
+      `Ce qui a freiné : ${friction.trim() || "—"}`,
+      `Je l’utiliserais avec : ${withWho.trim() || "—"}`,
+      `Email testeur : ${email.trim() || "non renseigné"}`,
+    ].join("\n");
+
     try {
-      const res = await fetch("/api/feedback", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ clear, friction, withWho, email }),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          subject: "Retour démo FlipOn",
+          from_name: "FlipOn Demo",
+          name: withWho.trim() || "Testeur FlipOn",
+          email: email.trim() || "noreply@flipon.app",
+          message,
+        }),
       });
+
       const text = await res.text();
-      let data: { error?: string; ok?: boolean } = {};
+      let data: { success?: boolean; message?: string } = {};
       if (text.trim()) {
         try {
-          data = JSON.parse(text) as { error?: string; ok?: boolean };
+          data = JSON.parse(text) as { success?: boolean; message?: string };
         } catch {
           throw new Error(
-            res.ok
-              ? "Réponse serveur invalide"
-              : `Erreur ${res.status} — redeploy le site avec le code feedback.`,
+            "Web3Forms a renvoyé une page de sécurité. Réessaie dans un instant.",
           );
         }
       }
-      if (!res.ok) {
-        throw new Error(data.error ?? `Envoi impossible (${res.status})`);
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message ?? "Envoi impossible");
       }
       setDone(true);
     } catch (err) {
@@ -72,7 +114,10 @@ export function FeedbackForm() {
         Ton avis part directement par e-mail.
       </p>
 
-      <label className="mt-4 block text-xs font-semibold text-ink" htmlFor={`${baseId}-clear`}>
+      <label
+        className="mt-4 block text-xs font-semibold text-ink"
+        htmlFor={`${baseId}-clear`}
+      >
         Ce qui était clair
       </label>
       <textarea
@@ -84,7 +129,10 @@ export function FeedbackForm() {
         placeholder="Ex. le vote, le duo…"
       />
 
-      <label className="mt-3 block text-xs font-semibold text-ink" htmlFor={`${baseId}-friction`}>
+      <label
+        className="mt-3 block text-xs font-semibold text-ink"
+        htmlFor={`${baseId}-friction`}
+      >
         Ce qui t’a freiné
       </label>
       <textarea
@@ -96,7 +144,10 @@ export function FeedbackForm() {
         placeholder="Ex. je ne savais pas quoi choisir…"
       />
 
-      <label className="mt-3 block text-xs font-semibold text-ink" htmlFor={`${baseId}-who`}>
+      <label
+        className="mt-3 block text-xs font-semibold text-ink"
+        htmlFor={`${baseId}-who`}
+      >
         Tu l’utiliserais avec qui ?
       </label>
       <input
@@ -107,7 +158,10 @@ export function FeedbackForm() {
         placeholder="Potes, couple, colloc…"
       />
 
-      <label className="mt-3 block text-xs font-semibold text-ink" htmlFor={`${baseId}-email`}>
+      <label
+        className="mt-3 block text-xs font-semibold text-ink"
+        htmlFor={`${baseId}-email`}
+      >
         Ton e-mail (optionnel)
       </label>
       <input
@@ -126,11 +180,7 @@ export function FeedbackForm() {
         </p>
       )}
 
-      <button
-        type="submit"
-        className="btn-primary mt-4 w-full"
-        disabled={busy}
-      >
+      <button type="submit" className="btn-primary mt-4 w-full" disabled={busy}>
         {busy ? "Envoi…" : "Envoyer mon retour"}
       </button>
     </form>
