@@ -46,7 +46,7 @@ export function LandingHero({ lang = "fr" }: { lang?: Lang }) {
           titleA: "Une activité validée",
           titleB: "par tout le groupe.",
           subtitle:
-            "Fini les 40 minutes à tourner en rond entre potes. Vous tranchez, et vous y allez.",
+            "Moins de discussions, plus d’action : vous choisissez vite et vous profitez.",
           ctaTry: "Essayer",
           ctaHow: "Comment ça marche",
         };

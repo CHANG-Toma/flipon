@@ -47,29 +47,46 @@ export default async function TarifsPage({
   const isEn = lang === "en";
   const boostFeatures = isEn
     ? [
-        "Everything in Basic",
-        "AI-generated ideas for your group",
-        "Nearby activity count around you",
-        "Location / neighborhood context",
-        "Weather + time of day",
+        "AI ideas based on your location and moment",
+        "Nearby activity count in real time",
+        "Weather-aware suggestions to avoid bad picks",
+        "Best-fit idea for the whole group (less debate)",
+        "Faster decision in a few taps",
+        "Duo+ / Group+ sessions without friction",
       ]
     : [
-        "Tout Basique inclus",
-        "Idées générées par IA pour ton groupe",
-        "Nombre d’activités trouvées autour de vous",
-        "Lieu / quartier pris en compte",
-        "Météo + moment de la journée",
+        "Idées IA selon votre lieu et le moment",
+        "Nombre d’activités autour en temps réel",
+        "Suggestions selon la météo pour éviter les mauvais plans",
+        "Idée la plus acceptable pour le groupe (moins de débat)",
+        "Décision plus rapide en quelques taps",
+        "Sessions Duo+ / Groupe+ sans friction",
       ];
   const freeFeatures = isEn
     ? [
         "Private vote -> one shared idea",
-        "Filters + catalog activity counter",
-        "FlipOn catalog ideas (no AI)",
+        "Catalog + smart filters",
+        "Quick setup templates",
+        "Auto Plan B if no match",
+        "Result sharing (copy / WhatsApp)",
       ]
     : [
         "Vote privé → une idée commune",
-        "Filtres + compteur du catalogue",
-        "Idées FlipOn (pas d’IA)",
+        "Catalogue + filtres intelligents",
+        "Templates de cadres rapides",
+        "Plan B auto si aucun match",
+        "Partage résultat (copie / WhatsApp)",
+      ];
+  const boostHighlights = isEn
+    ? [
+        "Less hesitation, more action",
+        "Real context = better choices",
+        "Shared result, without friction",
+      ]
+    : [
+        "Moins d’hésitation, plus d’action",
+        "Contexte réel = meilleurs choix",
+        "Résultat commun, sans friction",
       ];
 
   return (
@@ -99,8 +116,8 @@ export default async function TarifsPage({
           </p>
         </header>
 
-        <section className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-5">
-          <article className="rounded-[var(--radius-ui)] border border-line bg-white p-5 shadow-sm sm:p-6">
+        <section className="mt-8 grid items-stretch gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-5">
+          <article className="flex h-full flex-col rounded-[var(--radius-ui)] border border-line bg-white p-5 shadow-sm sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
               {isEn ? "Free" : "Gratuit"}
             </p>
@@ -134,13 +151,13 @@ export default async function TarifsPage({
             <Link
               href={withLang("/download", lang)}
               prefetch
-              className="btn-secondary mt-7 w-full"
+              className="btn-secondary mt-auto w-full"
             >
               {isEn ? "Download app" : "Télécharger l’app"}
             </Link>
           </article>
 
-          <article className="relative overflow-hidden rounded-[var(--radius-ui)] border-2 border-coral bg-ink p-5 text-white shadow-sm sm:p-6">
+          <article className="relative flex h-full flex-col overflow-hidden rounded-[var(--radius-ui)] border-2 border-coral bg-ink p-5 text-white shadow-sm sm:p-6">
             <div
               className="pointer-events-none absolute inset-0 opacity-80"
               aria-hidden
@@ -149,7 +166,7 @@ export default async function TarifsPage({
                   "radial-gradient(ellipse 80% 60% at 90% -5%, color-mix(in srgb, var(--coral) 45%, transparent), transparent 55%)",
               }}
             />
-            <div className="relative z-10">
+            <div className="relative z-10 flex h-full flex-col">
               <p className="text-xs font-semibold uppercase tracking-wide text-coral">
                 {isEn ? "Recommended" : "Recommandé"}
               </p>
@@ -159,6 +176,20 @@ export default async function TarifsPage({
                   ? "Enjoy your best moments with less friction."
                   : "Pour passer vos meilleurs moments en toute simplicité."}
               </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="rounded-full border border-coral/40 bg-coral/10 px-2.5 py-1 text-[11px] font-semibold text-coral">
+                  {isEn ? "Less debate" : "Moins de débat"}
+                </span>
+                <span className="rounded-full border border-coral/40 bg-coral/10 px-2.5 py-1 text-[11px] font-semibold text-coral">
+                  {isEn ? "Real-time nearby" : "Autour en temps réel"}
+                </span>
+                <span className="rounded-full border border-coral/40 bg-coral/10 px-2.5 py-1 text-[11px] font-semibold text-coral">
+                  {isEn ? "Weather-smart" : "Météo intelligente"}
+                </span>
+                <span className="rounded-full border border-coral/40 bg-coral/10 px-2.5 py-1 text-[11px] font-semibold text-coral">
+                  {isEn ? "Time saver" : "Gain de temps"}
+                </span>
+              </div>
 
               <p className="mt-5 flex items-baseline gap-1.5">
                 <span className="font-[family-name:var(--font-display)] text-4xl font-extrabold tracking-tight">
@@ -169,6 +200,15 @@ export default async function TarifsPage({
                 </span>
               </p>
 
+              <ul className="mt-3 space-y-1.5 text-sm font-semibold text-white">
+                {boostHighlights.map((item) => (
+                  <li key={item} className="flex items-center gap-2">
+                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-coral" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
               <ul className="mt-5 space-y-2.5 text-sm text-white/90">
                 {boostFeatures.map((f) => (
                   <li key={f} className="flex gap-2.5">
@@ -178,18 +218,15 @@ export default async function TarifsPage({
                 ))}
               </ul>
 
-              <Link
-                href={withLang("/download", lang)}
-                prefetch
-                className="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-[var(--radius-ui)] bg-coral px-6 text-[15px] font-bold text-white hover:bg-coral-deep"
-              >
-                {isEn ? "Download Boost" : "Télécharger Boost"}
-              </Link>
-              <p className="mt-2 text-center text-xs text-white/50">
-                {isEn
-                  ? "Boost ships with the mobile app."
-                  : "Boost arrive avec l’app."}
-              </p>
+              <div className="mt-auto pt-7">
+                <Link
+                  href={withLang("/download", lang)}
+                  prefetch
+                  className="inline-flex min-h-12 w-full items-center justify-center rounded-[var(--radius-ui)] bg-coral px-6 text-[15px] font-bold text-white hover:bg-coral-deep"
+                >
+                  {isEn ? "Download Boost" : "Télécharger Boost"}
+                </Link>
+              </div>
             </div>
           </article>
         </section>

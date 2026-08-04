@@ -402,6 +402,23 @@ function DemoBanner({ lang }: { lang: Lang }) {
   );
 }
 
+function StepHint({
+  title,
+  text,
+}: {
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className="rounded-[var(--radius-ui)] border border-coral/25 bg-coral/[0.04] px-3.5 py-3">
+      <p className="text-xs font-semibold uppercase tracking-wide text-coral">
+        {title}
+      </p>
+      <p className="mt-1 text-xs leading-relaxed text-ink-soft">{text}</p>
+    </div>
+  );
+}
+
 function ConstraintsSummary({ constraints, lang }: { constraints: Constraints; lang: Lang }) {
   const localize = (label?: string) =>
     lang === "en"
@@ -1011,6 +1028,14 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
     return (
       <div className="mx-auto w-full max-w-md animate-rise space-y-4 sm:space-y-5">
         <DemoBanner lang={lang} />
+        <StepHint
+          title={isEn ? "Step 1 of 3" : "Étape 1 sur 3"}
+          text={
+            isEn
+              ? "Choose your mode first, then FlipOn guides you."
+              : "Choisis d’abord ton mode, puis FlipOn te guide."
+          }
+        />
 
         <div>
           <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
@@ -1093,6 +1118,14 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
         {soloStep === "constraints" && (
           <div className="animate-rise space-y-5 sm:space-y-6">
             <DemoBanner lang={lang} />
+            <StepHint
+              title={isEn ? "Step 1 of 3" : "Étape 1 sur 3"}
+              text={
+                isEn
+                  ? "Set your constraints. You can change them anytime before voting."
+                  : "Définis ton cadre. Tu peux encore le changer avant de voter."
+              }
+            />
             <div>
               <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
                 {isEn ? "What is doable now?" : "Qu’est-ce qui est jouable ?"}
@@ -1204,6 +1237,14 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
 
       {duoPhase === "constraints" && !role && (
         <div className="animate-rise space-y-5 sm:space-y-6">
+          <StepHint
+            title={isEn ? "Step 1 of 4" : "Étape 1 sur 4"}
+            text={
+              isEn
+                ? "One person creates the session, the other joins with code."
+                : "Une personne crée la session, l’autre rejoint avec le code."
+            }
+          />
           <div>
             <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
               {isEn ? "Create or join" : "Créer ou rejoindre"}
@@ -1274,6 +1315,14 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
 
       {duoPhase === "lobby" && role && snapshot && (
         <div className="animate-rise space-y-4 sm:space-y-5">
+          <StepHint
+            title={isEn ? "Step 2 of 4" : "Étape 2 sur 4"}
+            text={
+              isEn
+                ? "Share code/link, then both confirm ready."
+                : "Partage le code/le lien, puis validez tous les deux."
+            }
+          />
           <div>
             <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
               {role === "host" ? (isEn ? "Invite your partner" : "Invite l’autre") : isEn ? "You joined" : "Tu as rejoint"}
@@ -1466,6 +1515,16 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
 
       {duoPhase === "waiting" && (
         <div className="animate-rise space-y-4 rounded-[var(--radius-ui)] border border-coral/20 bg-white py-8 text-center shadow-sm">
+          <div className="mx-auto w-full max-w-xs px-3">
+            <StepHint
+              title={isEn ? "Step 3 of 4" : "Étape 3 sur 4"}
+              text={
+                isEn
+                  ? "Your votes are sent. Waiting for the other person."
+                  : "Tes votes sont envoyés. En attente de l’autre."
+              }
+            />
+          </div>
           <div className="mx-auto h-10 w-10 animate-pulse rounded-full bg-coral/40" />
           <h2 className="text-xl font-bold text-ink">{isEn ? "Votes sent" : "Votes envoyés"}</h2>
           <p className="mx-auto max-w-xs text-sm text-ink-soft">

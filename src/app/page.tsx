@@ -45,81 +45,132 @@ export default async function HomePage({
     <main>
       <LandingHero lang={lang} />
 
-      <section className="content-auto border-b border-line bg-petal page-gutter py-8 sm:py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <p className="text-base font-bold text-ink sm:text-lg">
-              {isEn
-                ? "Setup → private vote → shared idea."
-                : "Cadre → vote privé → idée commune."}
+      <section className="content-auto page-gutter py-10 sm:py-14">
+        <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-3 lg:gap-5">
+          <article className="surface bg-white p-5 shadow-sm lg:col-span-2 sm:p-6">
+            <p className="text-xs font-semibold uppercase tracking-wide text-coral">
+              {isEn ? "Objective" : "Objectif"}
             </p>
-            <p className="mt-1 text-sm text-ink-soft">
+            <h2 className="mt-2 text-xl font-bold tracking-tight text-ink sm:text-2xl">
               {isEn
-                ? "The real FlipOn flow in 30 seconds. No account needed."
-                : "Le vrai flux FlipOn, en 30 secondes. Sans compte."}
+                ? "Help a group choose one activity fast."
+                : "Aider un groupe à choisir une activité rapidement."}
+            </h2>
+            <p className="mt-2 text-[15px] leading-relaxed text-ink-soft sm:text-base">
+              {isEn
+                ? "When nobody wants to decide, FlipOn gives one clear direction everyone can accept."
+                : "Quand personne ne veut trancher, FlipOn donne une direction claire que tout le monde peut accepter."}
             </p>
-          </div>
-          <Link
-            href={withLang("/test", lang)}
-            prefetch
-            className="btn-primary w-full shrink-0 sm:w-auto"
-          >
-            {isEn ? "Try now" : "Essayer maintenant"}
-          </Link>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                isEn ? "30s setup" : "Cadre en 30s",
+                isEn ? "Private vote" : "Vote privé",
+                isEn ? "No account" : "Sans compte",
+              ].map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-line bg-petal px-2.5 py-1 text-[11px] font-semibold text-ink-soft"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </article>
+
+          <aside className="surface flex flex-col bg-white p-5 shadow-sm sm:p-6">
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
+              {isEn ? "Try now" : "Passer à l’action"}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              {isEn
+                ? "See the full flow in under 2 minutes."
+                : "Vois le flux complet en moins de 2 minutes."}
+            </p>
+            <div className="mt-4 flex flex-col gap-2.5">
+              <Link
+                href={withLang("/test", lang)}
+                prefetch
+                className="btn-primary w-full"
+              >
+                {isEn ? "Start demo" : "Lancer la démo"}
+              </Link>
+              <Link
+                href={withLang("/tarifs", lang)}
+                prefetch
+                className="btn-secondary w-full"
+              >
+                {isEn ? "Compare plans" : "Comparer les offres"}
+              </Link>
+            </div>
+          </aside>
         </div>
       </section>
 
-      <section className="content-auto page-gutter py-12 sm:py-20">
+      <section className="content-auto border-y border-line bg-petal page-gutter py-12 sm:py-16">
         <div className="mx-auto max-w-6xl">
-          <div className="max-w-lg">
-            <h2 className="sr-only">
-              {isEn
-                ? "FlipOn helps groups choose one activity."
-                : "FlipOn sert à trancher une activité en groupe."}
-            </h2>
+          <div className="max-w-xl">
             <AnimatedHeading
               text={
                 isEn
-                  ? "The blocker is not a lack of ideas."
-                  : "Le frein, c’est pas le manque d’idées."
+                  ? "Less debate. More real plans."
+                  : "Moins de débat. Plus de vrais plans."
               }
               className="text-xl font-bold tracking-tight text-ink sm:text-3xl"
             />
-            <p className="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-lg">
+            <p className="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-base">
               {isEn
-                ? "It is when nobody wants to choose. FlipOn removes the pressure: everyone answers privately."
-                : "C’est quand personne n’ose choisir. FlipOn enlève la pression : chacun répond de son côté, sans influencer l’autre."}
+                ? "Everyone answers privately, then FlipOn outputs one shared plan."
+                : "Chacun répond en privé, puis FlipOn sort un plan commun."}
             </p>
           </div>
 
-          <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-3 sm:gap-4">
+          <div className="mt-8 grid gap-3 sm:grid-cols-3 sm:gap-4">
             {steps.map((item) => (
-              <div key={item.t} className="surface p-4 sm:p-5">
+              <article key={item.t} className="surface bg-white p-4 shadow-sm sm:p-5">
                 <h3 className="font-bold text-ink">{item.t}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-ink-soft">
                   {item.d}
                 </p>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="content-auto border-y border-line page-gutter py-10 sm:py-14">
-        <div className="mx-auto max-w-xl">
-          <AnimatedHeading
-            text={
-              isEn
-                ? "Not a dating app. A decision tool."
-                : "Pas une app de rencontres. Un outil pour décider."
-            }
-            className="text-xl font-bold text-ink sm:text-2xl"
-          />
-          <p className="mt-2 text-[15px] leading-relaxed text-ink-soft sm:text-base">
-            {isEn
-              ? "Friends, couples, roommates, group nights: same use case. “Date” is just a vibe filter."
-              : "Potes, couple, colloc ou soirée : même usage. « Date » filtre juste le type d’idées — rien à voir avec des profils."}
-          </p>
+      <section className="content-auto page-gutter py-10 sm:py-14">
+        <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-2 lg:gap-5">
+          <article className="surface bg-white p-5 shadow-sm sm:p-6">
+            <p className="text-xs font-semibold uppercase tracking-wide text-coral">
+              {isEn ? "Use cases" : "Pour qui"}
+            </p>
+            <p className="mt-2 text-[15px] leading-relaxed text-ink-soft sm:text-base">
+              {isEn
+                ? "Friends, couples, roommates, group nights: same product. “Date” only changes suggestion style."
+                : "Potes, couple, colloc, soirées de groupe : même produit. « Date » change seulement le style des idées."}
+            </p>
+          </article>
+          <article className="surface bg-white p-5 shadow-sm sm:p-6">
+            <p className="text-xs font-semibold uppercase tracking-wide text-coral">
+              {isEn ? "What you get" : "Ce que tu obtiens"}
+            </p>
+            <ul className="mt-2 space-y-2 text-sm text-ink-soft">
+              <li>
+                {isEn
+                  ? "Setup in under 30 seconds."
+                  : "Un cadre défini en moins de 30 secondes."}
+              </li>
+              <li>
+                {isEn
+                  ? "Private vote without social pressure."
+                  : "Un vote privé sans pression sociale."}
+              </li>
+              <li>
+                {isEn
+                  ? "One clear group result."
+                  : "Un résultat de groupe clair."}
+              </li>
+            </ul>
+          </article>
         </div>
       </section>
 
@@ -135,8 +186,8 @@ export default async function HomePage({
             />
             <p className="mt-2 text-sm leading-relaxed text-ink-soft">
               {isEn
-                ? "Leave your email to get notified, or send feedback after the demo. No weekly spam."
-                : "Laisse ton mail si tu veux qu’on te prévienne — ou un retour après la démo. Pas de newsletter toutes les semaines."}
+                ? "Leave your email for launch updates, or send quick feedback after the demo."
+                : "Laisse ton e-mail pour le lancement, ou envoie un retour rapide après la démo."}
             </p>
           </div>
           <WaitlistForm lang={lang} />
