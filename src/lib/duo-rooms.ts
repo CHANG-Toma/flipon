@@ -14,7 +14,7 @@ export type DuoRoom = {
   guestReady: boolean;
   hostLikes: string[] | null;
   guestLikes: string[] | null;
-  /** Set when both have voted — room will expire soon after. */
+  /** Set when both have voted - room will expire soon after. */
   completedAt?: number;
 };
 

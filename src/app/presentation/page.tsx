@@ -46,12 +46,12 @@ export default async function PresentationPage({
             {isEn ? "Overview" : "Présentation"}
           </p>
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-            {isEn ? "FlipOn in one page" : "FlipOn en une page"}
+            {isEn ? "Where you want, when you want." : "Où tu veux, quand tu veux."}
           </h1>
           <p className="mx-auto mt-3 max-w-lg text-[15px] leading-relaxed text-ink-soft sm:text-base">
             {isEn
-              ? "End the debate, not build a giant list."
-              : "Couper le débat, pas remplir un catalogue."}
+              ? "FlipOn locks one shared plan for your group, adapted to place and timing."
+              : "FlipOn verrouille un plan commun pour le groupe, adapté au lieu et au moment."}
           </p>
 
           <div className="mx-auto mt-6 flex max-w-sm flex-col gap-2.5 sm:flex-row sm:justify-center">

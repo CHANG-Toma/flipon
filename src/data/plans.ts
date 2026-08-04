@@ -297,7 +297,7 @@ export const PLANS: Plan[] = [
     blurb: "3 km max, rythme de celui qui est le plus lent.",
     steps: [
       "Choisir un parcours simple",
-      "Pas de musique partagée — chacun son rythme",
+      "Pas de musique partagée, chacun son rythme",
       "Étirements 5 min à la fin",
     ],
     durationMin: 45,

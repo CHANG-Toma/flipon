@@ -44,7 +44,7 @@ function BoostPlanTicket({
         <div className="relative z-[1]">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-coral">
-              {isEn ? "AI plan locked" : "Plan IA verrouillé"}
+              {isEn ? "Plan ready" : "Plan prêt"}
             </p>
             <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-white/90">
               {example.total}
@@ -74,10 +74,10 @@ function BoostPlanTicket({
       <div className="px-4 pb-5 sm:px-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
-            {isEn ? "Your steps (already chosen)" : "Tes étapes (déjà choisies)"}
+            {isEn ? "Steps already set" : "Étapes déjà définies"}
           </p>
           <p className="text-[11px] font-semibold text-coral">
-            {isEn ? "No decision left" : "Plus rien à décider"}
+            {isEn ? "Nothing left to decide" : "Rien à décider"}
           </p>
         </div>
 
@@ -118,7 +118,7 @@ function BoostPlanTicket({
             {isEn ? "Everything is set" : "Tout est déjà décidé"}
           </p>
           <span className="text-xs font-semibold text-coral">
-            {isEn ? "Follow step 1 →" : "Suivre l'étape 1 →"}
+            {isEn ? "Follow step 1 →" : "Passer à l'étape 1 →"}
           </span>
         </div>
       </div>
@@ -323,7 +323,7 @@ export function TestModeSwitcher({ lang }: { lang: Lang }) {
     <section className="mx-auto max-w-3xl space-y-4">
       <div className="animate-rise p-1 sm:p-0">
         <h2 className="text-center font-[family-name:var(--font-display)] text-2xl font-extrabold tracking-tight text-ink sm:text-4xl">
-          {isEn ? "Choose your demo mode" : "Choisis ton mode de démo"}
+          {isEn ? "Choose your demo mode" : "Choisir le mode de démo"}
         </h2>
         <p className="mx-auto mt-2 max-w-xl text-center text-sm text-ink-soft sm:text-[15px]">
           {isEn
@@ -378,7 +378,7 @@ export function TestModeSwitcher({ lang }: { lang: Lang }) {
               {isEn ? "Boost preview" : "Aperçu Boost"}
             </p>
             <h3 className="mt-1 text-xl font-bold tracking-tight text-ink sm:text-2xl">
-              {isEn ? "AI chooses. You just follow." : "L'IA choisit. Tu n'as qu'à suivre."}
+              {isEn ? "AI chooses. Just follow." : "L'IA choisit. Il ne reste qu'à suivre."}
             </h3>
             <p className="mt-1 text-sm text-ink-soft sm:text-[15px]">
               {isEn

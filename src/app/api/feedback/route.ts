@@ -44,9 +44,9 @@ export async function POST(req: NextRequest) {
     const message = [
       "Retour démo FlipOn (/test)",
       "",
-      `Ce qui était clair : ${clear || "—"}`,
-      `Ce qui a freiné : ${friction || "—"}`,
-      `Je l’utiliserais avec : ${withWho || "—"}`,
+      `Ce qui était clair : ${clear || "-"}`,
+      `Ce qui a freiné : ${friction || "-"}`,
+      `Je l’utiliserais avec : ${withWho || "-"}`,
       `Email testeur : ${email || "non renseigné"}`,
       "",
       `Date : ${new Date().toISOString()}`,

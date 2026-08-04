@@ -79,12 +79,12 @@ export default async function TarifsPage({
       ];
   const boostHighlights = isEn
     ? [
-        "Less hesitation, more action",
+        "Where you want, when you want",
         "Real context = better choices",
         "Shared result, without friction",
       ]
     : [
-        "Moins d’hésitation, plus d’action",
+        "Où tu veux, quand tu veux",
         "Contexte réel = meilleurs choix",
         "Résultat commun, sans friction",
       ];
@@ -105,12 +105,12 @@ export default async function TarifsPage({
             {isEn ? (
               <>
                 Same voting flow. Ideas generated for <em>here</em> and{" "}
-                <em>now</em> — not just a catalog.
+                <em>now</em>, not just a catalog.
               </>
             ) : (
               <>
                 Même vote. Des idées inventées pour <em>ici</em> et{" "}
-                <em>maintenant</em> — pas seulement le catalogue.
+                <em>maintenant</em>, pas seulement le catalogue.
               </>
             )}
           </p>

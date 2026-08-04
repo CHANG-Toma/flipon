@@ -19,8 +19,8 @@ export function WaitlistForm({ lang = "fr" }: { lang?: Lang }) {
     return (
       <p className="animate-rise rounded-[var(--radius-ui)] border border-coral/25 bg-sky px-4 py-3 text-sm font-medium text-coral-deep" role="status">
         {isEn
-          ? "Thanks — we’ll email you as soon as it is ready."
-          : "Merci — on t’écrit dès que c’est prêt."}
+          ? "Thanks. We’ll email you as soon as it is ready."
+          : "Merci, on t’écrit dès que c’est prêt."}
       </p>
     );
   }

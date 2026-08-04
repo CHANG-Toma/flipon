@@ -50,9 +50,9 @@ export function FeedbackForm({ lang = "fr" }: { lang?: Lang }) {
     const message = [
       isEn ? "FlipOn demo feedback (/test)" : "Retour démo FlipOn (/test)",
       "",
-      `${isEn ? "What was clear" : "Ce qui était clair"}: ${clear.trim() || "—"}`,
-      `${isEn ? "What blocked you" : "Ce qui a freiné"}: ${friction.trim() || "—"}`,
-      `${isEn ? "I would use it with" : "Je l’utiliserais avec"}: ${withWho.trim() || "—"}`,
+      `${isEn ? "What was clear" : "Ce qui était clair"}: ${clear.trim() || "-"}`,
+      `${isEn ? "What blocked you" : "Ce qui a freiné"}: ${friction.trim() || "-"}`,
+      `${isEn ? "I would use it with" : "Je l’utiliserais avec"}: ${withWho.trim() || "-"}`,
       `${isEn ? "Tester email" : "Email testeur"}: ${email.trim() || (isEn ? "not provided" : "non renseigné")}`,
     ].join("\n");
 
@@ -104,7 +104,7 @@ export function FeedbackForm({ lang = "fr" }: { lang?: Lang }) {
         className="animate-rise rounded-[var(--radius-ui)] border border-coral/25 bg-sky px-4 py-3 text-center text-sm font-medium text-coral-deep"
         role="status"
       >
-        {isEn ? "Thanks — your feedback was sent." : "Merci — ton retour est parti."}
+        {isEn ? "Thanks. Your feedback was sent." : "Merci, ton retour est parti."}
       </p>
     );
   }

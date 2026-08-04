@@ -16,9 +16,9 @@ const WaitlistForm = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "FlipOn — Une activité validée par tout le groupe",
+  title: "FlipOn : Une activité validée par tout le groupe",
   description:
-    "Cadre, vote privé, une idée : FlipOn sort l’activité où tout le monde a dit oui — potes, couple, colloc.",
+    "Cadre, vote privé, une idée : FlipOn sort l’activité où tout le monde a dit oui. Potes, couple, colloc.",
   alternates: { canonical: "/" },
 };
 
@@ -32,12 +32,12 @@ export default async function HomePage({
   const steps = isEn
     ? [
         { t: "1. Setup", d: "Tonight: time, budget, and vibe." },
-        { t: "2. Vote", d: "Yes or pass — private choices." },
+        { t: "2. Vote", d: "Yes or pass: private choices." },
         { t: "3. Go", d: "One idea + next steps." },
       ]
     : [
         { t: "1. Cadre", d: "Ce soir : temps, budget, ambiance." },
-        { t: "2. Vote", d: "Oui ou passer — l’autre ne voit pas." },
+        { t: "2. Vote", d: "Oui ou passer: l’autre ne voit pas." },
         { t: "3. Go", d: "Une idée + les prochaines étapes." },
       ];
 

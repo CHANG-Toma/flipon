@@ -37,16 +37,18 @@ export function LandingHero({ lang = "fr" }: { lang?: Lang }) {
       ? {
           titleA: "One activity approved",
           titleB: "by the whole group.",
-          subtitle:
-            "No more 40-minute loops with friends. You decide and go.",
+          subtitle: "Where you want, when you want.",
+          support:
+            "No more 40-minute loops with friends. FlipOn locks a plan and you go.",
           ctaTry: "Try now",
           ctaHow: "How it works",
         }
       : {
           titleA: "Une activité validée",
           titleB: "par tout le groupe.",
-          subtitle:
-            "Moins de discussions, plus d’action : vous choisissez vite et vous profitez.",
+          subtitle: "Où tu veux, quand tu veux.",
+          support:
+            "Moins de discussions, plus d’action : FlipOn verrouille un plan et vous y allez.",
           ctaTry: "Essayer",
           ctaHow: "Comment ça marche",
         };
@@ -80,8 +82,11 @@ export function LandingHero({ lang = "fr" }: { lang?: Lang }) {
             {copy.titleB}
           </h1>
 
-          <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/75 sm:text-base">
+          <p className="mt-4 max-w-md text-lg font-semibold leading-snug text-[#ff4d00] sm:text-xl">
             {copy.subtitle}
+          </p>
+          <p className="mt-2 max-w-md text-[15px] leading-relaxed text-white/75 sm:text-base">
+            {copy.support}
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">

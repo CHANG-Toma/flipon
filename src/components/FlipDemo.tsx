@@ -324,8 +324,8 @@ function ConstraintsForm({
         <p className="-mt-2 text-xs leading-relaxed text-ink-soft">
           {constraints.vibe === "date"
             ? isEn
-              ? "Calmer ideas for two — not a dating feed."
-              : "Idées plus calmes / à deux — pas un feed de rencontres."
+              ? "Calmer ideas for two, not a dating feed."
+              : "Idées plus calmes / à deux, pas un feed de rencontres."
             : constraints.vibe === "groupe"
               ? isEn
                 ? "Ideas that work for groups, indoors or outdoors."
@@ -341,8 +341,8 @@ function ConstraintsForm({
         {constraints.vibe === "date" && (
           <p className="-mt-1 text-xs font-medium text-ink">
             {isEn
-              ? "Reminder: not a dating app — only a vibe filter."
-              : "Rappel : ce n’est pas une app de rencontres — juste une ambiance d’idées."}
+              ? "Reminder: not a dating app, only a vibe filter."
+              : "Rappel : ce n’est pas une app de rencontres, juste une ambiance d’idées."}
           </p>
         )}
         <ChoiceGroup
@@ -466,7 +466,7 @@ function RealAppNote({ lang }: { lang: Lang }) {
       ) : (
         <>
           <span className="font-semibold text-ink">À deux :</span> partage le code
-          ou le lien. Sur la vraie app, chacun ouvrira FlipOn directement — sans
+          ou le lien. Sur la vraie app, chacun ouvrira FlipOn directement, sans
           lien.
         </>
       )}
@@ -533,7 +533,7 @@ function VoteCard({
         <p className="mt-1 text-xs text-ink-soft">
           {isEn
             ? "Your choices stay private until the final result."
-            : "Tes choix restent privés jusqu’au résultat final."}
+            : "Vos choix restent privés jusqu’au résultat final."}
         </p>
       </div>
 
@@ -849,7 +849,7 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
   function startSoloSwipe() {
     const pool = buildDeck(constraints);
     if (!pool.length) {
-      setError(isEn ? "No idea for this setup — widen one filter." : "Aucun plan pour ce cadre — élargis un critère.");
+      setError(isEn ? "No idea for this setup. Widen one filter." : "Aucun plan pour ce cadre. Élargis un critère.");
       return;
     }
     setError(null);
@@ -1014,7 +1014,7 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      setError(isEn ? "Copy failed — copy the link manually." : "Copie impossible — sélectionne le lien à la main");
+      setError(isEn ? "Copy failed. Copy the link manually." : "Copie impossible. Sélectionne le lien à la main");
     }
   }
 
@@ -1023,7 +1023,7 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
   const partnerReady =
     role === "host" ? snapshot?.guestReady : snapshot?.hostReady;
 
-  /* ——— Mode pick ——— */
+  /* --- Mode pick --- */
   if (mode === "pick") {
     return (
       <div className="mx-auto w-full max-w-md animate-rise space-y-4 sm:space-y-5">
@@ -1105,7 +1105,7 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
     );
   }
 
-  /* ——— Solo ——— */
+  /* --- Solo --- */
   if (mode === "solo") {
     const stepIndex = STEPS_SOLO.findIndex((s) => s.id === soloStep);
     return (
@@ -1133,7 +1133,7 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
               <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
                 {isEn
                   ? "Pick a vibe first, then your constraints. Ideas follow your choices."
-                  : "Ambiance d’abord, puis le cadre. Les idées suivent tes choix."}
+                  : "Ambiance d’abord, puis le cadre. Les idées suivent vos choix."}
               </p>
             </div>
             <ConstraintsForm
@@ -1212,7 +1212,7 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
     );
   }
 
-  /* ——— Duo ——— */
+  /* --- Duo --- */
   const duoStepIndex =
     duoPhase === "constraints"
       ? 0
@@ -1376,7 +1376,7 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
                       onClick={async () => {
                         try {
                           await navigator.share({
-                            title: isEn ? "FlipOn — join session" : "FlipOn — rejoins la session",
+                            title: isEn ? "FlipOn: join session" : "FlipOn: rejoins la session",
                             text: isEn
                               ? `Join my FlipOn session. Code ${snapshot.id}`
                               : `Rejoins ma session FlipOn. Code ${snapshot.id}`,
@@ -1394,8 +1394,8 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
                     <a
                       href={`https://wa.me/?text=${encodeURIComponent(
                         isEn
-                          ? `Join my FlipOn session! Code ${snapshot.id} — ${shareUrl}`
-                          : `Rejoins ma session FlipOn ! Code ${snapshot.id} — ${shareUrl}`,
+                          ? `Join my FlipOn session! Code ${snapshot.id} · ${shareUrl}`
+                          : `Rejoins ma session FlipOn ! Code ${snapshot.id} · ${shareUrl}`,
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -1412,8 +1412,8 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
           {role === "guest" && (
             <p className="text-center text-xs text-ink-soft">
               {isEn
-                ? "Setup is fixed by host — you cannot edit it."
-                : "Cadre fixé par l’hôte — tu ne peux pas le modifier."}
+                ? "Setup is fixed by host. You cannot edit it."
+                : "Cadre fixé par l’hôte. Tu ne peux pas le modifier."}
             </p>
           )}
 
@@ -1508,7 +1508,7 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
           progress={progress}
           fly={fly}
           onVote={voteDuo}
-          privateLabel={isEn ? "partner cannot see your choices" : "l’autre ne voit pas tes choix"}
+          privateLabel={isEn ? "partner cannot see your choices" : "l’autre ne voit pas vos choix"}
           lang={lang}
         />
       )}
@@ -1521,7 +1521,7 @@ export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
               text={
                 isEn
                   ? "Your votes are sent. Waiting for the other person."
-                  : "Tes votes sont envoyés. En attente de l’autre."
+                  : "Votes envoyés. En attente de l’autre."
               }
             />
           </div>
