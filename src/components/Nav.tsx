@@ -25,15 +25,6 @@ export function Nav() {
   const searchParams = useSearchParams();
   const lang: Lang = normalizeLang(searchParams.get("lang"));
   const onHome = pathname === "/";
-  const isEn = lang === "en";
-
-  const langHref = (target: Lang) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (target === "fr") params.delete("lang");
-    else params.set("lang", "en");
-    const query = params.toString();
-    return query ? `${pathname}?${query}` : pathname;
-  };
 
   return (
     <header
@@ -96,26 +87,6 @@ export function Nav() {
               </Link>
             );
           })}
-          <div className="ml-1 flex items-center rounded-[var(--radius-ui)] border border-line/80 bg-white/80 px-1 py-1 text-xs sm:text-sm">
-            <Link
-              href={langHref("fr")}
-              className={[
-                "rounded-[var(--radius-ui)] px-2 py-1 font-semibold",
-                !isEn ? "bg-sky text-coral-deep" : "text-ink-soft hover:text-ink",
-              ].join(" ")}
-            >
-              FR
-            </Link>
-            <Link
-              href={langHref("en")}
-              className={[
-                "rounded-[var(--radius-ui)] px-2 py-1 font-semibold",
-                isEn ? "bg-sky text-coral-deep" : "text-ink-soft hover:text-ink",
-              ].join(" ")}
-            >
-              EN
-            </Link>
-          </div>
         </nav>
       </div>
     </header>
