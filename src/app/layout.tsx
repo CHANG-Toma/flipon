@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { Nav } from "@/components/Nav";
 import "./globals.css";
@@ -109,7 +110,9 @@ export default function RootLayout({
         >
           Aller au contenu
         </a>
-        <Nav />
+        <Suspense fallback={null}>
+          <Nav />
+        </Suspense>
         <div id="contenu">{children}</div>
       </body>
     </html>

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getLang, withLang } from "@/lib/i18n";
 
+type BenefitType = "bell" | "rocket" | "shield";
+type PlatformPoint = { icon: BenefitType; text: string };
+
 export const metadata: Metadata = {
   title: "Télécharger",
   description:
@@ -30,7 +33,7 @@ function AndroidIcon() {
   );
 }
 
-function BenefitIcon({ type }: { type: "bell" | "rocket" | "shield" }) {
+function BenefitIcon({ type }: { type: BenefitType }) {
   if (type === "bell") {
     return (
       <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden>
@@ -84,7 +87,15 @@ export default async function DownloadPage({
 }) {
   const lang = getLang(await searchParams);
   const isEn = lang === "en";
-  const platforms = [
+  const platforms: Array<{
+    name: "iOS" | "Android";
+    icon: string;
+    status: string;
+    note: string;
+    accent: string;
+    cta: string;
+    points: PlatformPoint[];
+  }> = [
     {
       name: "iOS",
       icon: "iPhone",
