@@ -16,6 +16,7 @@ import {
 } from "@/data/plans";
 import type { DuoPublicSnapshot, DuoRole } from "@/lib/duo-types";
 import { FeedbackForm } from "@/components/FeedbackForm";
+import type { Lang } from "@/lib/i18n";
 
 type Mode = "pick" | "solo" | "duo";
 type SoloStep = "constraints" | "swipe" | "match";
@@ -81,7 +82,10 @@ function Stepper({
   currentIndex: number;
 }) {
   return (
-    <ol className="mb-6 flex items-start gap-1 sm:mb-8 sm:items-center sm:gap-2" aria-label="Étapes">
+    <ol
+      className="mb-6 flex items-start gap-1 rounded-[var(--radius-ui)] border border-line bg-white/85 px-2 py-2 shadow-sm backdrop-blur-sm sm:mb-8 sm:items-center sm:gap-2 sm:px-3"
+      aria-label="Étapes"
+    >
       {labels.map((label, i) => {
         const done = i < currentIndex;
         const active = i === currentIndex;
@@ -132,6 +136,7 @@ function ChoiceGroup<T extends string>({
   options,
   value,
   onChange,
+  lang,
   columns = 2,
   disabled = false,
 }: {
@@ -139,6 +144,7 @@ function ChoiceGroup<T extends string>({
   options: { value: T; label: string }[];
   value: T;
   onChange: (v: T) => void;
+  lang: Lang;
   columns?: 2 | 3 | 4;
   disabled?: boolean;
 }) {
@@ -166,7 +172,26 @@ function ChoiceGroup<T extends string>({
               onClick={() => onChange(opt.value)}
               className="chip w-full text-center leading-snug disabled:opacity-60"
             >
-              {opt.label}
+              {lang === "en"
+                ? {
+                    "1 h": "1 h",
+                    "2 h": "2 h",
+                    Soirée: "Evening",
+                    Gratuit: "Free",
+                    "≤ 20 €": "<= 20 EUR",
+                    "≤ 50 €": "<= 50 EUR",
+                    "80 € +": "80 EUR +",
+                    Tranquille: "Calm",
+                    Normal: "Normal",
+                    Dynamique: "Dynamic",
+                    Dedans: "Indoor",
+                    Dehors: "Outdoor",
+                    "Peu importe": "Any",
+                    Potes: "Friends",
+                    Groupe: "Group",
+                    Date: "Date",
+                  }[opt.label] ?? opt.label
+                : opt.label}
             </button>
           );
         })}
@@ -175,11 +200,22 @@ function ChoiceGroup<T extends string>({
   );
 }
 
-function placeLabel(p: Plan["place"]): string {
+function placeLabel(p: Plan["place"], lang: Lang): string {
+  if (lang === "en") return p === "dedans" ? "Indoor" : "Outdoor";
   return p === "dedans" ? "Dedans" : "Dehors";
 }
 
-function energyLabel(e: Energy): string {
+function energyLabel(e: Energy, lang: Lang): string {
+  if (lang === "en") {
+    switch (e) {
+      case "basse":
+        return "Calm";
+      case "haute":
+        return "Dynamic";
+      default:
+        return "Normal";
+    }
+  }
   switch (e) {
     case "basse":
       return "Tranquille";
@@ -190,19 +226,21 @@ function energyLabel(e: Energy): string {
   }
 }
 
-function MetaTags({ plan }: { plan: Plan }) {
+function MetaTags({ plan, lang }: { plan: Plan; lang: Lang }) {
   const vibeHint =
     plan.vibes.length === 1
       ? vibeLabel(plan.vibes[0])
       : plan.vibes.includes("date") && plan.vibes.length <= 2
-        ? "idéal à deux"
+        ? lang === "en"
+          ? "great for two"
+          : "idéal à deux"
         : null;
 
   const tags = [
     `~${plan.durationMin} min`,
-    plan.budgetMax === 0 ? "Gratuit" : `≤ ${plan.budgetMax} €`,
-    placeLabel(plan.place),
-    energyLabel(plan.energy),
+    plan.budgetMax === 0 ? (lang === "en" ? "Free" : "Gratuit") : `≤ ${plan.budgetMax} €`,
+    placeLabel(plan.place, lang),
+    energyLabel(plan.energy, lang),
     ...(vibeHint ? [vibeHint] : []),
   ];
   return (
@@ -222,47 +260,97 @@ function MetaTags({ plan }: { plan: Plan }) {
 function ConstraintsForm({
   constraints,
   setConstraints,
+  lang,
   readOnly = false,
   showCount = true,
 }: {
   constraints: Constraints;
   setConstraints: (fn: (c: Constraints) => Constraints) => void;
+  lang: Lang;
   readOnly?: boolean;
   showCount?: boolean;
 }) {
+  const isEn = lang === "en";
   const matchCount = countMatchingPlans(constraints);
+  const deckPreview = Math.min(6, matchCount);
 
   return (
     <div className="space-y-4">
+      {showCount && !readOnly && (
+        <div
+          className="sticky top-[calc(3rem+env(safe-area-inset-top))] z-10 rounded-[var(--radius-ui)] border border-coral/20 bg-white/95 px-4 py-3 text-center shadow-sm backdrop-blur-sm sm:top-[calc(3.5rem+env(safe-area-inset-top))]"
+          aria-live="polite"
+        >
+          {matchCount === 0 ? (
+            <p className="text-sm font-semibold text-coral">
+              {isEn ? "0 activities with this setup" : "0 activité avec ce cadre"}
+            </p>
+          ) : (
+            <p className="text-sm font-semibold text-ink">
+              <span className="font-[family-name:var(--font-display)] text-2xl font-extrabold text-coral">
+                {matchCount}
+              </span>{" "}
+              {isEn
+                ? `activit${matchCount > 1 ? "ies" : "y"} found`
+                : `activité${matchCount > 1 ? "s" : ""} trouvée${matchCount > 1 ? "s" : ""}`}
+            </p>
+          )}
+          <p className="mt-0.5 text-xs text-ink-soft">
+            {matchCount === 0
+              ? isEn
+                ? "Try wider filters (time, budget, place...)."
+                : "Élargis un filtre (durée, budget, lieu…)."
+              : matchCount > 6
+                ? isEn
+                  ? `You will vote on ${deckPreview} · ${vibeLabel(constraints.vibe)}`
+                  : `Tu en voteras ${deckPreview} · ${vibeLabel(constraints.vibe)}`
+                : isEn
+                  ? `You are voting on ${deckPreview} · ${vibeLabel(constraints.vibe)}`
+                  : `Tu vas en voter ${deckPreview} · ${vibeLabel(constraints.vibe)}`}
+          </p>
+        </div>
+      )}
+
       <div className="surface space-y-4 p-4 sm:space-y-5 sm:p-5">
         <ChoiceGroup
-          label="Ambiance"
+          label={isEn ? "Vibe" : "Ambiance"}
           options={vibeOptions}
           value={constraints.vibe}
           onChange={(vibe) => setConstraints((c) => ({ ...c, vibe }))}
+          lang={lang}
           columns={4}
           disabled={readOnly}
         />
         <p className="-mt-2 text-xs leading-relaxed text-ink-soft">
           {constraints.vibe === "date"
-            ? "Idées plus calmes / à deux — pas un feed de rencontres."
+            ? isEn
+              ? "Calmer ideas for two — not a dating feed."
+              : "Idées plus calmes / à deux — pas un feed de rencontres."
             : constraints.vibe === "groupe"
-              ? "Plans qui marchent à plusieurs autour d’une table ou dehors."
+              ? isEn
+                ? "Ideas that work for groups, indoors or outdoors."
+                : "Plans qui marchent à plusieurs autour d’une table ou dehors."
               : constraints.vibe === "potes"
-                ? "Sorties et défis simples entre amis."
-                : "On mélange toutes les ambiances."}
+                ? isEn
+                  ? "Simple outings and challenges with friends."
+                  : "Sorties et défis simples entre amis."
+                : isEn
+                  ? "Mix all vibes."
+                  : "On mélange toutes les ambiances."}
         </p>
         {constraints.vibe === "date" && (
           <p className="-mt-1 text-xs font-medium text-ink">
-            Rappel : ce n’est pas une app de rencontres — juste une ambiance
-            d’idées.
+            {isEn
+              ? "Reminder: not a dating app — only a vibe filter."
+              : "Rappel : ce n’est pas une app de rencontres — juste une ambiance d’idées."}
           </p>
         )}
         <ChoiceGroup
-          label="Durée"
+          label={isEn ? "Duration" : "Durée"}
           options={durationOptions}
           value={constraints.duration}
           onChange={(duration) => setConstraints((c) => ({ ...c, duration }))}
+          lang={lang}
           columns={4}
           disabled={readOnly}
         />
@@ -271,90 +359,121 @@ function ConstraintsForm({
           options={budgetOptions}
           value={constraints.budget}
           onChange={(budget) => setConstraints((c) => ({ ...c, budget }))}
+          lang={lang}
           columns={4}
           disabled={readOnly}
         />
         <ChoiceGroup
-          label="Énergie"
+          label={isEn ? "Energy" : "Énergie"}
           options={energyOptions}
           value={constraints.energy}
           onChange={(energy) => setConstraints((c) => ({ ...c, energy }))}
+          lang={lang}
           columns={3}
           disabled={readOnly}
         />
         <ChoiceGroup
-          label="Lieu"
+          label={isEn ? "Place" : "Lieu"}
           options={placeOptions}
           value={constraints.place}
           onChange={(place) => setConstraints((c) => ({ ...c, place }))}
+          lang={lang}
           columns={3}
           disabled={readOnly}
         />
       </div>
-
-      {showCount && !readOnly && (
-        <p className="text-center text-sm text-ink-soft" aria-live="polite">
-          {matchCount === 0
-            ? "Aucun plan avec ce cadre — élargis un critère."
-            : matchCount <= 6
-              ? `${matchCount} idée${matchCount > 1 ? "s" : ""} à voter · ${vibeLabel(constraints.vibe)}`
-              : `Jusqu’à 6 idées à voter · ${matchCount} collent · ${vibeLabel(constraints.vibe)}`}
-        </p>
-      )}
     </div>
   );
 }
 
-function DemoBanner() {
+function DemoBanner({ lang }: { lang: Lang }) {
   return (
-    <p className="rounded-[var(--radius-ui)] border border-line bg-foam px-3.5 py-2.5 text-center text-xs leading-relaxed text-ink-soft">
-      <span className="font-semibold text-ink">Démo web</span>
-      {" — "}
-      même logique que l’app (Basique). La vraie version arrivera sur mobile.
-    </p>
+    <div className="rounded-[var(--radius-ui)] border border-line bg-white p-3 shadow-sm sm:p-3.5">
+      <p className="text-center text-xs leading-relaxed text-ink-soft">
+        <span className="rounded-full bg-coral/10 px-2 py-0.5 font-semibold text-coral">
+          Démo web
+        </span>
+        {" · "}
+        {lang === "en"
+          ? "same logic as the app (Basic). Mobile version is coming soon."
+          : "même logique que l’app (Basique). La vraie version arrivera sur mobile."}
+      </p>
+    </div>
   );
 }
 
-function ConstraintsSummary({ constraints }: { constraints: Constraints }) {
+function ConstraintsSummary({ constraints, lang }: { constraints: Constraints; lang: Lang }) {
+  const localize = (label?: string) =>
+    lang === "en"
+      ? {
+          Soirée: "Evening",
+          Gratuit: "Free",
+          "≤ 20 €": "<= 20 EUR",
+          "≤ 50 €": "<= 50 EUR",
+          "80 € +": "80 EUR +",
+          Tranquille: "Calm",
+          Normal: "Normal",
+          Dynamique: "Dynamic",
+          Dedans: "Indoor",
+          Dehors: "Outdoor",
+          "Peu importe": "Any",
+          Potes: "Friends",
+          Groupe: "Group",
+          Date: "Date",
+        }[label ?? ""] ?? label
+      : label;
   const bits = [
     vibeLabel(constraints.vibe),
-    durationOptions.find((o) => o.value === constraints.duration)?.label,
-    budgetOptions.find((o) => o.value === constraints.budget)?.label,
-    energyOptions.find((o) => o.value === constraints.energy)?.label,
-    placeOptions.find((o) => o.value === constraints.place)?.label,
+    localize(durationOptions.find((o) => o.value === constraints.duration)?.label),
+    localize(budgetOptions.find((o) => o.value === constraints.budget)?.label),
+    localize(energyOptions.find((o) => o.value === constraints.energy)?.label),
+    localize(placeOptions.find((o) => o.value === constraints.place)?.label),
   ];
   return (
     <p className="surface px-4 py-3 text-sm leading-relaxed text-ink-soft">
-      <span className="font-semibold text-ink">Cadre</span>
+      <span className="font-semibold text-ink">{lang === "en" ? "Setup" : "Cadre"}</span>
       {" · "}
       {bits.join(" · ")}
     </p>
   );
 }
 
-function RealAppNote() {
+function RealAppNote({ lang }: { lang: Lang }) {
   return (
     <p className="rounded-[var(--radius-ui)] border border-line bg-foam px-3.5 py-3 text-xs leading-relaxed text-ink-soft">
-      <span className="font-semibold text-ink">À deux :</span> partage le code
-      ou le lien. Sur la vraie app, chacun ouvrira FlipOn directement — sans
-      lien.
+      {lang === "en" ? (
+        <>
+          <span className="font-semibold text-ink">For two:</span> share code or link.
+          In the real app, each person opens FlipOn directly.
+        </>
+      ) : (
+        <>
+          <span className="font-semibold text-ink">À deux :</span> partage le code
+          ou le lien. Sur la vraie app, chacun ouvrira FlipOn directement — sans
+          lien.
+        </>
+      )}
     </p>
   );
 }
 
-function humanizeDuoError(raw: string): string {
+function humanizeDuoError(raw: string, lang: Lang): string {
   const t = raw.toLowerCase();
   if (t.includes("redis") || t.includes("503")) {
-    return "Le duo n’est pas dispo pour le moment (serveur). Réessaie dans un instant, ou teste en solo.";
+    return lang === "en"
+      ? "Duo mode is unavailable right now (server). Try again soon or use solo mode."
+      : "Le duo n’est pas dispo pour le moment (serveur). Réessaie dans un instant, ou teste en solo.";
   }
   if (t.includes("introuvable") || t.includes("404") || t.includes("code")) {
-    return "Code invalide ou session expirée. Demande un nouveau code à l’autre.";
+    return lang === "en"
+      ? "Invalid code or expired session. Ask for a new code."
+      : "Code invalide ou session expirée. Demande un nouveau code à l’autre.";
   }
   if (t.includes("expir") || t.includes("ferm")) {
-    return "Cette session est terminée. Crée-en une nouvelle.";
+    return lang === "en" ? "This session is over. Create a new one." : "Cette session est terminée. Crée-en une nouvelle.";
   }
   if (t.includes("network") || t.includes("fetch")) {
-    return "Pas de réseau. Vérifie ta connexion et réessaie.";
+    return lang === "en" ? "No network. Check your connection and retry." : "Pas de réseau. Vérifie ta connexion et réessaie.";
   }
   return raw;
 }
@@ -367,6 +486,7 @@ function VoteCard({
   fly,
   onVote,
   privateLabel,
+  lang,
 }: {
   current: Plan;
   index: number;
@@ -375,21 +495,28 @@ function VoteCard({
   fly: "left" | "right" | null;
   onVote: (yes: boolean) => void;
   privateLabel?: string;
+  lang: Lang;
 }) {
+  const isEn = lang === "en";
   return (
     <div className="animate-rise space-y-4 pb-2">
       <div>
         <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
-          Ça vous dit ?
+          {isEn ? "Would you do this?" : "Ça vous dit ?"}
         </h2>
         <p className="mt-1 text-sm text-ink-soft">
-          Idée {index + 1} sur {total}
+          {isEn ? "Idea" : "Idée"} {index + 1} {isEn ? "of" : "sur"} {total}
           {privateLabel ? (
             <>
               <span className="hidden sm:inline">{` · ${privateLabel}`}</span>
               <span className="mt-0.5 block text-xs sm:hidden">{privateLabel}</span>
             </>
           ) : null}
+        </p>
+        <p className="mt-1 text-xs text-ink-soft">
+          {isEn
+            ? "Your choices stay private until the final result."
+            : "Tes choix restent privés jusqu’au résultat final."}
         </p>
       </div>
 
@@ -399,7 +526,7 @@ function VoteCard({
         aria-valuenow={progress}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label="Progression du vote"
+        aria-label={isEn ? "Vote progress" : "Progression du vote"}
       >
         <div
           className="h-full rounded-full bg-coral transition-all duration-300"
@@ -409,7 +536,7 @@ function VoteCard({
 
       <div
         className={[
-          "surface min-h-[240px] p-4 transition-all duration-200 sm:min-h-[280px] sm:p-5",
+          "surface min-h-[240px] border-coral/15 bg-white p-4 shadow-sm transition-all duration-200 sm:min-h-[280px] sm:p-5",
           fly === "right" ? "translate-x-6 opacity-0" : "",
           fly === "left" ? "-translate-x-6 opacity-0" : "",
         ].join(" ")}
@@ -421,7 +548,7 @@ function VoteCard({
         <p className="mt-3 text-sm leading-relaxed text-ink-soft sm:text-[15px]">
           {current.blurb}
         </p>
-        <MetaTags plan={current} />
+        <MetaTags plan={current} lang={lang} />
       </div>
 
       <div className="vote-dock">
@@ -432,7 +559,7 @@ function VoteCard({
             className="btn-secondary min-h-12 w-full touch-manipulation"
             disabled={!!fly}
           >
-            Passer
+            {isEn ? "No / Skip" : "Non / Passer"}
           </button>
           <button
             type="button"
@@ -440,7 +567,7 @@ function VoteCard({
             className="btn-primary min-h-12 w-full touch-manipulation"
             disabled={!!fly}
           >
-            Oui
+            {isEn ? "Yes" : "Oui, chaud"}
           </button>
         </div>
       </div>
@@ -452,17 +579,20 @@ function MatchView({
   matched,
   subtitle,
   onReset,
+  lang,
 }: {
   matched: Plan | null;
   subtitle: string;
   onReset: () => void;
+  lang: Lang;
 }) {
+  const isEn = lang === "en";
   return (
     <div className="animate-rise space-y-5">
       <div>
-        <p className="text-sm font-semibold text-coral">C’est bon</p>
+        <p className="text-sm font-semibold text-coral">{isEn ? "Done" : "C’est bon"}</p>
         <h2 className="mt-1 text-xl font-bold tracking-tight text-ink sm:text-2xl">
-          Votre idée
+          {isEn ? "Your idea" : "Votre idée"}
         </h2>
         <p className="mt-1.5 text-sm text-ink-soft">{subtitle}</p>
       </div>
@@ -474,7 +604,7 @@ function MatchView({
           <p className="mt-2 text-sm leading-relaxed text-ink-soft sm:text-[15px]">
             {matched.blurb}
           </p>
-          <MetaTags plan={matched} />
+          <MetaTags plan={matched} lang={lang} />
           <ol className="mt-5 space-y-3 border-t border-line pt-5">
             {matched.steps.map((s, i) => (
               <li key={s} className="flex gap-3 text-sm text-ink sm:text-[15px]">
@@ -488,21 +618,23 @@ function MatchView({
         </div>
       ) : (
         <p className="surface p-5 text-sm text-ink-soft">
-          Aucune idée en commun / retenue cette fois. Élargis le cadre, ou dis
-          oui à au moins une proposition, puis réessaie.
+          {isEn
+            ? "No shared idea this time. Widen your setup, or say yes to at least one option and retry."
+            : "Aucune idée en commun / retenue cette fois. Élargis le cadre, ou dis oui à au moins une proposition, puis réessaie."}
         </p>
       )}
 
-      <FeedbackForm />
+      <FeedbackForm lang={lang} />
 
       <button type="button" onClick={onReset} className="btn-secondary w-full">
-        Recommencer
+        {isEn ? "Restart" : "Recommencer"}
       </button>
     </div>
   );
 }
 
-export function FlipDemo() {
+export function FlipDemo({ lang = "fr" }: { lang?: Lang }) {
+  const isEn = lang === "en";
   const router = useRouter();
   const searchParams = useSearchParams();
   const roomFromUrl = searchParams.get("room")?.toUpperCase() ?? null;
@@ -642,7 +774,7 @@ export function FlipDemo() {
           method: "POST",
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Impossible de rejoindre");
+        if (!res.ok) throw new Error(data.error ?? (isEn ? "Cannot join" : "Impossible de rejoindre"));
         if (cancelled) return;
         setRole("guest");
         persistRole(data.room.id, "guest");
@@ -654,9 +786,7 @@ export function FlipDemo() {
       } catch (e) {
         if (!cancelled) {
           setError(
-            humanizeDuoError(
-              e instanceof Error ? e.message : "Erreur réseau",
-            ),
+            humanizeDuoError(e instanceof Error ? e.message : isEn ? "Network error" : "Erreur réseau", lang),
           );
           setMode("pick");
         }
@@ -702,7 +832,7 @@ export function FlipDemo() {
   function startSoloSwipe() {
     const pool = buildDeck(constraints);
     if (!pool.length) {
-      setError("Aucun plan pour ce cadre — élargis un critère.");
+      setError(isEn ? "No idea for this setup — widen one filter." : "Aucun plan pour ce cadre — élargis un critère.");
       return;
     }
     setError(null);
@@ -741,7 +871,7 @@ export function FlipDemo() {
         body: JSON.stringify({ constraints }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Création impossible");
+      if (!res.ok) throw new Error(data.error ?? (isEn ? "Cannot create session" : "Création impossible"));
       setRole("host");
       persistRole(data.room.id, "host");
       setJoinBootstrapped(true);
@@ -752,7 +882,7 @@ export function FlipDemo() {
       router.replace(`/test?room=${data.room.id}`);
     } catch (e) {
       setError(
-        humanizeDuoError(e instanceof Error ? e.message : "Erreur réseau"),
+        humanizeDuoError(e instanceof Error ? e.message : isEn ? "Network error" : "Erreur réseau", lang),
       );
     } finally {
       setBusy(false);
@@ -762,7 +892,11 @@ export function FlipDemo() {
   async function joinWithCode() {
     const code = joinCode.trim().toUpperCase();
     if (code.length < 4) {
-      setError("Entre le code à 4 caractères affiché sur l’autre téléphone");
+      setError(
+        isEn
+          ? "Enter the 4-character code shown on the other phone"
+          : "Entre le code à 4 caractères affiché sur l’autre téléphone",
+      );
       return;
     }
     setBusy(true);
@@ -770,7 +904,7 @@ export function FlipDemo() {
     try {
       const res = await fetch(`/api/duo/${code}/join`, { method: "POST" });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Code invalide");
+      if (!res.ok) throw new Error(data.error ?? (isEn ? "Invalid code" : "Code invalide"));
       setRole("guest");
       persistRole(data.room.id, "guest");
       setRoomId(data.room.id);
@@ -781,7 +915,7 @@ export function FlipDemo() {
       router.replace(`/test?room=${data.room.id}`);
     } catch (e) {
       setError(
-        humanizeDuoError(e instanceof Error ? e.message : "Erreur réseau"),
+        humanizeDuoError(e instanceof Error ? e.message : isEn ? "Network error" : "Erreur réseau", lang),
       );
     } finally {
       setBusy(false);
@@ -799,7 +933,7 @@ export function FlipDemo() {
         body: JSON.stringify({ role }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Impossible");
+      if (!res.ok) throw new Error(data.error ?? (isEn ? "Action failed" : "Impossible"));
       setSnapshot(data);
       if (data.bothReady) {
         setDeck(data.deck);
@@ -809,7 +943,7 @@ export function FlipDemo() {
       }
     } catch (e) {
       setError(
-        humanizeDuoError(e instanceof Error ? e.message : "Erreur réseau"),
+        humanizeDuoError(e instanceof Error ? e.message : isEn ? "Network error" : "Erreur réseau", lang),
       );
     } finally {
       setBusy(false);
@@ -829,7 +963,7 @@ export function FlipDemo() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Envoi impossible");
+      if (!res.ok) throw new Error(data.error ?? (isEn ? "Submit failed" : "Envoi impossible"));
       setSnapshot(data);
       if (data.bothVoted) {
         setMatched(data.match);
@@ -837,7 +971,7 @@ export function FlipDemo() {
       }
     } catch (e) {
       setError(
-        humanizeDuoError(e instanceof Error ? e.message : "Erreur réseau"),
+        humanizeDuoError(e instanceof Error ? e.message : isEn ? "Network error" : "Erreur réseau", lang),
       );
       setDuoPhase("swipe");
     }
@@ -863,7 +997,7 @@ export function FlipDemo() {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      setError("Copie impossible — sélectionne le lien à la main");
+      setError(isEn ? "Copy failed — copy the link manually." : "Copie impossible — sélectionne le lien à la main");
     }
   }
 
@@ -876,15 +1010,16 @@ export function FlipDemo() {
   if (mode === "pick") {
     return (
       <div className="mx-auto w-full max-w-md animate-rise space-y-4 sm:space-y-5">
-        <DemoBanner />
+        <DemoBanner lang={lang} />
 
         <div>
           <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
-            Comment tu testes ?
+            {isEn ? "How do you want to test?" : "Comment tu testes ?"}
           </h2>
           <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-            Même logique que l’app : cadre → vote privé → une idée. Choisis
-            ton mode.
+            {isEn
+              ? "Same app logic: setup -> private vote -> one idea. Choose your mode."
+              : "Même logique que l’app : cadre → vote privé → une idée. Choisis ton mode."}
           </p>
         </div>
 
@@ -894,12 +1029,21 @@ export function FlipDemo() {
             setMode("solo");
             setSoloStep("constraints");
           }}
-          className="surface w-full p-4 text-left transition-colors hover:border-coral/40 active:scale-[0.99] sm:p-5"
+          className="surface w-full bg-white p-4 text-left shadow-sm transition-colors hover:border-coral/40 active:scale-[0.99] sm:p-5"
         >
-          <p className="font-bold text-ink">Solo · découvrir</p>
-          <p className="mt-1 text-sm text-ink-soft">
-            2 minutes seul·e pour voir le flux. Idéal pour comprendre.
-          </p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-bold text-ink">{isEn ? "Solo · discover" : "Solo · découvrir"}</p>
+              <p className="mt-1 text-sm text-ink-soft">
+                {isEn
+                  ? "2 minutes solo to experience the flow."
+                  : "2 minutes seul·e pour voir le flux. Idéal pour comprendre."}
+              </p>
+            </div>
+            <span className="rounded-full bg-foam px-2 py-1 text-[11px] font-semibold text-ink-soft">
+              {isEn ? "Quick" : "Rapide"}
+            </span>
+          </div>
         </button>
 
         <button
@@ -910,13 +1054,21 @@ export function FlipDemo() {
             setRole(null);
             setRoomId(null);
           }}
-          className="surface w-full border-coral/30 p-4 text-left transition-colors hover:border-coral/50 active:scale-[0.99] sm:p-5"
+          className="surface w-full border-coral/30 bg-coral/[0.04] p-4 text-left shadow-sm transition-colors hover:border-coral/50 active:scale-[0.99] sm:p-5"
         >
-          <p className="font-bold text-ink">Duo · le vrai test</p>
-          <p className="mt-1 text-sm text-ink-soft">
-            2 téléphones. Un crée la session, l’autre entre le code. Chacun
-            vote en privé → une idée commune.
-          </p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-bold text-ink">{isEn ? "Duo · real test" : "Duo · le vrai test"}</p>
+              <p className="mt-1 text-sm text-ink-soft">
+                {isEn
+                  ? "2 phones. One creates the session, the other joins with the code. Private voting -> shared idea."
+                  : "2 téléphones. Un crée la session, l’autre entre le code. Chacun vote en privé → une idée commune."}
+              </p>
+            </div>
+            <span className="rounded-full bg-coral/10 px-2 py-1 text-[11px] font-semibold text-coral">
+              {isEn ? "Recommended" : "Recommandé"}
+            </span>
+          </div>
         </button>
 
         {error && (
@@ -934,45 +1086,50 @@ export function FlipDemo() {
     return (
       <div className="mx-auto w-full max-w-md">
         <Stepper
-          labels={STEPS_SOLO.map((s) => s.label)}
+          labels={isEn ? ["Setup", "Vote", "Idea"] : STEPS_SOLO.map((s) => s.label)}
           currentIndex={stepIndex}
         />
 
         {soloStep === "constraints" && (
           <div className="animate-rise space-y-5 sm:space-y-6">
-            <DemoBanner />
+            <DemoBanner lang={lang} />
             <div>
               <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
-                Qu’est-ce qui est jouable ?
+                {isEn ? "What is doable now?" : "Qu’est-ce qui est jouable ?"}
               </h2>
               <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-                Ambiance d’abord, puis le cadre. Les idées suivent tes choix.
+                {isEn
+                  ? "Pick a vibe first, then your constraints. Ideas follow your choices."
+                  : "Ambiance d’abord, puis le cadre. Les idées suivent tes choix."}
               </p>
             </div>
             <ConstraintsForm
               constraints={constraints}
               setConstraints={setConstraints}
+              lang={lang}
             />
             {error && (
               <p className="text-sm font-medium text-coral" role="alert">
                 {error}
               </p>
             )}
-            <button
-              type="button"
-              onClick={startSoloSwipe}
-              className="btn-primary w-full"
-              disabled={countMatchingPlans(constraints) === 0}
-            >
-              Voir des idées
-            </button>
-            <button
-              type="button"
-              onClick={resetAll}
-              className="btn-secondary w-full"
-            >
-              Retour
-            </button>
+            <div className="surface space-y-2.5 border-coral/20 bg-white p-3 shadow-sm sm:p-3.5">
+              <button
+                type="button"
+                onClick={startSoloSwipe}
+                className="btn-primary w-full"
+                disabled={countMatchingPlans(constraints) === 0}
+              >
+                {isEn ? "Start voting" : "Lancer le vote"}
+              </button>
+              <button
+                type="button"
+                onClick={resetAll}
+                className="btn-secondary w-full"
+              >
+                {isEn ? "Back" : "Retour"}
+              </button>
+            </div>
           </div>
         )}
 
@@ -984,17 +1141,24 @@ export function FlipDemo() {
             progress={progress}
             fly={fly}
             onVote={voteSolo}
-            privateLabel={`Cadre ${vibeLabel(constraints.vibe)}`}
+            privateLabel={
+              isEn
+                ? `Setup ${vibeLabel(constraints.vibe)}`
+                : `Cadre ${vibeLabel(constraints.vibe)}`
+            }
+            lang={lang}
           />
         )}
 
         {soloStep === "swipe" && !current && (
           <div className="animate-rise space-y-4">
             <p className="text-sm text-ink-soft">
-              Plus d’idées dans ce deck. Recadre ou recommence.
+              {isEn
+                ? "No more ideas in this deck. Change setup or restart."
+                : "Plus d’idées dans ce deck. Recadre ou recommence."}
             </p>
             <button type="button" onClick={resetAll} className="btn-secondary w-full">
-              Recommencer
+              {isEn ? "Restart" : "Recommencer"}
             </button>
           </div>
         )}
@@ -1002,8 +1166,13 @@ export function FlipDemo() {
         {soloStep === "match" && (
           <MatchView
             matched={matched}
-            subtitle={`En solo (${vibeLabel(constraints.vibe)}) : ta première idée « oui ». À plusieurs, ce serait le croisement de vos votes.`}
+            subtitle={
+              isEn
+                ? `Solo (${vibeLabel(constraints.vibe)}): your first “yes” idea. In duo, it would be the overlap of both votes.`
+                : `En solo (${vibeLabel(constraints.vibe)}) : ta première idée « oui ». À plusieurs, ce serait le croisement de vos votes.`
+            }
             onReset={resetAll}
+            lang={lang}
           />
         )}
       </div>
@@ -1023,7 +1192,7 @@ export function FlipDemo() {
   return (
     <div className="mx-auto w-full max-w-md">
       <Stepper
-        labels={["Cadre", "Duo", "Vote", "Idée"]}
+          labels={isEn ? ["Setup", "Duo", "Vote", "Idea"] : ["Cadre", "Duo", "Vote", "Idée"]}
         currentIndex={duoStepIndex}
       />
 
@@ -1037,19 +1206,21 @@ export function FlipDemo() {
         <div className="animate-rise space-y-5 sm:space-y-6">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
-              Créer ou rejoindre
+              {isEn ? "Create or join" : "Créer ou rejoindre"}
             </h2>
             <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-              Un téléphone fixe le cadre et crée la session. L’autre rejoint
-              avec le code.
+              {isEn
+                ? "One phone sets the setup and creates the session. The other joins with the code."
+                : "Un téléphone fixe le cadre et crée la session. L’autre rejoint avec le code."}
             </p>
           </div>
 
-          <RealAppNote />
+          <RealAppNote lang={lang} />
 
           <ConstraintsForm
             constraints={constraints}
             setConstraints={setConstraints}
+              lang={lang}
           />
 
           <button
@@ -1058,11 +1229,11 @@ export function FlipDemo() {
             className="btn-primary w-full"
             disabled={busy || countMatchingPlans(constraints) === 0}
           >
-            {busy ? "Création…" : "Créer la session"}
+            {busy ? (isEn ? "Creating..." : "Création…") : isEn ? "Create session" : "Créer la session"}
           </button>
 
           <div className="relative py-2 text-center text-xs font-medium text-ink-soft">
-            <span className="bg-[var(--petal)] relative z-10 px-2">ou</span>
+            <span className="bg-[var(--petal)] relative z-10 px-2">{isEn ? "or" : "ou"}</span>
             <span
               className="absolute left-0 right-0 top-1/2 h-px bg-line"
               aria-hidden
@@ -1079,7 +1250,7 @@ export function FlipDemo() {
               autoCapitalize="characters"
               autoCorrect="off"
               className="min-h-12 w-full flex-1 rounded-[var(--radius-ui)] border border-line bg-white px-3 text-center text-lg font-bold tracking-[0.2em] text-ink outline-none focus:border-coral sm:text-base"
-              aria-label="Code de session"
+              aria-label={isEn ? "Session code" : "Code de session"}
             />
             <button
               type="button"
@@ -1087,7 +1258,7 @@ export function FlipDemo() {
               className="btn-secondary w-full shrink-0 sm:w-auto sm:px-4"
               disabled={busy}
             >
-              Rejoindre
+              {isEn ? "Join" : "Rejoindre"}
             </button>
           </div>
 
@@ -1096,7 +1267,7 @@ export function FlipDemo() {
             onClick={resetAll}
             className="w-full text-sm font-medium text-ink-soft hover:text-ink"
           >
-            Retour
+            {isEn ? "Back" : "Retour"}
           </button>
         </div>
       )}
@@ -1105,22 +1276,26 @@ export function FlipDemo() {
         <div className="animate-rise space-y-4 sm:space-y-5">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
-              {role === "host" ? "Invite l’autre" : "Tu as rejoint"}
+              {role === "host" ? (isEn ? "Invite your partner" : "Invite l’autre") : isEn ? "You joined" : "Tu as rejoint"}
             </h2>
             <p className="mt-1.5 text-sm text-ink-soft">
               {role === "host"
-                ? "Envoie le code ou le lien. Ensuite vous validez tous les deux."
-                : "Le cadre est déjà fixé. Dis que tu es prêt·e quand vous y êtes."}
+                ? isEn
+                  ? "Share code or link. Then both of you confirm you're ready."
+                  : "Envoie le code ou le lien. Ensuite vous validez tous les deux."
+                : isEn
+                  ? "Setup is already fixed. Confirm when you are ready."
+                  : "Le cadre est déjà fixé. Dis que tu es prêt·e quand vous y êtes."}
             </p>
           </div>
 
-          <RealAppNote />
+          <RealAppNote lang={lang} />
 
-          <ConstraintsSummary constraints={constraints} />
+          <ConstraintsSummary constraints={constraints} lang={lang} />
 
-          <div className="surface p-4 text-center sm:p-5">
+          <div className="surface border-coral/25 bg-white p-4 text-center shadow-sm sm:p-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
-              Code
+              {isEn ? "Code" : "Code"}
             </p>
             <p className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-[0.2em] text-ink sm:text-4xl sm:tracking-[0.25em]">
               {snapshot.id}
@@ -1130,7 +1305,7 @@ export function FlipDemo() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(shareUrl)}`}
-                  alt="QR code pour rejoindre la session"
+                  alt={isEn ? "QR code to join session" : "QR code pour rejoindre la session"}
                   width={140}
                   height={140}
                   className="mx-auto mt-4 h-[140px] w-[140px] rounded-lg border border-line bg-white p-2 sm:h-[160px] sm:w-[160px]"
@@ -1144,7 +1319,7 @@ export function FlipDemo() {
                     onClick={copyLink}
                     className="btn-secondary w-full"
                   >
-                    {copied ? "Lien copié" : "Copier le lien"}
+                    {copied ? (isEn ? "Link copied" : "Lien copié") : isEn ? "Copy link" : "Copier le lien"}
                   </button>
                   {"share" in navigator ? (
                     <button
@@ -1152,8 +1327,10 @@ export function FlipDemo() {
                       onClick={async () => {
                         try {
                           await navigator.share({
-                            title: "FlipOn — rejoins la session",
-                            text: `Rejoins ma session FlipOn. Code ${snapshot.id}`,
+                            title: isEn ? "FlipOn — join session" : "FlipOn — rejoins la session",
+                            text: isEn
+                              ? `Join my FlipOn session. Code ${snapshot.id}`
+                              : `Rejoins ma session FlipOn. Code ${snapshot.id}`,
                             url: shareUrl,
                           });
                         } catch {
@@ -1162,11 +1339,15 @@ export function FlipDemo() {
                       }}
                       className="btn-primary w-full"
                     >
-                      Partager
+                      {isEn ? "Share" : "Partager"}
                     </button>
                   ) : (
                     <a
-                      href={`https://wa.me/?text=${encodeURIComponent(`Rejoins ma session FlipOn ! Code ${snapshot.id} — ${shareUrl}`)}`}
+                      href={`https://wa.me/?text=${encodeURIComponent(
+                        isEn
+                          ? `Join my FlipOn session! Code ${snapshot.id} — ${shareUrl}`
+                          : `Rejoins ma session FlipOn ! Code ${snapshot.id} — ${shareUrl}`,
+                      )}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn-primary w-full text-center"
@@ -1181,29 +1362,49 @@ export function FlipDemo() {
 
           {role === "guest" && (
             <p className="text-center text-xs text-ink-soft">
-              Cadre fixé par l’hôte — tu ne peux pas le modifier.
+              {isEn
+                ? "Setup is fixed by host — you cannot edit it."
+                : "Cadre fixé par l’hôte — tu ne peux pas le modifier."}
             </p>
           )}
 
           <ul className="space-y-2 text-sm">
-            <li className="flex items-center justify-between rounded-[var(--radius-ui)] border border-line bg-white px-3 py-2.5">
+            <li className="flex items-center justify-between rounded-[var(--radius-ui)] border border-line bg-white px-3 py-2.5 shadow-sm">
               <span className="text-ink-soft">
-                {role === "host" ? "Toi (hôte)" : "L’autre (hôte)"}
+                {role === "host"
+                  ? isEn
+                    ? "You (host)"
+                    : "Toi (hôte)"
+                  : isEn
+                    ? "Partner (host)"
+                    : "L’autre (hôte)"}
               </span>
               <span className="font-semibold text-ink">
-                {snapshot.hostReady ? "Prêt" : "En attente"}
+                {snapshot.hostReady ? (isEn ? "Ready" : "Prêt") : isEn ? "Waiting" : "En attente"}
               </span>
             </li>
-            <li className="flex items-center justify-between rounded-[var(--radius-ui)] border border-line bg-white px-3 py-2.5">
+            <li className="flex items-center justify-between rounded-[var(--radius-ui)] border border-line bg-white px-3 py-2.5 shadow-sm">
               <span className="text-ink-soft">
-                {role === "guest" ? "Toi (invité)" : "L’autre (invité)"}
+                {role === "guest"
+                  ? isEn
+                    ? "You (guest)"
+                    : "Toi (invité)"
+                  : isEn
+                    ? "Partner (guest)"
+                    : "L’autre (invité)"}
               </span>
               <span className="font-semibold text-ink">
                 {!snapshot.guestJoined
-                  ? "Pas encore là"
+                  ? isEn
+                    ? "Not joined yet"
+                    : "Pas encore là"
                   : snapshot.guestReady
-                    ? "Prêt"
-                    : "En attente"}
+                    ? isEn
+                      ? "Ready"
+                      : "Prêt"
+                    : isEn
+                      ? "Waiting"
+                      : "En attente"}
               </span>
             </li>
           </ul>
@@ -1215,31 +1416,35 @@ export function FlipDemo() {
               className="btn-primary w-full"
               disabled={busy || (role === "host" && !snapshot.guestJoined)}
             >
-              {busy ? "…" : "Je suis prêt·e"}
+              {busy ? "…" : isEn ? "I am ready" : "Je suis prêt·e"}
             </button>
           )}
 
           {youReady && !partnerReady && (
-            <div className="rounded-[var(--radius-ui)] border border-line bg-foam px-4 py-4 text-center">
+            <div className="rounded-[var(--radius-ui)] border border-coral/20 bg-foam px-4 py-4 text-center shadow-sm">
               <div className="mx-auto h-8 w-8 animate-pulse rounded-full bg-coral/35" />
               <p className="mt-3 text-sm font-semibold text-ink">
-                En attente de l’autre…
+                {isEn ? "Waiting for partner..." : "En attente de l’autre…"}
               </p>
               <p className="mt-1 text-xs text-ink-soft">
-                Garde cet écran ouvert. Dès que l’autre est prêt·e, le vote
-                démarre.
+                {isEn
+                  ? "Keep this screen open. Voting starts as soon as the other person is ready."
+                  : "Garde cet écran ouvert. Dès que l’autre est prêt·e, le vote démarre."}
               </p>
             </div>
           )}
 
           {role === "host" && !snapshot.guestJoined && (
-            <div className="rounded-[var(--radius-ui)] border border-line bg-foam px-4 py-4 text-center">
+            <div className="rounded-[var(--radius-ui)] border border-line bg-foam px-4 py-4 text-center shadow-sm">
               <p className="text-sm font-semibold text-ink">
-                En attente que l’autre rejoigne…
+                {isEn ? "Waiting for partner to join..." : "En attente que l’autre rejoigne…"}
               </p>
               <p className="mt-1 text-xs text-ink-soft">
-                Envoie le code <span className="font-bold text-ink">{snapshot.id}</span>{" "}
-                ou le lien. L’écran se met à jour tout seul.
+                {isEn ? "Share code " : "Envoie le code "}
+                <span className="font-bold text-ink">{snapshot.id}</span>{" "}
+                {isEn
+                  ? "or link. This page updates automatically."
+                  : "ou le lien. L’écran se met à jour tout seul."}
               </p>
             </div>
           )}
@@ -1254,17 +1459,19 @@ export function FlipDemo() {
           progress={progress}
           fly={fly}
           onVote={voteDuo}
-          privateLabel="l’autre ne voit pas tes choix"
+          privateLabel={isEn ? "partner cannot see your choices" : "l’autre ne voit pas tes choix"}
+          lang={lang}
         />
       )}
 
       {duoPhase === "waiting" && (
-        <div className="animate-rise space-y-4 py-8 text-center">
+        <div className="animate-rise space-y-4 rounded-[var(--radius-ui)] border border-coral/20 bg-white py-8 text-center shadow-sm">
           <div className="mx-auto h-10 w-10 animate-pulse rounded-full bg-coral/40" />
-          <h2 className="text-xl font-bold text-ink">Votes envoyés</h2>
+          <h2 className="text-xl font-bold text-ink">{isEn ? "Votes sent" : "Votes envoyés"}</h2>
           <p className="mx-auto max-w-xs text-sm text-ink-soft">
-            En attente que l’autre finisse… FlipOn croisera vos oui. Garde
-            cet écran ouvert.
+            {isEn
+              ? "Waiting for the other person to finish... FlipOn will cross your yes votes. Keep this screen open."
+              : "En attente que l’autre finisse… FlipOn croisera vos oui. Garde cet écran ouvert."}
           </p>
         </div>
       )}
@@ -1272,13 +1479,18 @@ export function FlipDemo() {
       {duoPhase === "match" && (
         <MatchView
           matched={matched}
-          subtitle={`Intersection de vos votes privés · cadre ${vibeLabel(constraints.vibe)}.`}
+          subtitle={
+            isEn
+              ? `Intersection of your private votes · ${vibeLabel(constraints.vibe)} setup.`
+              : `Intersection de vos votes privés · cadre ${vibeLabel(constraints.vibe)}.`
+          }
           onReset={resetAll}
+          lang={lang}
         />
       )}
 
       {busy && duoPhase === "lobby" && !snapshot && (
-        <p className="text-center text-sm text-ink-soft">Connexion…</p>
+        <p className="text-center text-sm text-ink-soft">{isEn ? "Connecting..." : "Connexion…"}</p>
       )}
     </div>
   );

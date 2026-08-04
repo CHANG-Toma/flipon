@@ -1,18 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { normalizeLang, type Lang, withLang } from "@/lib/i18n";
 
 const links = [
-  { href: "/", label: "Accueil", short: "Home" },
-  { href: "/presentation", label: "Présentation", short: "Info" },
-  { href: "/tarifs", label: "Tarifs", short: "Prix" },
-  { href: "/test", label: "Essayer", short: "Essayer" },
+  { href: "/", label: { fr: "Accueil", en: "Home" }, short: { fr: "Accueil", en: "Home" } },
+  {
+    href: "/presentation",
+    label: { fr: "Présentation", en: "Overview" },
+    short: { fr: "Info", en: "Info" },
+  },
+  { href: "/tarifs", label: { fr: "Tarifs", en: "Pricing" }, short: { fr: "Prix", en: "Price" } },
+  {
+    href: "/download",
+    label: { fr: "Télécharger", en: "Download" },
+    short: { fr: "Téléch.", en: "App" },
+  },
+  { href: "/test", label: { fr: "Essayer", en: "Try" }, short: { fr: "Essayer", en: "Try" } },
 ];
 
 export function Nav() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const lang: Lang = normalizeLang(searchParams.get("lang"));
   const onHome = pathname === "/";
+  const isEn = lang === "en";
+
+  const langHref = (target: Lang) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (target === "fr") params.delete("lang");
+    else params.set("lang", "en");
+    const query = params.toString();
+    return query ? `${pathname}?${query}` : pathname;
+  };
 
   return (
     <header
@@ -26,7 +47,7 @@ export function Nav() {
     >
       <div className="page-gutter mx-auto flex h-12 max-w-5xl items-center justify-between gap-2 sm:h-14 sm:gap-4">
         <Link
-          href="/"
+          href={withLang("/", lang)}
           className={[
             "shrink-0 font-[family-name:var(--font-display)] text-base font-extrabold tracking-tight sm:text-lg",
             onHome ? "text-white" : "text-ink",
@@ -46,18 +67,18 @@ export function Nav() {
               return (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={withLang(link.href, lang)}
                   prefetch
                   className="ml-1 inline-flex min-h-10 items-center rounded-[var(--radius-ui)] bg-coral px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-coral-deep sm:min-h-9 sm:px-3.5"
                 >
-                  {link.label}
+                  {link.label[lang]}
                 </Link>
               );
             }
             return (
               <Link
                 key={link.href}
-                href={link.href}
+                href={withLang(link.href, lang)}
                 className={[
                   "inline-flex min-h-10 items-center rounded-[var(--radius-ui)] px-2.5 py-2 text-xs font-medium transition-colors sm:min-h-9 sm:px-3 sm:text-sm",
                   onHome
@@ -70,11 +91,31 @@ export function Nav() {
                 ].join(" ")}
                 aria-current={active ? "page" : undefined}
               >
-                <span className="sm:hidden">{link.short}</span>
-                <span className="hidden sm:inline">{link.label}</span>
+                <span className="sm:hidden">{link.short[lang]}</span>
+                <span className="hidden sm:inline">{link.label[lang]}</span>
               </Link>
             );
           })}
+          <div className="ml-1 flex items-center rounded-[var(--radius-ui)] border border-line/80 bg-white/80 px-1 py-1 text-xs sm:text-sm">
+            <Link
+              href={langHref("fr")}
+              className={[
+                "rounded-[var(--radius-ui)] px-2 py-1 font-semibold",
+                !isEn ? "bg-sky text-coral-deep" : "text-ink-soft hover:text-ink",
+              ].join(" ")}
+            >
+              FR
+            </Link>
+            <Link
+              href={langHref("en")}
+              className={[
+                "rounded-[var(--radius-ui)] px-2 py-1 font-semibold",
+                isEn ? "bg-sky text-coral-deep" : "text-ink-soft hover:text-ink",
+              ].join(" ")}
+            >
+              EN
+            </Link>
+          </div>
         </nav>
       </div>
     </header>

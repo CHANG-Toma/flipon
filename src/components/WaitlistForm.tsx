@@ -1,8 +1,10 @@
 "use client";
 
 import { FormEvent, useId, useState } from "react";
+import { type Lang } from "@/lib/i18n";
 
-export function WaitlistForm() {
+export function WaitlistForm({ lang = "fr" }: { lang?: Lang }) {
+  const isEn = lang === "en";
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
   const id = useId();
@@ -16,7 +18,9 @@ export function WaitlistForm() {
   if (done) {
     return (
       <p className="animate-rise rounded-[var(--radius-ui)] border border-coral/25 bg-sky px-4 py-3 text-sm font-medium text-coral-deep" role="status">
-        Merci — on t’écrit dès que c’est prêt.
+        {isEn
+          ? "Thanks — we’ll email you as soon as it is ready."
+          : "Merci — on t’écrit dès que c’est prêt."}
       </p>
     );
   }
@@ -28,7 +32,7 @@ export function WaitlistForm() {
     >
       <div className="flex-1">
         <label htmlFor={id} className="sr-only">
-          Adresse e-mail
+          {isEn ? "Email address" : "Adresse e-mail"}
         </label>
         <input
           id={id}
@@ -37,12 +41,12 @@ export function WaitlistForm() {
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="ton@email.fr"
+          placeholder={isEn ? "you@email.com" : "ton@email.fr"}
           className="h-12 w-full rounded-[var(--radius-ui)] border border-line bg-white px-3.5 text-base text-ink outline-none transition placeholder:text-ink-soft/50 focus:border-coral sm:h-11 sm:text-[15px]"
         />
       </div>
       <button type="submit" className="btn-primary w-full shrink-0 sm:w-auto sm:min-w-[9.5rem]">
-        Me prévenir
+        {isEn ? "Notify me" : "Me prévenir"}
       </button>
     </form>
   );

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { type Lang, withLang } from "@/lib/i18n";
 
 const DuoDemo = dynamic(
   () => import("@/components/DuoDemo").then((m) => m.DuoDemo),
@@ -29,8 +30,26 @@ function useDeferredReady(delayMs = 200) {
   return ready;
 }
 
-export function LandingHero() {
+export function LandingHero({ lang = "fr" }: { lang?: Lang }) {
   const demoReady = useDeferredReady(280);
+  const copy =
+    lang === "en"
+      ? {
+          titleA: "One activity approved",
+          titleB: "by the whole group.",
+          subtitle:
+            "No more 40-minute loops with friends. You decide and go.",
+          ctaTry: "Try now",
+          ctaHow: "How it works",
+        }
+      : {
+          titleA: "Une activité validée",
+          titleB: "par tout le groupe.",
+          subtitle:
+            "Fini les 40 minutes à tourner en rond entre potes. Vous tranchez, et vous y allez.",
+          ctaTry: "Essayer",
+          ctaHow: "Comment ça marche",
+        };
 
   return (
     <section className="relative min-h-[92svh] overflow-hidden bg-[#0a0a0a]">
@@ -56,30 +75,29 @@ export function LandingHero() {
           </p>
 
           <h1 className="mt-5 text-xl font-bold leading-snug text-white sm:text-3xl md:text-[2.1rem]">
-            Une activité validée
+            {copy.titleA}
             <br />
-            par tout le groupe.
+            {copy.titleB}
           </h1>
 
           <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/75 sm:text-base">
-            Fini les 40 minutes à tourner en rond entre potes. Vous tranchez,
-            et vous y allez.
+            {copy.subtitle}
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
-              href="/test"
+              href={withLang("/test", lang)}
               prefetch
               className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-ui)] bg-[#ff4d00] px-7 text-base font-bold text-white hover:bg-[#e04400]"
             >
-              Essayer
+              {copy.ctaTry}
             </Link>
             <Link
-              href="/presentation"
+              href={withLang("/presentation", lang)}
               prefetch
               className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-ui)] border border-white px-6 text-[15px] font-semibold text-white hover:bg-white/10"
             >
-              Comment ça marche
+              {copy.ctaHow}
             </Link>
           </div>
         </div>

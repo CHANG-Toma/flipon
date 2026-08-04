@@ -1,195 +1,198 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getLang, withLang } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "Tarifs",
   description:
-    "FlipOn gratuit pour voter et trancher. Boost à 3,99 €/mois : idées calées sur ton lieu, la météo et le moment.",
+    "Basique : catalogue FlipOn + vote. Boost 3,99 € : pour passer vos meilleurs moments en toute simplicité.",
   alternates: { canonical: "/tarifs" },
   openGraph: {
     title: "Tarifs FlipOn",
     description:
-      "Basique 0 € · Boost 3,99 €/mois — des idées vraiment adaptées au moment.",
+      "Basique 0 € (catalogue) · Boost 3,99 € pour passer vos meilleurs moments en toute simplicité.",
     url: "/tarifs",
   },
 };
 
 const BOOST_PRICE = "3,99";
 
-const rows: {
-  label: string;
-  free: string;
-  boost: string;
-}[] = [
-  {
-    label: "Vote privé + idée commune",
-    free: "Oui",
-    boost: "Oui",
-  },
-  {
-    label: "Source des idées",
-    free: "Catalogue FlipOn",
-    boost: "Idées générées pour vous",
-  },
-  {
-    label: "Prise en compte du lieu",
-    free: "Non",
-    boost: "Autour de vous",
-  },
-  {
-    label: "Météo du moment",
-    free: "Non",
-    boost: "Oui",
-  },
-  {
-    label: "Heure / jour",
-    free: "Cadre manuel",
-    boost: "Adapté automatiquement",
-  },
-  {
-    label: "Niveau de précision",
-    free: "Bon pour démarrer",
-    boost: "Plans concrets, moins génériques",
-  },
-];
-
-export default function TarifsPage() {
+function Check({ onDark }: { onDark?: boolean }) {
   return (
-    <main className="safe-bottom min-h-[100dvh] pb-12 pt-6 sm:pb-20 sm:pt-10">
+    <span
+      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+        onDark ? "bg-coral text-white" : "bg-coral/15 text-coral"
+      }`}
+      aria-hidden
+    >
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <path
+          d="M2 5.2L4.1 7.3L8 2.8"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
+export default async function TarifsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const lang = getLang(await searchParams);
+  const isEn = lang === "en";
+  const boostFeatures = isEn
+    ? [
+        "Everything in Basic",
+        "AI-generated ideas for your group",
+        "Nearby activity count around you",
+        "Location / neighborhood context",
+        "Weather + time of day",
+      ]
+    : [
+        "Tout Basique inclus",
+        "Idées générées par IA pour ton groupe",
+        "Nombre d’activités trouvées autour de vous",
+        "Lieu / quartier pris en compte",
+        "Météo + moment de la journée",
+      ];
+  const freeFeatures = isEn
+    ? [
+        "Private vote -> one shared idea",
+        "Filters + catalog activity counter",
+        "FlipOn catalog ideas (no AI)",
+      ]
+    : [
+        "Vote privé → une idée commune",
+        "Filtres + compteur du catalogue",
+        "Idées FlipOn (pas d’IA)",
+      ];
+
+  return (
+    <main className="safe-bottom overflow-x-hidden pb-14 pt-6 sm:pb-20 sm:pt-10">
       <div className="page-gutter mx-auto max-w-5xl">
-        <header className="mx-auto max-w-xl animate-rise">
-          <p className="text-sm font-semibold text-coral">Tarifs</p>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-4xl">
-            Gratuit pour trancher.
-            <br className="hidden sm:block" /> Boost quand tu veux mieux.
+        <header className="mx-auto max-w-2xl animate-rise text-center">
+          <p className="text-sm font-semibold text-coral">
+            {isEn ? "Pricing" : "Tarifs"}
+          </p>
+          <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-ink sm:text-5xl">
+            {isEn
+              ? "Boost for your best moments."
+              : "Boost pour vos meilleurs moments."}
           </h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-base">
-            Basique = le flux FlipOn. Boost = des idées calées sur{" "}
-            <span className="text-ink">où</span> tu es,{" "}
-            <span className="text-ink">le temps qu’il fait</span> et{" "}
-            <span className="text-ink">quand</span> tu sors — sans te ruiner.
+          <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-ink-soft sm:text-base">
+            {isEn ? (
+              <>
+                Same voting flow. Ideas generated for <em>here</em> and{" "}
+                <em>now</em> — not just a catalog.
+              </>
+            ) : (
+              <>
+                Même vote. Des idées inventées pour <em>ici</em> et{" "}
+                <em>maintenant</em> — pas seulement le catalogue.
+              </>
+            )}
           </p>
         </header>
 
-        <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-2">
-          <section className="surface flex flex-col p-5 sm:p-6">
+        <section className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-5">
+          <article className="rounded-[var(--radius-ui)] border border-line bg-white p-5 shadow-sm sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
-              Pour commencer
+              {isEn ? "Free" : "Gratuit"}
             </p>
-            <h2 className="mt-1 text-lg font-bold text-ink sm:text-xl">
-              Basique
+            <h2 className="mt-1 text-xl font-bold text-ink">
+              {isEn ? "Basic" : "Basique"}
             </h2>
             <p className="mt-1 text-sm text-ink-soft">
-              Cadre → vote privé → une idée. Suffisant pour tester et trancher.
+              {isEn
+                ? "Well-filtered FlipOn catalog. Enough to decide tonight."
+                : "Catalogue FlipOn, bien filtré. Assez pour trancher ce soir."}
             </p>
+
             <p className="mt-5 flex items-baseline gap-1.5">
               <span className="font-[family-name:var(--font-display)] text-4xl font-extrabold tracking-tight text-ink">
                 0 €
               </span>
-              <span className="text-sm text-ink-soft">/ mois</span>
-            </p>
-            <ul className="mt-6 flex-1 space-y-2.5 text-sm text-ink">
-              <li>Vote privé, idée commune</li>
-              <li>Ambiances potes / groupe / date</li>
-              <li>Idées tirées du catalogue FlipOn</li>
-            </ul>
-            <Link href="/test" prefetch className="btn-secondary mt-8 w-full">
-              Essayer gratuitement
-            </Link>
-          </section>
-
-          <section className="relative flex flex-col rounded-[var(--radius-ui)] border-2 border-coral bg-petal p-5 sm:p-6">
-            <p className="text-xs font-semibold uppercase tracking-wide text-coral">
-              Le plus populaire
-            </p>
-            <h2 className="mt-1 text-lg font-bold text-ink sm:text-xl">Boost</h2>
-            <p className="mt-1 text-sm text-ink-soft">
-              Moins d’idées « au hasard ». Plus de plans qui collent à ce soir.
-            </p>
-            <p className="mt-5 flex flex-wrap items-end gap-x-2 gap-y-1">
-              <span className="font-[family-name:var(--font-display)] text-4xl font-extrabold tracking-tight text-ink">
-                {BOOST_PRICE} €
+              <span className="text-sm text-ink-soft">
+                {isEn ? "/ month" : "/ mois"}
               </span>
-              <span className="pb-1 text-sm text-ink-soft">/ mois</span>
             </p>
-            <p className="mt-1 text-sm font-medium text-coral">
-              Un petit prix, zéro engagement
-            </p>
-            <ul className="mt-6 flex-1 space-y-2.5 text-sm text-ink">
-              <li>Tout Basique, inclus</li>
-              <li>Idées adaptées à ton lieu</li>
-              <li>Selon la météo et le moment</li>
-              <li>Propositions plus concrètes, moins génériques</li>
+
+            <ul className="mt-5 space-y-2.5 text-sm text-ink">
+              {freeFeatures.map((f) => (
+                <li key={f} className="flex gap-2.5">
+                  <Check />
+                  <span>{f}</span>
+                </li>
+              ))}
             </ul>
-            <div className="mt-8 space-y-2">
-              <Link href="/test" prefetch className="btn-primary w-full">
-                Voir le flux (démo)
+
+            <Link
+              href={withLang("/download", lang)}
+              prefetch
+              className="btn-secondary mt-7 w-full"
+            >
+              {isEn ? "Download app" : "Télécharger l’app"}
+            </Link>
+          </article>
+
+          <article className="relative overflow-hidden rounded-[var(--radius-ui)] border-2 border-coral bg-ink p-5 text-white shadow-sm sm:p-6">
+            <div
+              className="pointer-events-none absolute inset-0 opacity-80"
+              aria-hidden
+              style={{
+                background:
+                  "radial-gradient(ellipse 80% 60% at 90% -5%, color-mix(in srgb, var(--coral) 45%, transparent), transparent 55%)",
+              }}
+            />
+            <div className="relative z-10">
+              <p className="text-xs font-semibold uppercase tracking-wide text-coral">
+                {isEn ? "Recommended" : "Recommandé"}
+              </p>
+              <h2 className="mt-1 text-xl font-bold">Boost</h2>
+              <p className="mt-1 text-sm text-white/75">
+                {isEn
+                  ? "Enjoy your best moments with less friction."
+                  : "Pour passer vos meilleurs moments en toute simplicité."}
+              </p>
+
+              <p className="mt-5 flex items-baseline gap-1.5">
+                <span className="font-[family-name:var(--font-display)] text-4xl font-extrabold tracking-tight">
+                  {BOOST_PRICE} €
+                </span>
+                <span className="text-sm text-white/60">
+                  {isEn ? "/ month" : "/ mois"}
+                </span>
+              </p>
+
+              <ul className="mt-5 space-y-2.5 text-sm text-white/90">
+                {boostFeatures.map((f) => (
+                  <li key={f} className="flex gap-2.5">
+                    <Check onDark />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                href={withLang("/download", lang)}
+                prefetch
+                className="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-[var(--radius-ui)] bg-coral px-6 text-[15px] font-bold text-white hover:bg-coral-deep"
+              >
+                {isEn ? "Download Boost" : "Télécharger Boost"}
               </Link>
-              <p className="text-center text-xs text-ink-soft">
-                Paiement bientôt — la démo actuelle tourne en Basique.
+              <p className="mt-2 text-center text-xs text-white/50">
+                {isEn
+                  ? "Boost ships with the mobile app."
+                  : "Boost arrive avec l’app."}
               </p>
             </div>
-          </section>
-        </div>
-
-        <section className="mx-auto mt-12 max-w-3xl sm:mt-16">
-          <h2 className="text-lg font-bold text-ink sm:text-xl">
-            La différence, clairement
-          </h2>
-          <p className="mt-2 text-sm text-ink-soft sm:text-[15px]">
-            Même mécanique de vote. Ce qui change, c’est d’où viennent les idées.
-          </p>
-
-          <div className="mt-6 overflow-x-auto">
-            <table className="w-full min-w-[320px] border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-line">
-                  <th className="py-3 pr-3 font-semibold text-ink"> </th>
-                  <th className="px-2 py-3 font-semibold text-ink">Basique</th>
-                  <th className="px-2 py-3 font-semibold text-coral">Boost</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => (
-                  <tr key={row.label} className="border-b border-line/80">
-                    <th
-                      scope="row"
-                      className="py-3.5 pr-3 align-top font-medium text-ink"
-                    >
-                      {row.label}
-                    </th>
-                    <td className="px-2 py-3.5 align-top text-ink-soft">
-                      {row.free}
-                    </td>
-                    <td className="px-2 py-3.5 align-top font-medium text-ink">
-                      {row.boost}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          </article>
         </section>
-
-        <section className="mx-auto mt-10 max-w-2xl border-t border-line pt-8 sm:mt-12">
-          <h2 className="text-base font-bold text-ink sm:text-lg">
-            En une phrase
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink-soft sm:text-[15px]">
-            <span className="text-ink">Basique</span> tire dans un catalogue
-            selon ton cadre. <span className="text-ink">Boost</span> compose
-            pour vous : pluie + 40 min + près de chez toi ≠ samedi ensoleillé en
-            centre-ville.
-          </p>
-          <p className="mt-4 text-sm font-medium text-ink">
-            {BOOST_PRICE} €/mois — assez bas pour dire oui sans réfléchir, pour
-            arrêter le « on verra ».
-          </p>
-        </section>
-
-        <p className="mx-auto mt-10 max-w-xl text-center text-xs leading-relaxed text-ink-soft sm:mt-12">
-          Annulable à tout moment. Pas d’engagement. Pas de frais cachés.
-        </p>
       </div>
     </main>
   );

@@ -243,6 +243,166 @@ export const PLANS: Plan[] = [
     category: "maison",
     vibes: ["groupe", "potes"],
   },
+  {
+    id: "p15",
+    title: "Session board game express",
+    blurb: "Un jeu de société, une seule partie, règle anti-téléphone.",
+    steps: [
+      "Choisir un jeu ≤ 45 min",
+      "Expliquer les règles en 5 min max",
+      "Finir la partie sans pause téléphone",
+    ],
+    durationMin: 60,
+    budgetMax: 0,
+    energy: "moyenne",
+    place: "dedans",
+    category: "jeu",
+    vibes: ["potes", "groupe", "date"],
+  },
+  {
+    id: "p16",
+    title: "Tour des bars low-cost",
+    blurb: "2 adresses max, 1 conso chacune, comparer l’ambiance.",
+    steps: [
+      "Lister 2 bars à moins de 20 min",
+      "Budget fixe par personne",
+      "Élire le gagnant en sortant",
+    ],
+    durationMin: 120,
+    budgetMax: 30,
+    energy: "haute",
+    place: "dehors",
+    category: "sortie légère",
+    vibes: ["potes", "groupe"],
+  },
+  {
+    id: "p17",
+    title: "Brunch maison en rôles",
+    blurb: "Chacun a une station : œufs, pain, fruits, vaisselle.",
+    steps: [
+      "Répartir 4 rôles",
+      "Timer 40 min de prep",
+      "Manger sans téléphone 30 min",
+    ],
+    durationMin: 90,
+    budgetMax: 25,
+    energy: "moyenne",
+    place: "dedans",
+    category: "food",
+    vibes: ["groupe", "potes", "date"],
+  },
+  {
+    id: "p18",
+    title: "Course à pied (ou marche) duo",
+    blurb: "3 km max, rythme de celui qui est le plus lent.",
+    steps: [
+      "Choisir un parcours simple",
+      "Pas de musique partagée — chacun son rythme",
+      "Étirements 5 min à la fin",
+    ],
+    durationMin: 45,
+    budgetMax: 0,
+    energy: "haute",
+    place: "dehors",
+    category: "sport",
+    vibes: ["potes", "date"],
+  },
+  {
+    id: "p19",
+    title: "Karaoké salon ridicule",
+    blurb: "YouTube + micro téléphone, notes honnêtes sur 5.",
+    steps: [
+      "Chacun choisit 1 chanson",
+      "Performance obligatoire (même 30 s)",
+      "Vote du pire / meilleur",
+    ],
+    durationMin: 60,
+    budgetMax: 0,
+    energy: "haute",
+    place: "dedans",
+    category: "maison",
+    vibes: ["potes", "groupe"],
+  },
+  {
+    id: "p20",
+    title: "Exposition / galerie flash",
+    blurb: "45 min max, 3 œuvres favorites, débat en sortant.",
+    steps: [
+      "Trouver une expo gratuite ou ≤ 10 €",
+      "Chacun note 3 coups de cœur",
+      "Comparer dehors 10 min",
+    ],
+    durationMin: 90,
+    budgetMax: 20,
+    energy: "basse",
+    place: "dehors",
+    category: "culture",
+    vibes: ["date", "potes"],
+  },
+  {
+    id: "p21",
+    title: "Soirée puzzles / Lego",
+    blurb: "Un seul projet, musique basse, zéro scroll.",
+    steps: [
+      "Sortir puzzle ou Lego",
+      "Timer 60–90 min",
+      "Photo du résultat (même incomplet)",
+    ],
+    durationMin: 90,
+    budgetMax: 0,
+    energy: "basse",
+    place: "dedans",
+    category: "maison",
+    vibes: ["date", "potes", "groupe"],
+  },
+  {
+    id: "p22",
+    title: "Food court challenge",
+    blurb: "Chacun commande un truc différent, partage en 4 bouchées.",
+    steps: [
+      "Choisir un food court / zone food",
+      "1 commande par personne, budget max fixe",
+      "Goûter et classer",
+    ],
+    durationMin: 75,
+    budgetMax: 25,
+    energy: "moyenne",
+    place: "dehors",
+    category: "food",
+    vibes: ["potes", "groupe"],
+  },
+  {
+    id: "p23",
+    title: "Lecture à voix haute 20 min",
+    blurb: "Un chapitre chacun, thé, canapé. Étonnamment efficace.",
+    steps: [
+      "Choisir un livre ou un PDF court",
+      "20 min chrono, tours de parole",
+      "1 phrase de réaction chacun",
+    ],
+    durationMin: 30,
+    budgetMax: 0,
+    energy: "basse",
+    place: "dedans",
+    category: "connexion",
+    vibes: ["date"],
+  },
+  {
+    id: "p24",
+    title: "Escape outdoor DIY",
+    blurb: "5 indices cachés dans un parc, 40 min pour tout retrouver.",
+    steps: [
+      "Un·e prépare 5 indices (15 min d’avance)",
+      "L’équipe cherche avec un timer",
+      "Photo de groupe à la fin",
+    ],
+    durationMin: 60,
+    budgetMax: 0,
+    energy: "haute",
+    place: "dehors",
+    category: "jeu",
+    vibes: ["groupe", "potes"],
+  },
 ];
 
 export type Constraints = {
@@ -335,23 +495,17 @@ export function filterPlans(c: Constraints): Plan[] {
   return [...PLANS];
 }
 
-/** Nombre d’idées qui collent au cadre (sans fallback « tout le catalogue »). */
+/** Nombre d’idées qui collent exactement au cadre affiché (filtres stricts). */
 export function countMatchingPlans(c: Constraints): number {
-  const stages = [
-    { looseDuration: false, looseBudget: false, looseEnergy: false },
-    { looseDuration: true, looseBudget: false, looseEnergy: false },
-    { looseDuration: true, looseBudget: true, looseEnergy: false },
-    { looseDuration: true, looseBudget: true, looseEnergy: true },
-  ];
-
-  for (const stage of stages) {
-    const n = PLANS.filter(
-      (p) => matchesVibe(p, c.vibe) && matchesCore(p, c, stage),
-    ).length;
-    if (n > 0) return n;
-  }
-
-  return PLANS.filter((p) => matchesVibe(p, c.vibe)).length;
+  return PLANS.filter(
+    (p) =>
+      matchesVibe(p, c.vibe) &&
+      matchesCore(p, c, {
+        looseDuration: false,
+        looseBudget: false,
+        looseEnergy: false,
+      }),
+  ).length;
 }
 
 /** Deck prêt à voter : filtré, mélangé, max 6. */
