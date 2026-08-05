@@ -1,8 +1,21 @@
-# FlipOn
+# FlipOn Web
 
-Site MVP pour tester FlipOn : voter en privé et trouver une activité que tout le groupe accepte.
+Site vitrine et demo web de FlipOn.
 
-Le vrai produit sera l’app mobile. Ici = landing + démo web.
+Objectif: presenter le concept, expliquer les offres Basique/Boost, et permettre de tester le flow vote + resultat avant la version mobile complete.
+
+## Positionnement du projet
+
+- `flipon/` = web marketing + demo produit
+- `flipon-app/` = application mobile principale (Expo)
+
+## Fonctionnalites web
+
+- Landing page avec proposition de valeur
+- Page presentation du produit
+- Page tarifs Basique vs Boost
+- Page test pour simuler une session et un resultat
+- Formulaire de feedback utilisateur
 
 ## Lancer en local
 
@@ -12,28 +25,41 @@ npm install
 npm run dev
 ```
 
-→ [http://localhost:3000](http://localhost:3000)
+Application disponible sur [http://localhost:3000](http://localhost:3000).
 
-## Pages
+## Routes principales
 
-| Route | Contenu |
-|-------|---------|
-| `/` | Accueil + waitlist |
-| `/presentation` | Le produit en une page |
-| `/tarifs` | Basique / Boost |
-| `/test` | Démo solo ou duo (2 téléphones) |
+- `/` : accueil
+- `/presentation` : presentation produit
+- `/tarifs` : offres
+- `/test` : demo interactive
+- `/download` : redirection iOS / Android
 
-## Variables d’environnement
+## Variables d environnement
 
-Voir `.env.example`.
+Copier le fichier exemple puis renseigner les valeurs:
 
-- `REDIS_URL` — obligatoire en prod pour le duo (Vercel Redis / Upstash)
-- `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` — pour recevoir les retours du formulaire `/test`
+```bash
+cp .env.example .env.local
+```
 
-## Déploiement (Vercel)
+Variables importantes:
 
-1. Brancher Redis au projet (`REDIS_URL`)
-2. Ajouter `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` si tu veux le feedback
-3. Push / redeploy — et **Promote to Production** si besoin
+- `REDIS_URL` : requis pour les sessions duo en production
+- `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` : requis pour le formulaire de feedback
 
-Les sessions duo durent ~24 h (plus court après un match).
+## Deploiement
+
+Deploiement recommande: Vercel.
+
+Etapes:
+
+1. Connecter le repository au projet Vercel
+2. Ajouter les variables d environnement (`REDIS_URL`, `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`)
+3. Lancer le deploy, puis promouvoir en production si necessaire
+
+## Notes produit
+
+- Les sessions duo ont une duree limitee (environ 24h, plus courte apres match).
+- Le web sert a valider le message produit et l experience.
+- Le coeur long terme de FlipOn est la mobile app.

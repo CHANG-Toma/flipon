@@ -5,18 +5,25 @@ import {
   hasDurableStore,
   toPublicSnapshot,
 } from "@/lib/duo-rooms";
+import { corsPreflight, withCors } from "@/lib/cors";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+export async function OPTIONS() {
+  return corsPreflight();
+}
+
 export async function POST(req: NextRequest) {
   if (process.env.VERCEL && !hasDurableStore()) {
-    return NextResponse.json(
-      {
-        error:
-          "Le duo n’est pas disponible pour le moment. Réessaie plus tard, ou teste en solo.",
-      },
-      { status: 503 },
+    return withCors(
+      NextResponse.json(
+        {
+          error:
+            "Le duo n’est pas disponible pour le moment. Réessaie plus tard, ou teste en solo.",
+        },
+        { status: 503 },
+      ),
     );
   }
 
@@ -24,16 +31,20 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "JSON invalide" }, { status: 400 });
+    return withCors(NextResponse.json({ error: "JSON invalide" }, { status: 400 }));
   }
 
   if (!body.constraints) {
-    return NextResponse.json({ error: "constraints requis" }, { status: 400 });
+    return withCors(
+      NextResponse.json({ error: "constraints requis" }, { status: 400 }),
+    );
   }
 
   const room = await createRoom(normalizeConstraints(body.constraints));
-  return NextResponse.json({
-    role: "host" as const,
-    room: toPublicSnapshot(room, "host"),
-  });
+  return withCors(
+    NextResponse.json({
+      role: "host" as const,
+      room: toPublicSnapshot(room, "host"),
+    }),
+  );
 }
