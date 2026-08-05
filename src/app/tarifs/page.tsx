@@ -126,8 +126,8 @@ export default async function TarifsPage({
             </h2>
             <p className="mt-1 text-sm text-ink-soft">
               {isEn
-                ? "Well-filtered FlipOn catalog. Enough to decide tonight."
-                : "Catalogue FlipOn, bien filtré. Assez pour trancher ce soir."}
+                ? "Well-filtered FlipOn catalog. Enough to decide now."
+                : "Catalogue FlipOn, bien filtré. Assez pour trancher maintenant."}
             </p>
 
             <p className="mt-5 flex items-baseline gap-1.5">

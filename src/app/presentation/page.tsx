@@ -12,29 +12,29 @@ export default async function PresentationPage({
     ? [
         {
           title: "The blocker",
-          body: "Too many options, nobody decides, and the evening starts late.",
+          body: "Too many options, nobody decides, and the plan never starts.",
         },
         {
           title: "The method",
           body: "Quick setup -> private vote -> one shared idea in minutes.",
         },
         {
-          title: "Boost difference",
-          body: "AI + location + weather + moment for better ideas around you.",
+          title: "Any moment",
+          body: "Day or evening: brunch, walk, terrace, or later out. Same flow.",
         },
       ]
     : [
         {
           title: "Le blocage",
-          body: "Trop d’options, personne ne tranche, et la soirée démarre tard.",
+          body: "Trop d’options, personne ne tranche, et le plan ne démarre jamais.",
         },
         {
           title: "La méthode",
           body: "Cadre rapide → vote privé → une idée commune en quelques minutes.",
         },
         {
-          title: "La différence Boost",
-          body: "IA + lieu + météo + moment pour des idées plus précises autour de vous.",
+          title: "N’importe quel moment",
+          body: "Journée ou soirée : brunch, balade, terrasse ou sortie plus tard. Même flux.",
         },
       ];
 
@@ -46,12 +46,14 @@ export default async function PresentationPage({
             {isEn ? "Overview" : "Présentation"}
           </p>
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-            {isEn ? "Where you want, when you want." : "Où tu veux, quand tu veux."}
+            {isEn
+              ? "Decide together, then go."
+              : "Trancher ensemble, puis y aller."}
           </h1>
           <p className="mx-auto mt-3 max-w-lg text-[15px] leading-relaxed text-ink-soft sm:text-base">
             {isEn
-              ? "FlipOn locks one shared plan for your group, adapted to place and timing."
-              : "FlipOn verrouille un plan commun pour le groupe, adapté au lieu et au moment."}
+              ? "FlipOn helps a group pick one activity, any time of day."
+              : "FlipOn aide un groupe à choisir une activité, à n’importe quel moment."}
           </p>
 
           <div className="mx-auto mt-6 flex max-w-sm flex-col gap-2.5 sm:flex-row sm:justify-center">

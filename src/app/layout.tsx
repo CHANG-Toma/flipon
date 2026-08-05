@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s · FlipOn",
   },
   description:
-    "Votez en privé sur votre téléphone. FlipOn sort l’activité que tout le monde accepte. Potes, couple ou groupe.",
+    "Votez en privé. FlipOn aide le groupe à trancher une activité, en journée ou le soir.",
   applicationName: "FlipOn",
   authors: [{ name: "FlipOn" }],
   creator: "FlipOn",
@@ -35,7 +35,9 @@ export const metadata: Metadata = {
     "amis",
     "couple",
     "groupe",
-    "idée soirée",
+    "idée activité",
+    "journée",
+    "soirée",
     "FlipOn",
   ],
   alternates: {

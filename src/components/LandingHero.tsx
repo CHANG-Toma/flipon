@@ -35,20 +35,20 @@ export function LandingHero({ lang = "fr" }: { lang?: Lang }) {
   const copy =
     lang === "en"
       ? {
-          titleA: "One activity approved",
-          titleB: "by the whole group.",
+          titleA: "One activity",
+          titleB: "the whole group wants.",
           subtitle: "Where you want, when you want.",
           support:
-            "No more 40-minute loops with friends. FlipOn locks a plan and you go.",
+            "Day or evening: FlipOn ends the “what should we do?” loop and locks one shared plan.",
           ctaTry: "Try now",
           ctaHow: "How it works",
         }
       : {
-          titleA: "Une activité validée",
-          titleB: "par tout le groupe.",
+          titleA: "Une activité",
+          titleB: "que tout le groupe veut faire.",
           subtitle: "Où tu veux, quand tu veux.",
           support:
-            "Moins de discussions, plus d’action : FlipOn verrouille un plan et vous y allez.",
+            "Journée ou soirée : FlipOn coupe le « on fait quoi ? » et verrouille un plan commun.",
           ctaTry: "Essayer",
           ctaHow: "Comment ça marche",
         };
@@ -57,18 +57,18 @@ export function LandingHero({ lang = "fr" }: { lang?: Lang }) {
     <section className="relative min-h-[92svh] overflow-hidden bg-[#0a0a0a]">
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <Image
-          src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1600&q=70"
+          src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1600&q=70"
           alt=""
           fill
           priority
           fetchPriority="high"
           sizes="100vw"
           quality={65}
-          className="object-cover object-[center_35%] opacity-45 grayscale"
+          className="object-cover object-[center_40%] opacity-50"
         />
       </div>
 
-      <div className="pointer-events-none absolute inset-0 bg-black/55" />
+      <div className="pointer-events-none absolute inset-0 bg-black/45" />
 
       <div className="relative z-10 mx-auto grid min-h-[92svh] max-w-6xl items-center gap-10 page-gutter pb-12 pt-20 sm:pb-16 sm:pt-24 lg:grid-cols-2 lg:gap-14 lg:pb-20">
         <div className="max-w-xl">

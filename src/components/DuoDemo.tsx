@@ -30,13 +30,13 @@ export function DuoDemo() {
                   </div>
                 </div>
                 <p className="mt-2.5 text-[9px] font-semibold text-coral">
-                  maison
+                  dehors
                 </p>
                 <p className="mt-0.5 text-[12px] font-bold leading-snug text-ink">
-                  Atelier cocktail
+                  Marché + café en terrasse
                 </p>
                 <p className="mt-1 text-[9px] leading-relaxed text-ink-soft">
-                  2 recettes, dégustation à l’aveugle…
+                  90 minutes dehors, budget soft…
                 </p>
                 <div className="mt-3 grid grid-cols-2 gap-1.5">
                   <span className="rounded-md border border-line bg-white py-1.5 text-center text-[9px] font-semibold text-ink-soft">
@@ -67,10 +67,10 @@ export function DuoDemo() {
                   </div>
                 </div>
                 <p className="mt-2.5 text-[9px] font-semibold text-coral">
-                  maison
+                  dehors
                 </p>
                 <p className="mt-0.5 text-[12px] font-bold leading-snug text-ink">
-                  Atelier cocktail
+                  Marché + café en terrasse
                 </p>
                 <p className="mt-1 text-[9px] leading-relaxed text-ink-soft">
                   Sam ne voit pas le vote d’Alex.
