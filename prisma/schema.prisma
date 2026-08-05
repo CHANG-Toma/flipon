@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SessionType {
+  DUO
+  GROUPE
+}
+
+enum SessionStatus {
+  LOBBY
+  VOTING
+  DONE
+  EXPIRED
+}
+
+enum MemberRole {
+  HOST
+  GUEST
+}
+
+enum HistoryStatus {
+  VALIDEE
+  SANS_MATCH
+  EXPIREE
+}
+
+model User {
+  id          String   @id @default(cuid())
+  clerkId     String   @unique
+  email       String?
+  displayName String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  hostedSessions Session[]       @relation("SessionHost")
+  memberships    SessionMember[]
+  history        HistoryItem[]
+}
+
+model Session {
+  id             String        @id
+  hostUserId     String?
+  hostUser       User?         @relation("SessionHost", fields: [hostUserId], references: [id], onDelete: SetNull)
+  type           SessionType   @default(DUO)
+  partySize      Int           @default(2)
+  status         SessionStatus @default(LOBBY)
+  constraints    Json
+  deck           Json
+  resultPlanId   String?
+  resultSnapshot Json?
+  expiresAt      DateTime
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  completedAt    DateTime?
+
+  members SessionMember[]
+  votes   Vote[]
+  history HistoryItem[]
+
+  @@index([status, expiresAt])
+  @@index([hostUserId])
+}
+
+model SessionMember {
+  id        String     @id @default(cuid())
+  sessionId String
+  session   Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  deviceKey String
+  role      MemberRole
+  joinedAt  DateTime   @default(now())
+
+  votes Vote[]
+
+  @@unique([sessionId, deviceKey])
+  @@index([userId])
+}
+
+model Vote {
+  id           String        @id @default(cuid())
+  sessionId    String
+  session      Session       @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  memberId     String
+  member       SessionMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  likedPlanIds Json
+  submittedAt  DateTime      @default(now())
+
+  @@unique([sessionId, memberId])
+}
+
+model HistoryItem {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId   String
+  session     Session       @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  title       String
+  type        SessionType
+  durationMin Int           @default(0)
+  status      HistoryStatus
+  planId      String?
+  createdAt   DateTime      @default(now())
+
+  @@unique([userId, sessionId])
+  @@index([userId, createdAt])
+}

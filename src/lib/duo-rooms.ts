@@ -52,7 +52,7 @@ function redisUrl(): string | undefined {
 
 /** True when a shared store is available (required on Vercel multi-instance). */
 export function hasDurableStore(): boolean {
-  return Boolean(redisUrl());
+  return Boolean(redisUrl()) || Boolean(process.env.DATABASE_URL?.trim());
 }
 
 async function getRedis(): Promise<RedisClientType | null> {
@@ -150,6 +150,13 @@ async function saveRoom(room: DuoRoom): Promise<void> {
     return;
   }
   memoryRooms().set(room.id, room);
+}
+
+/** Restaure une room (ex. depuis Postgres) si absente du store hot. */
+export async function saveRoomIfMissing(room: DuoRoom): Promise<void> {
+  const existing = await loadRoom(room.id);
+  if (existing) return;
+  await saveRoom(room);
 }
 
 async function loadRoom(id: string): Promise<DuoRoom | undefined> {

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { setReady, toPublicSnapshot, type DuoRole } from "@/lib/duo-rooms";
+import { SessionStatus } from "@prisma/client";
 import { corsPreflight, withCors } from "@/lib/cors";
+import { setReady, toPublicSnapshot, type DuoRole } from "@/lib/duo-rooms";
+import { persistSessionStatus } from "@/lib/session-persist";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,6 +34,14 @@ export async function POST(req: NextRequest, ctx: Ctx) {
         { status: 404 },
       ),
     );
+  }
+
+  try {
+    if (room.hostReady && room.guestReady) {
+      await persistSessionStatus(room.id, SessionStatus.VOTING);
+    }
+  } catch {
+    /* ignore */
   }
 
   return withCors(NextResponse.json(toPublicSnapshot(room, body.role)));

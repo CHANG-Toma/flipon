@@ -45,8 +45,17 @@ cp .env.example .env.local
 
 Variables importantes:
 
-- `REDIS_URL` : requis pour les sessions duo en production
-- `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` : requis pour le formulaire de feedback
+- `REDIS_URL` : lobby duo (Upstash / Vercel Storage)
+- `DATABASE_URL` : Postgres (o2switch, Neon, …) pour users / sessions / historique
+- `CLERK_SECRET_KEY` : vérif JWT mobile + upsert user
+- `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` : formulaire de feedback
+
+Base de données:
+
+```bash
+# Avec DATABASE_URL dans .env.local
+npm run db:push
+```
 
 ## Deploiement
 
