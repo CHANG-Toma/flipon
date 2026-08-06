@@ -10,7 +10,12 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:up": "docker compose --env-file .env.docker up -d",
+    "db:down": "docker compose --env-file .env.docker down",
+    "db:reset": "docker compose --env-file .env.docker down -v && docker compose --env-file .env.docker up -d",
+    "db:logs": "docker compose --env-file .env.docker logs -f --tail=100",
+    "db:ps": "docker compose --env-file .env.docker ps"
   },
   "dependencies": {
     "@clerk/backend": "^3.15.1",

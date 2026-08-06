@@ -43,10 +43,32 @@ Copier le fichier exemple puis renseigner les valeurs:
 cp .env.example .env.local
 ```
 
+### Infra locale (Docker) — tests avant o2switch
+
+```bash
+cp .env.docker.example .env.docker   # puis changer les mots de passe
+# ou utiliser le .env.docker déjà généré en local
+
+npm run db:up      # Postgres + Redis sur 127.0.0.1 uniquement
+npm run db:push    # schéma Prisma
+npm run db:studio  # UI optionnelle
+```
+
+Dans `.env` (lu par Prisma) et `.env.local` (Next) :
+
+- `DATABASE_URL=postgresql://flipon:…@127.0.0.1:5432/flipon?schema=public&connection_limit=10`
+- `REDIS_URL=redis://:…@127.0.0.1:6379`
+
+> Prisma CLI lit `.env` (pas `.env.local`). Garder `DATABASE_URL` dans les deux, ou au minimum dans `.env`.
+
+Sécurité locale : ports bindés sur `127.0.0.1`, auth SCRAM Postgres, Redis avec mot de passe, limites mémoire.
+
+Quand les tests produit sont OK → basculer `DATABASE_URL` vers Postgres o2switch (`sslmode=require`) et Redis vers Upstash / Vercel.
+
 Variables importantes:
 
-- `REDIS_URL` : lobby duo (Upstash / Vercel Storage)
-- `DATABASE_URL` : Postgres (o2switch, Neon, …) pour users / sessions / historique
+- `REDIS_URL` : lobby duo (Docker local / Upstash / Vercel Storage)
+- `DATABASE_URL` : Postgres (Docker local, o2switch, Neon, …) pour users / sessions / historique
 - `CLERK_SECRET_KEY` : vérif JWT mobile + upsert user
 - `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` : formulaire de feedback
 
@@ -64,7 +86,7 @@ Deploiement recommande: Vercel.
 Etapes:
 
 1. Connecter le repository au projet Vercel
-2. Ajouter les variables d environnement (`REDIS_URL`, `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`)
+2. Ajouter les variables d environnement (`REDIS_URL`, `DATABASE_URL`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`)
 3. Lancer le deploy, puis promouvoir en production si necessaire
 
 ## Notes produit
