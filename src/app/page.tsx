@@ -195,10 +195,21 @@ export default async function HomePage({
       </section>
 
       <footer className="safe-bottom border-t border-line page-gutter py-5 text-sm text-ink-soft">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-bold text-ink">
             Flip<span className="text-coral">On</span>
           </p>
+          <nav className="flex flex-wrap gap-x-4 gap-y-1" aria-label="Légal">
+            <a className="hover:text-ink" href="/legal/confidentialite">
+              {isEn ? "Privacy" : "Confidentialité"}
+            </a>
+            <a className="hover:text-ink" href="/legal/cgu">
+              {isEn ? "Terms" : "CGU"}
+            </a>
+            <a className="hover:text-ink" href="/legal/mentions">
+              {isEn ? "Legal notice" : "Mentions"}
+            </a>
+          </nav>
           <p>{isEn ? "France · 2026" : "France · 2026"}</p>
         </div>
       </footer>
