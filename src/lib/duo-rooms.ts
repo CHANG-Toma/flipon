@@ -1,5 +1,12 @@
 import { createClient, type RedisClientType } from "redis";
-import { buildDeck, type Constraints, type Plan } from "@/data/plans";
+import {
+  buildDeck,
+  type Constraints,
+  type ContextHint,
+  type Plan,
+} from "@/data/plans";
+import type { DeckSource } from "@/lib/ai/generate-deck";
+import { generatePremiumDeck } from "@/lib/ai/generate-deck";
 import type { DuoPublicSnapshot, DuoRole } from "@/lib/duo-types";
 
 export type { DuoPublicSnapshot, DuoRole };
@@ -9,6 +16,8 @@ export type DuoRoom = {
   createdAt: number;
   constraints: Constraints;
   deck: Plan[];
+  /** Origine du deck (Premium IA / POI / catalogue). */
+  deckSource?: DeckSource;
   guestJoined: boolean;
   hostReady: boolean;
   guestReady: boolean;
@@ -204,7 +213,11 @@ async function loadRoom(id: string): Promise<DuoRoom | undefined> {
 }
 
 // Permet de créer une room
-export async function createRoom(constraints: Constraints): Promise<DuoRoom> {
+export async function createRoom(
+  constraints: Constraints,
+  context?: ContextHint | null,
+  opts?: { premiumDeck?: boolean },
+): Promise<DuoRoom> {
   let id = makeCode();
   for (let i = 0; i < 8; i++) {
     const existing = await loadRoom(id);
@@ -212,11 +225,23 @@ export async function createRoom(constraints: Constraints): Promise<DuoRoom> {
     id = makeCode();
   }
 
+  let deck: Plan[];
+  let deckSource: DeckSource = "catalogue";
+
+  if (opts?.premiumDeck && context) {
+    const generated = await generatePremiumDeck(constraints, context);
+    deck = generated.plans;
+    deckSource = generated.source;
+  } else {
+    deck = buildDeck(constraints, context ?? null);
+  }
+
   const room: DuoRoom = {
     id,
     createdAt: Date.now(),
     constraints,
-    deck: buildDeck(constraints),
+    deck,
+    deckSource,
     guestJoined: false,
     hostReady: false,
     guestReady: false,
@@ -307,6 +332,7 @@ export function toPublicSnapshot(
     id: room.id,
     constraints: room.constraints,
     deck: room.deck,
+    deckSource: room.deckSource ?? "catalogue",
     guestJoined: room.guestJoined,
     hostReady: room.hostReady,
     guestReady: room.guestReady,

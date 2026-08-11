@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { normalizeConstraints } from "@/data/plans";
+import { normalizeConstraints, normalizeContextHint } from "@/data/plans";
 import { readDeviceKey, resolveDbUser } from "@/lib/auth";
 import { corsPreflight, withCors } from "@/lib/cors";
 import {
@@ -8,9 +8,15 @@ import {
   toPublicSnapshot,
 } from "@/lib/duo-rooms";
 import { persistSessionCreated } from "@/lib/session-persist";
+import {
+  getSubscriptionViewForClerkId,
+  isDevPremiumAllowed,
+} from "@/lib/subscription";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+/** OSM + Gemini peuvent dépasser 10s */
+export const maxDuration = 30;
 
 export async function OPTIONS() {
   return corsPreflight();
@@ -31,6 +37,7 @@ export async function POST(req: NextRequest) {
 
   let body: {
     constraints?: Parameters<typeof normalizeConstraints>[0];
+    context?: Parameters<typeof normalizeContextHint>[0];
     type?: "DUO" | "GROUPE";
     partySize?: number;
   };
@@ -48,7 +55,29 @@ export async function POST(req: NextRequest) {
 
   const user = await resolveDbUser(req);
   const deviceKey = readDeviceKey(req);
-  const room = await createRoom(normalizeConstraints(body.constraints));
+  const context = normalizeContextHint(body.context);
+
+  let premiumDeck = false;
+  if (context) {
+    if (user) {
+      const view = await getSubscriptionViewForClerkId(user.clerkId);
+      premiumDeck = Boolean(view?.isPremium);
+    }
+    // Dev DX : contexte envoyé + clé IA / OSM sans abo factice
+    if (
+      !premiumDeck &&
+      isDevPremiumAllowed() &&
+      process.env.ALLOW_DEV_AI_DECK !== "0"
+    ) {
+      premiumDeck = true;
+    }
+  }
+
+  const room = await createRoom(
+    normalizeConstraints(body.constraints),
+    context,
+    { premiumDeck },
+  );
 
   try {
     await persistSessionCreated({
@@ -67,6 +96,7 @@ export async function POST(req: NextRequest) {
       role: "host" as const,
       room: toPublicSnapshot(room, "host"),
       deviceKey,
+      deckSource: room.deckSource ?? "catalogue",
     }),
   );
 }
