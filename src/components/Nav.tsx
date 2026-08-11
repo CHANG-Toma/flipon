@@ -18,11 +18,15 @@ const links = [
     short: { fr: "Téléch.", en: "App" },
   },
   {
+    href: "/test",
+    label: { fr: "Essayer", en: "Try" },
+    short: { fr: "Essayer", en: "Try" },
+  },
+  {
     href: "/join",
     label: { fr: "Rejoindre", en: "Join" },
     short: { fr: "Rejoindre", en: "Join" },
   },
-  { href: "/test", label: { fr: "Essayer", en: "Try" }, short: { fr: "Essayer", en: "Try" } },
 ];
 
 export function Nav() {
@@ -58,14 +62,14 @@ export function Nav() {
         >
           {links.map((link) => {
             const active = pathname === link.href;
-            const isTry = link.href === "/test";
-            if (isTry) {
+            const isJoin = link.href === "/join";
+            if (isJoin) {
               return (
                 <Link
                   key={link.href}
                   href={withLang(link.href, lang)}
                   prefetch
-                  className="ml-1 inline-flex min-h-10 items-center rounded-[var(--radius-ui)] bg-coral px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-coral-deep sm:min-h-9 sm:px-3.5"
+                  className="ml-1 inline-flex min-h-10 items-center rounded-[var(--radius-ui)] border-2 border-coral px-3 py-2 text-sm font-bold text-coral transition-colors hover:bg-coral hover:text-white sm:min-h-9 sm:px-3.5"
                 >
                   {link.label[lang]}
                 </Link>

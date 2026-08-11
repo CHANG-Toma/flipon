@@ -5,7 +5,6 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DemoPhoneFrame } from "@/components/DemoPhoneFrame";
 import { FlipDemo } from "@/components/FlipDemo";
-import { JoinSessionForm } from "@/components/JoinSessionForm";
 import { TestSidePanel } from "@/components/TestSidePanel";
 import { withLang, type Lang } from "@/lib/i18n";
 
@@ -163,49 +162,69 @@ function TestModeSwitcherInner({ lang }: { lang: Lang }) {
 
   return (
     <section className="mx-auto max-w-6xl space-y-4 sm:space-y-5">
-      <div className="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+      {inRoom ? (
+        <div className="border-b border-line pb-4">
           <h1 className="font-[family-name:var(--font-display)] text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
-            {isEn ? "Try FlipOn" : "Essayer FlipOn"}
+            {isEn ? "Session in progress" : "Session en cours"}
           </h1>
-          <div className="mt-2 flex gap-5">
-            <button
-              type="button"
-              className="test-toolbar-tab"
-              data-active={mode === "basic"}
-              aria-pressed={mode === "basic"}
-              onClick={() => setMode("basic")}
-            >
-              {isEn ? "Basic" : "Basique"}
-            </button>
-            <button
-              type="button"
-              className="test-toolbar-tab"
-              data-active={mode === "boost"}
-              aria-pressed={mode === "boost"}
-              onClick={() => setMode("boost")}
-            >
-              Boost
-            </button>
-          </div>
+          <p className="mt-1 text-sm text-ink-soft">
+            {isEn
+              ? "Vote privately — results appear once everyone has voted."
+              : "Vote en privé — les résultats apparaissent quand tout le monde a voté."}
+          </p>
         </div>
-
-        {!inRoom && mode === "basic" ? (
-          <div className="w-full sm:max-w-sm">
-            <JoinSessionForm lang={lang} variant="compact" />
+      ) : (
+        <div className="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="font-[family-name:var(--font-display)] text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
+              {isEn ? "Try FlipOn" : "Essayer FlipOn"}
+            </h1>
+            <div className="mt-2 flex gap-5">
+              <button
+                type="button"
+                className="test-toolbar-tab"
+                data-active={mode === "basic"}
+                aria-pressed={mode === "basic"}
+                onClick={() => setMode("basic")}
+              >
+                {isEn ? "Basic" : "Basique"}
+              </button>
+              <button
+                type="button"
+                className="test-toolbar-tab"
+                data-active={mode === "boost"}
+                aria-pressed={mode === "boost"}
+                onClick={() => setMode("boost")}
+              >
+                Boost
+              </button>
+            </div>
           </div>
-        ) : null}
-      </div>
+
+          <Link
+            href={withLang("/join", lang)}
+            className="rounded-full border-2 border-coral px-5 py-2 text-sm font-semibold text-coral transition hover:bg-coral hover:text-white"
+          >
+            {isEn ? "Join" : "Rejoindre"}
+          </Link>
+        </div>
+      )}
 
       {mode === "basic" ? (
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-6">
-          <TestSidePanel lang={lang} />
-          <div className="flex items-start justify-center lg:pt-2">
-            <DemoPhoneFrame>
-              <FlipDemo lang={lang} compact />
-            </DemoPhoneFrame>
+        inRoom ? (
+          <div className="mx-auto max-w-md">
+            <FlipDemo lang={lang} />
           </div>
-        </div>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-6">
+            <TestSidePanel lang={lang} />
+            <div className="flex items-start justify-center lg:pt-2">
+              <DemoPhoneFrame>
+                <FlipDemo lang={lang} compact />
+              </DemoPhoneFrame>
+            </div>
+          </div>
+        )
       ) : (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-6">
           <aside className="rounded-[var(--radius-ui)] border border-line bg-white p-5 shadow-sm sm:p-6">
