@@ -5,17 +5,17 @@ import { getLang, withLang } from "@/lib/i18n";
 export const metadata: Metadata = {
   title: "Tarifs",
   description:
-    "Basique : catalogue FlipOn + vote. Boost 3,99 € : pour passer vos meilleurs moments en toute simplicité.",
+    "Basique : catalogue FlipOn + vote. Premium 3,99 € : pour passer vos meilleurs moments en toute simplicité.",
   alternates: { canonical: "/tarifs" },
   openGraph: {
     title: "Tarifs FlipOn",
     description:
-      "Basique 0 € (catalogue) · Boost 3,99 € pour passer vos meilleurs moments en toute simplicité.",
+      "Basique 0 € (catalogue) · Premium 3,99 € pour passer vos meilleurs moments en toute simplicité.",
     url: "/tarifs",
   },
 };
 
-const BOOST_PRICE = "3,99";
+const PREMIUM_PRICE = "3,99";
 
 function Check({ onDark }: { onDark?: boolean }) {
   return (
@@ -45,7 +45,7 @@ export default async function TarifsPage({
 }) {
   const lang = getLang(await searchParams);
   const isEn = lang === "en";
-  const boostFeatures = isEn
+  const premiumFeatures = isEn
     ? [
         "AI ideas based on your location and moment",
         "Nearby activity count in real time",
@@ -77,7 +77,7 @@ export default async function TarifsPage({
         "Plan B auto si aucun match",
         "Partage résultat (copie / WhatsApp)",
       ];
-  const boostHighlights = isEn
+  const premiumHighlights = isEn
     ? [
         "Where you want, when you want",
         "Real context = better choices",
@@ -98,8 +98,8 @@ export default async function TarifsPage({
           </p>
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-ink sm:text-5xl">
             {isEn
-              ? "Boost for your best moments."
-              : "Boost pour vos meilleurs moments."}
+              ? "Premium for your best moments."
+              : "Premium pour vos meilleurs moments."}
           </h1>
           <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-ink-soft sm:text-base">
             {isEn ? (
@@ -170,7 +170,7 @@ export default async function TarifsPage({
               <p className="text-xs font-semibold uppercase tracking-wide text-coral">
                 {isEn ? "Recommended" : "Recommandé"}
               </p>
-              <h2 className="mt-1 text-xl font-bold">Boost</h2>
+              <h2 className="mt-1 text-xl font-bold">Premium</h2>
               <p className="mt-1 text-sm text-white/75">
                 {isEn
                   ? "Enjoy your best moments with less friction."
@@ -193,7 +193,7 @@ export default async function TarifsPage({
 
               <p className="mt-5 flex items-baseline gap-1.5">
                 <span className="font-[family-name:var(--font-display)] text-4xl font-extrabold tracking-tight">
-                  {BOOST_PRICE} €
+                  {PREMIUM_PRICE} €
                 </span>
                 <span className="text-sm text-white/60">
                   {isEn ? "/ month" : "/ mois"}
@@ -201,7 +201,7 @@ export default async function TarifsPage({
               </p>
 
               <ul className="mt-3 space-y-1.5 text-sm font-semibold text-white">
-                {boostHighlights.map((item) => (
+                {premiumHighlights.map((item) => (
                   <li key={item} className="flex items-center gap-2">
                     <span className="inline-flex h-1.5 w-1.5 rounded-full bg-coral" />
                     <span>{item}</span>
@@ -210,7 +210,7 @@ export default async function TarifsPage({
               </ul>
 
               <ul className="mt-5 space-y-2.5 text-sm text-white/90">
-                {boostFeatures.map((f) => (
+                {premiumFeatures.map((f) => (
                   <li key={f} className="flex gap-2.5">
                     <Check onDark />
                     <span>{f}</span>
@@ -224,7 +224,7 @@ export default async function TarifsPage({
                   prefetch
                   className="inline-flex min-h-12 w-full items-center justify-center rounded-[var(--radius-ui)] bg-coral px-6 text-[15px] font-bold text-white hover:bg-coral-deep"
                 >
-                  {isEn ? "Download Boost" : "Télécharger Boost"}
+                  {isEn ? "Download Premium" : "Télécharger Premium"}
                 </Link>
               </div>
             </div>

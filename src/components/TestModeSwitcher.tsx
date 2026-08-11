@@ -8,7 +8,7 @@ import { FlipDemo } from "@/components/FlipDemo";
 import { TestSidePanel } from "@/components/TestSidePanel";
 import { withLang, type Lang } from "@/lib/i18n";
 
-type Mode = "basic" | "boost";
+type Mode = "basic" | "premium";
 
 type RoadmapStep = {
   title: string;
@@ -16,7 +16,7 @@ type RoadmapStep = {
   duration: string;
 };
 
-type BoostExample = {
+type PremiumExample = {
   id: string;
   label: string;
   context: string;
@@ -26,11 +26,11 @@ type BoostExample = {
   steps: RoadmapStep[];
 };
 
-function BoostPlanTicket({
+function PremiumPlanTicket({
   example,
   isEn,
 }: {
-  example: BoostExample;
+  example: PremiumExample;
   isEn: boolean;
 }) {
   return (
@@ -100,7 +100,7 @@ function TestModeSwitcherInner({ lang }: { lang: Lang }) {
   const [mode, setMode] = useState<Mode>("basic");
   const [activePlan, setActivePlan] = useState(0);
 
-  const boostExamples: BoostExample[] = isEn
+  const premiumExamples: PremiumExample[] = isEn
     ? [
         {
           id: "rain",
@@ -158,7 +158,7 @@ function TestModeSwitcherInner({ lang }: { lang: Lang }) {
         },
       ];
 
-  const current = boostExamples[activePlan] ?? boostExamples[0];
+  const current = premiumExamples[activePlan] ?? premiumExamples[0];
 
   return (
     <section className="mx-auto max-w-6xl space-y-4 sm:space-y-5">
@@ -192,11 +192,11 @@ function TestModeSwitcherInner({ lang }: { lang: Lang }) {
               <button
                 type="button"
                 className="test-toolbar-tab"
-                data-active={mode === "boost"}
-                aria-pressed={mode === "boost"}
-                onClick={() => setMode("boost")}
+                data-active={mode === "premium"}
+                aria-pressed={mode === "premium"}
+                onClick={() => setMode("premium")}
               >
-                Boost
+                Premium
               </button>
             </div>
           </div>
@@ -229,7 +229,7 @@ function TestModeSwitcherInner({ lang }: { lang: Lang }) {
         <div className="grid gap-4 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-6">
           <aside className="rounded-[var(--radius-ui)] border border-line bg-white p-5 shadow-sm sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-coral">
-              {isEn ? "Boost preview" : "Aperçu Boost"}
+              {isEn ? "Premium preview" : "Aperçu Premium"}
             </p>
             <h2 className="mt-2 text-xl font-bold text-ink">
               {isEn ? "AI picks the plan." : "L’IA choisit le plan."}
@@ -246,7 +246,7 @@ function TestModeSwitcherInner({ lang }: { lang: Lang }) {
 
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              {boostExamples.map((example, idx) => (
+              {premiumExamples.map((example, idx) => (
                 <button
                   key={example.id}
                   type="button"
@@ -263,7 +263,7 @@ function TestModeSwitcherInner({ lang }: { lang: Lang }) {
                 </button>
               ))}
             </div>
-            <BoostPlanTicket example={current} isEn={isEn} />
+            <PremiumPlanTicket example={current} isEn={isEn} />
             <Link href={withLang("/download", lang)} className="btn-primary inline-flex w-full sm:w-auto">
               {isEn ? "Get the app" : "Télécharger l’app"}
             </Link>

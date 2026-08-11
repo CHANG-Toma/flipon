@@ -33,7 +33,7 @@ export default function CguPage() {
         <p>
           L’offre <strong className="text-[var(--ink)]">Basique</strong> est
           gratuite et s’appuie sur un catalogue d’idées filtrées. Des offres
-          payantes (ex. Boost) pourront être proposées séparément, avec leurs
+          payantes (ex. Premium) pourront être proposées séparément, avec leurs
           conditions.
         </p>
       </LegalSection>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   LEGAL_CONTACT_EMAIL,
   LegalDoc,
@@ -59,7 +59,7 @@ export default function ConfidentialitePage() {
         <p>
           FlipOn Basique (gratuit) n’utilise pas la géolocalisation ni la météo
           pour générer des idées. Ces traitements pourront s’appliquer
-          uniquement à l’offre Boost, avec information préalable.
+          uniquement à l’offre Premium, avec information préalable.
         </p>
       </LegalSection>
 
