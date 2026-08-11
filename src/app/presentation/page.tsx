@@ -42,7 +42,7 @@ export default async function PresentationPage({
     <main className="safe-bottom bg-[radial-gradient(ellipse_120%_60%_at_50%_-10%,color-mix(in_srgb,var(--coral)_6%,white),transparent_60%)] pb-12 pt-6 sm:pb-20 sm:pt-10">
       <div className="page-gutter mx-auto max-w-4xl">
         <header className="mx-auto max-w-2xl animate-rise text-center">
-          <p className="text-sm font-semibold text-coral">
+          <p className="premium-kicker">
             {isEn ? "Overview" : "Présentation"}
           </p>
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
@@ -65,7 +65,7 @@ export default async function PresentationPage({
 
         <section className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-3 sm:gap-4">
           {cards.map((item) => (
-            <article key={item.title} className="surface bg-white p-4 shadow-sm sm:p-5">
+            <article key={item.title} className="premium-card p-4 sm:p-5">
               <p className="text-sm font-bold text-ink">{item.title}</p>
               <p className="mt-1.5 text-sm leading-relaxed text-ink-soft sm:text-[15px]">
                 {item.body}
@@ -74,7 +74,7 @@ export default async function PresentationPage({
           ))}
         </section>
 
-        <section className="mx-auto mt-8 max-w-2xl rounded-[var(--radius-ui)] border border-line bg-white p-5 text-center shadow-sm sm:mt-10 sm:p-6">
+        <section className="premium-card mx-auto mt-8 max-w-2xl p-5 text-center sm:mt-10 sm:p-6">
           <p className="mt-2 text-[15px] leading-relaxed text-ink-soft sm:text-base">
             {isEn
               ? "FlipOn does not search for the perfect activity. It gives the one your group is ready to do now."

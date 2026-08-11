@@ -47,7 +47,7 @@ export default async function HomePage({
 
       <section className="content-auto page-gutter py-10 sm:py-14">
         <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-3 lg:gap-5">
-          <article className="surface bg-white p-5 shadow-sm lg:col-span-2 sm:p-6">
+          <article className="premium-card lg:col-span-2 p-5 sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-coral">
               {isEn ? "Objective" : "Objectif"}
             </p>
@@ -77,7 +77,7 @@ export default async function HomePage({
             </div>
           </article>
 
-          <aside className="surface flex flex-col bg-white p-5 shadow-sm sm:p-6">
+          <aside className="premium-card flex flex-col p-5 sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
               {isEn ? "Try now" : "Passer à l’action"}
             </p>
@@ -133,9 +133,19 @@ export default async function HomePage({
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3 sm:gap-4">
             {steps.map((item) => (
-              <article key={item.t} className="surface bg-white p-4 shadow-sm sm:p-5">
-                <h3 className="font-bold text-ink">{item.t}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              <article
+                key={item.t}
+                className="premium-card p-4 sm:p-5"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-coral/25 bg-coral/10 px-2 text-xs font-bold text-coral">
+                    {item.t.split(".")[0]}
+                  </span>
+                  <h3 className="text-base font-bold text-ink">
+                    {item.t.replace(/^\d+\.\s*/, "")}
+                  </h3>
+                </div>
+                <p className="mt-2.5 text-sm leading-relaxed text-ink-soft">
                   {item.d}
                 </p>
               </article>
@@ -146,35 +156,66 @@ export default async function HomePage({
 
       <section className="content-auto page-gutter py-10 sm:py-14">
         <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-2 lg:gap-5">
-          <article className="surface bg-white p-5 shadow-sm sm:p-6">
+          <article className="premium-card p-5 sm:p-6">
+            <div
+              className="pointer-events-none absolute right-0 top-0 h-20 w-20 rounded-full bg-coral/10 blur-2xl"
+              aria-hidden
+            />
             <p className="text-xs font-semibold uppercase tracking-wide text-coral">
               {isEn ? "Use cases" : "Pour qui"}
             </p>
+            <h3 className="mt-2 text-lg font-bold tracking-tight text-ink sm:text-xl">
+              {isEn ? "One product, multiple social contexts." : "Un produit, plusieurs contextes sociaux."}
+            </h3>
             <p className="mt-2 text-[15px] leading-relaxed text-ink-soft sm:text-base">
               {isEn
                 ? "Friends, couples, roommates, weekend groups: one refined flow to turn shared intent into a plan."
                 : "Potes, couples, colocs, sorties du week-end : une même expérience, pensée pour transformer une envie commune en vrai plan."}
             </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                isEn ? "Friends" : "Potes",
+                isEn ? "Couples" : "Couples",
+                isEn ? "Roommates" : "Colocs",
+                isEn ? "Weekend plans" : "Sorties week-end",
+              ].map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-line bg-petal px-2.5 py-1 text-[11px] font-semibold text-ink-soft"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           </article>
-          <article className="surface bg-white p-5 shadow-sm sm:p-6">
+          <article className="premium-card p-5 sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-coral">
               {isEn ? "What you get" : "Ce que tu obtiens"}
             </p>
-            <ul className="mt-2 space-y-2 text-sm text-ink-soft">
-              <li>
+            <ul className="mt-3 space-y-2.5 text-sm text-ink-soft">
+              <li className="flex items-start gap-2.5">
+                <span className="mt-[0.38rem] h-1.5 w-1.5 shrink-0 rounded-full bg-coral" />
+                <span>
                 {isEn
                   ? "Setup in under 30 seconds."
                   : "Un cadre défini en moins de 30 secondes."}
+                </span>
               </li>
-              <li>
+              <li className="flex items-start gap-2.5">
+                <span className="mt-[0.38rem] h-1.5 w-1.5 shrink-0 rounded-full bg-coral" />
+                <span>
                 {isEn
                   ? "Private vote without social pressure."
                   : "Un vote privé sans pression sociale."}
+                </span>
               </li>
-              <li>
+              <li className="flex items-start gap-2.5">
+                <span className="mt-[0.38rem] h-1.5 w-1.5 shrink-0 rounded-full bg-coral" />
+                <span>
                 {isEn
                   ? "One clear group result."
                   : "Un résultat de groupe clair."}
+                </span>
               </li>
             </ul>
           </article>

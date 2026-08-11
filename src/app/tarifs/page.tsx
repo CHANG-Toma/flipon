@@ -93,7 +93,7 @@ export default async function TarifsPage({
     <main className="safe-bottom overflow-x-hidden pb-14 pt-6 sm:pb-20 sm:pt-10">
       <div className="page-gutter mx-auto max-w-5xl">
         <header className="mx-auto max-w-2xl animate-rise text-center">
-          <p className="text-sm font-semibold text-coral">
+          <p className="premium-kicker">
             {isEn ? "Pricing" : "Tarifs"}
           </p>
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-ink sm:text-5xl">
@@ -117,7 +117,7 @@ export default async function TarifsPage({
         </header>
 
         <section className="mt-8 grid items-stretch gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-5">
-          <article className="flex h-full flex-col rounded-[var(--radius-ui)] border border-line bg-white p-5 shadow-sm sm:p-6">
+          <article className="premium-card flex h-full flex-col p-5 sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
               {isEn ? "Free" : "Gratuit"}
             </p>

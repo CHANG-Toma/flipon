@@ -145,7 +145,7 @@ export default async function DownloadPage({
     <main className="safe-bottom bg-[radial-gradient(ellipse_120%_65%_at_50%_-10%,color-mix(in_srgb,var(--coral)_8%,white),transparent_60%)] pb-12 pt-6 sm:pb-20 sm:pt-10">
       <div className="page-gutter mx-auto max-w-5xl">
         <header className="mx-auto max-w-2xl animate-rise text-center">
-          <p className="text-sm font-semibold text-coral">
+          <p className="premium-kicker">
             {isEn ? "Download" : "Téléchargement"}
           </p>
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-ink sm:text-5xl">
@@ -166,7 +166,7 @@ export default async function DownloadPage({
           {platforms.map((platform) => (
             <article
               key={platform.name}
-              className="surface relative flex flex-col overflow-hidden bg-white p-5 shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:border-coral/35 sm:p-6"
+              className="premium-card relative flex flex-col p-5 transition-transform duration-200 hover:-translate-y-0.5 hover:border-coral/35 sm:p-6"
             >
               <div
                 className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${platform.accent} opacity-80`}
@@ -230,7 +230,7 @@ export default async function DownloadPage({
           ))}
         </section>
 
-        <section className="mx-auto mt-8 max-w-2xl rounded-[var(--radius-ui)] border border-line bg-white p-5 text-center shadow-sm sm:mt-10 sm:p-6">
+        <section className="premium-soft mx-auto mt-8 max-w-2xl p-5 text-center sm:mt-10 sm:p-6">
           <p className="text-sm leading-relaxed text-ink-soft">
             {isEn
               ? "Want to try now? The web version is already available."
