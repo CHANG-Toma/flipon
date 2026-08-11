@@ -4,11 +4,12 @@ const globalForPrisma = globalThis as typeof globalThis & {
   __fliponPrisma?: PrismaClient;
 };
 
+// Permet de vérifier si la base de données est configurée
 export function hasDatabase() {
   return Boolean(process.env.DATABASE_URL?.trim());
 }
 
-/** Singleton Prisma — réutilise la connexion en hot-reload Next.js. */
+// Permet de récupérer le singleton Prisma pour réutiliser la connexion en hot-reload Next.js.
 export function getPrisma(): PrismaClient | null {
   if (!hasDatabase()) return null;
   if (!globalForPrisma.__fliponPrisma) {

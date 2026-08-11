@@ -15,6 +15,7 @@ export function withCors(res: NextResponse) {
   return res;
 }
 
+// Permet de gérer les requêtes CORS
 export function corsPreflight() {
   return withCors(new NextResponse(null, { status: 204 }));
 }

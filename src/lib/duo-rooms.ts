@@ -34,6 +34,7 @@ const globalStore = globalThis as typeof globalThis & {
   __fliponRedisReady?: Promise<RedisClientType | null>;
 };
 
+// Permet de stocker les rooms en mémoire
 function memoryRooms(): Map<string, DuoRoom> {
   if (!globalStore.__fliponDuoRooms) {
     globalStore.__fliponDuoRooms = new Map();
@@ -41,6 +42,7 @@ function memoryRooms(): Map<string, DuoRoom> {
   return globalStore.__fliponDuoRooms;
 }
 
+// Permet de récupérer l'url du redis pour le stockage des rooms
 function redisUrl(): string | undefined {
   return (
     process.env.REDIS_URL ||
@@ -50,11 +52,12 @@ function redisUrl(): string | undefined {
   );
 }
 
-/** True when a shared store is available (required on Vercel multi-instance). */
+// Permet de vérifier si un store partagé est disponible (requis sur Vercel multi-instance).
 export function hasDurableStore(): boolean {
   return Boolean(redisUrl()) || Boolean(process.env.DATABASE_URL?.trim());
 }
 
+// Permet de récupérer le client redis pour le stockage des rooms
 async function getRedis(): Promise<RedisClientType | null> {
   const url = redisUrl();
   if (!url) return null;
@@ -63,6 +66,7 @@ async function getRedis(): Promise<RedisClientType | null> {
     return globalStore.__fliponRedisClient;
   }
 
+  // Permet de vérifier si le client redis est prêt
   if (!globalStore.__fliponRedisReady) {
     globalStore.__fliponRedisReady = (async () => {
       const client = createClient({ url }) as RedisClientType;
@@ -82,10 +86,12 @@ async function getRedis(): Promise<RedisClientType | null> {
   return globalStore.__fliponRedisReady;
 }
 
+// Permet de récupérer la clé de la room pour le stockage dans redis
 function roomKey(id: string) {
   return `${KEY_PREFIX}${id.toUpperCase()}`;
 }
 
+// Permet de générer un code pour la room
 function makeCode(): string {
   let code = "";
   for (let i = 0; i < 4; i++) {
@@ -94,10 +100,12 @@ function makeCode(): string {
   return code;
 }
 
+// Permet de vérifier si la room a dépassé l'âge maximum de 2 jours
 function isPastMaxAge(room: DuoRoom): boolean {
   return Date.now() - room.createdAt > MAX_AGE_MS;
 }
 
+// Permet de récupérer le TTL pour la room
 function ttlFor(room: DuoRoom): number {
   const ageLeftSec = Math.floor(
     (room.createdAt + MAX_AGE_MS - Date.now()) / 1000,
@@ -109,6 +117,7 @@ function ttlFor(room: DuoRoom): number {
   return Math.min(ACTIVE_TTL_SEC, ageLeftSec);
 }
 
+// Permet de purger les rooms expirées de la mémoire
 function purgeExpiredMemory() {
   const now = Date.now();
   const map = memoryRooms();
@@ -126,6 +135,7 @@ function purgeExpiredMemory() {
   }
 }
 
+// Permet de supprimer la clé de la room dans redis
 async function deleteRoomKey(id: string): Promise<void> {
   const code = id.toUpperCase();
   const redis = await getRedis();
@@ -136,6 +146,7 @@ async function deleteRoomKey(id: string): Promise<void> {
   memoryRooms().delete(code);
 }
 
+// Permet de sauvegarder la room dans le store
 async function saveRoom(room: DuoRoom): Promise<void> {
   if (isPastMaxAge(room)) {
     await deleteRoomKey(room.id);
@@ -152,13 +163,14 @@ async function saveRoom(room: DuoRoom): Promise<void> {
   memoryRooms().set(room.id, room);
 }
 
-/** Restaure une room (ex. depuis Postgres) si absente du store hot. */
+// Permet de restaurer une room (ex. depuis Postgres) si absente du store hot.
 export async function saveRoomIfMissing(room: DuoRoom): Promise<void> {
   const existing = await loadRoom(room.id);
   if (existing) return;
   await saveRoom(room);
 }
 
+// Permet de charger une room depuis le store
 async function loadRoom(id: string): Promise<DuoRoom | undefined> {
   const code = id.toUpperCase();
   const redis = await getRedis();
@@ -191,6 +203,7 @@ async function loadRoom(id: string): Promise<DuoRoom | undefined> {
   return memoryRooms().get(code);
 }
 
+// Permet de créer une room
 export async function createRoom(constraints: Constraints): Promise<DuoRoom> {
   let id = makeCode();
   for (let i = 0; i < 8; i++) {
@@ -214,10 +227,12 @@ export async function createRoom(constraints: Constraints): Promise<DuoRoom> {
   return room;
 }
 
+// Permet de récupérer une room
 export async function getRoom(id: string): Promise<DuoRoom | undefined> {
   return loadRoom(id);
 }
 
+// Permet de rejoindre une room
 export async function joinRoom(id: string): Promise<DuoRoom | null> {
   const room = await loadRoom(id);
   if (!room) return null;
@@ -226,6 +241,7 @@ export async function joinRoom(id: string): Promise<DuoRoom | null> {
   return room;
 }
 
+// Permet de définir le statut de ready pour un participant
 export async function setReady(
   id: string,
   role: DuoRole,

@@ -11,6 +11,7 @@ import { getPrisma } from "@/lib/db";
 
 const ACTIVE_MS = 24 * 60 * 60 * 1000;
 
+// Permet de sauvegarder une session créée
 export async function persistSessionCreated(input: {
   room: DuoRoom;
   type?: "DUO" | "GROUPE";
@@ -52,6 +53,7 @@ export async function persistSessionCreated(input: {
   });
 }
 
+// Permet de sauvegarder un participant qui a rejoint la session
 export async function persistGuestJoined(input: {
   sessionId: string;
   deviceKey: string;
@@ -79,6 +81,7 @@ export async function persistGuestJoined(input: {
   });
 }
 
+// Permet de sauvegarder le statut d'une session
 export async function persistSessionStatus(
   sessionId: string,
   status: SessionStatus,
@@ -91,6 +94,7 @@ export async function persistSessionStatus(
   });
 }
 
+// Permet de sauvegarder les votes et de compléter la session si nécessaire
 export async function persistVotesAndMaybeComplete(input: {
   room: DuoRoom;
   likedIds: string[];
@@ -190,6 +194,7 @@ export async function persistVotesAndMaybeComplete(input: {
   }
 }
 
+// Permet de sauvegarder une session fermée
 export async function persistSessionClosed(sessionId: string) {
   const prisma = getPrisma();
   if (!prisma) return;
@@ -199,6 +204,7 @@ export async function persistSessionClosed(sessionId: string) {
   });
 }
 
+// Permet de charger une room depuis la base de données
 export async function loadRoomFromPostgres(
   sessionId: string,
 ): Promise<DuoRoom | null> {

@@ -1,14 +1,17 @@
 import { createClerkClient, verifyToken } from "@clerk/backend";
 import { getPrisma } from "@/lib/db";
 
+// Permet de récupérer la clé secrète de Clerk
 export function getClerkSecretKey() {
   return process.env.CLERK_SECRET_KEY?.trim() || "";
 }
 
+// Permet de vérifier si le serveur Clerk est configuré
 export function isClerkServerConfigured() {
   return Boolean(getClerkSecretKey());
 }
 
+// Permet de récupérer l'ID de l'utilisateur authentifié
 export async function getAuthUserId(req: Request): Promise<string | null> {
   const secret = getClerkSecretKey();
   if (!secret) return null;
@@ -25,6 +28,7 @@ export async function getAuthUserId(req: Request): Promise<string | null> {
   }
 }
 
+// Permet de mettre à jour ou créer un utilisateur depuis Clerk
 export async function upsertUserFromClerk(input: {
   clerkId: string;
   email?: string | null;
@@ -47,6 +51,7 @@ export async function upsertUserFromClerk(input: {
   });
 }
 
+// Permet de résoudre un utilisateur depuis la base de données
 export async function resolveDbUser(req: Request) {
   const clerkId = await getAuthUserId(req);
   if (!clerkId) return null;
@@ -57,7 +62,7 @@ export async function resolveDbUser(req: Request) {
   const existing = await prisma.user.findUnique({ where: { clerkId } });
   if (existing) return existing;
 
-  // Best-effort profile from Clerk if secret configured
+  // Tentative de récupération du profil depuis Clerk si la clé secrète est configurée
   try {
     const client = createClerkClient({ secretKey: getClerkSecretKey() });
     const user = await client.users.getUser(clerkId);
@@ -74,6 +79,7 @@ export async function resolveDbUser(req: Request) {
   }
 }
 
+// Permet de lire la clé de l'appareil
 export function readDeviceKey(req: Request) {
   const fromHeader = req.headers.get("x-flipon-device-key")?.trim();
   if (fromHeader && fromHeader.length >= 8 && fromHeader.length <= 64) {
