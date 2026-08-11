@@ -17,6 +17,11 @@ const links = [
     label: { fr: "Télécharger", en: "Download" },
     short: { fr: "Téléch.", en: "App" },
   },
+  {
+    href: "/join",
+    label: { fr: "Rejoindre", en: "Join" },
+    short: { fr: "Rejoindre", en: "Join" },
+  },
   { href: "/test", label: { fr: "Essayer", en: "Try" }, short: { fr: "Essayer", en: "Try" } },
 ];
 

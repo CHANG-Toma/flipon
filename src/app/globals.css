@@ -78,6 +78,65 @@ body {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
+.demo-shell {
+  filter: drop-shadow(0 24px 48px color-mix(in srgb, var(--ink) 14%, transparent));
+}
+
+.demo-shell-body {
+  border-radius: 2rem;
+  border: 3px solid #1a1a1a;
+  background: #1a1a1a;
+  padding: 0.55rem;
+}
+
+.demo-shell-notch {
+  margin: 0 auto 0.45rem;
+  height: 0.35rem;
+  width: 4.5rem;
+  border-radius: 999px;
+  background: #2a2a2a;
+}
+
+.demo-shell-screen {
+  max-height: min(78svh, 720px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 1.45rem;
+  background: var(--background);
+  padding: 1rem 0.85rem 1.25rem;
+  scrollbar-width: thin;
+}
+
+@media (min-width: 640px) {
+  .demo-shell-screen {
+    padding: 1.15rem 1rem 1.35rem;
+  }
+}
+
+.test-toolbar-tab {
+  position: relative;
+  padding: 0.35rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  transition: color 0.15s ease;
+}
+
+.test-toolbar-tab[data-active="true"] {
+  color: var(--ink);
+}
+
+.test-toolbar-tab[data-active="true"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.35rem;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--coral);
+}
+
 .vote-dock {
   position: sticky;
   bottom: 0;
@@ -90,6 +149,120 @@ body {
     var(--background) 55%,
     color-mix(in srgb, var(--background) 70%, transparent)
   );
+}
+
+/* Page Essayer (/test) */
+.test-flow-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: white;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.test-segment {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  border-radius: var(--radius-ui);
+  border: 1px solid var(--line);
+  background: white;
+  padding: 0.35rem;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.test-segment-btn {
+  min-height: 3rem;
+  border-radius: calc(var(--radius-ui) - 4px);
+  border: 1px solid transparent;
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.test-segment-btn[data-active="true"] {
+  border-color: color-mix(in srgb, var(--coral) 35%, var(--line));
+  background: color-mix(in srgb, var(--coral) 8%, white);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--coral) 12%, transparent);
+}
+
+.test-mode-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-ui);
+  border: 1px solid var(--line);
+  background: white;
+  padding: 1rem 1.1rem;
+  text-align: left;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 4%, transparent);
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.test-mode-card:hover {
+  border-color: color-mix(in srgb, var(--coral) 45%, var(--line));
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--coral) 10%, transparent);
+}
+
+.test-mode-card:active {
+  transform: scale(0.99);
+}
+
+.test-mode-card[data-highlight="true"] {
+  border-color: color-mix(in srgb, var(--coral) 40%, var(--line));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--coral) 6%, white),
+    white 55%
+  );
+}
+
+.test-status-dot {
+  display: inline-block;
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.test-status-dot[data-state="ready"] {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #22c55e 22%, transparent);
+}
+
+.test-status-dot[data-state="waiting"] {
+  background: var(--coral);
+  animation: test-pulse 1.4s ease-in-out infinite;
+}
+
+.test-status-dot[data-state="idle"] {
+  background: color-mix(in srgb, var(--ink-soft) 40%, var(--line));
+}
+
+@keyframes test-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .test-status-dot[data-state="waiting"] {
+    animation: none;
+  }
 }
 
 ::selection {

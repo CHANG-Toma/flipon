@@ -95,9 +95,16 @@ export default async function HomePage({
                 {isEn ? "Start demo" : "Lancer la démo"}
               </Link>
               <Link
-                href={withLang("/tarifs", lang)}
+                href={withLang("/join", lang)}
                 prefetch
                 className="btn-secondary w-full"
+              >
+                {isEn ? "Join with a code" : "Rejoindre avec un code"}
+              </Link>
+              <Link
+                href={withLang("/tarifs", lang)}
+                prefetch
+                className="w-full text-center text-sm font-medium text-ink-soft hover:text-ink"
               >
                 {isEn ? "Compare plans" : "Comparer les offres"}
               </Link>
@@ -145,8 +152,8 @@ export default async function HomePage({
             </p>
             <p className="mt-2 text-[15px] leading-relaxed text-ink-soft sm:text-base">
               {isEn
-                ? "Friends, couples, roommates, weekend groups: same product. “Date” only changes suggestion style."
-                : "Potes, couple, colloc, sorties du week-end : même produit. « Date » change seulement le style des idées."}
+                ? "Friends, couples, roommates, weekend groups: one refined flow to turn shared intent into a plan."
+                : "Potes, couples, colocs, sorties du week-end : une même expérience, pensée pour transformer une envie commune en vrai plan."}
             </p>
           </article>
           <article className="surface bg-white p-5 shadow-sm sm:p-6">

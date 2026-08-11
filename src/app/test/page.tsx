@@ -22,7 +22,7 @@ export default async function TestPage({
 }) {
   const lang = getLang(await searchParams);
   return (
-    <main className="safe-bottom bg-[radial-gradient(ellipse_120%_60%_at_50%_-10%,color-mix(in_srgb,var(--coral)_7%,white),transparent_60%)] pb-10 pt-5 sm:pb-20 sm:pt-8">
+    <main className="safe-bottom bg-[radial-gradient(ellipse_120%_60%_at_50%_-10%,color-mix(in_srgb,var(--coral)_7%,white),transparent_60%)] pb-12 pt-6 sm:pb-20 sm:pt-10">
       <div className="page-gutter mx-auto max-w-5xl">
         <TestModeSwitcher lang={lang} />
       </div>
