@@ -15,8 +15,8 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-/** OSM + Gemini peuvent dépasser 10s */
-export const maxDuration = 30;
+/** OSM + Gemini : timeout réaliste serveur */
+export const maxDuration = 45;
 
 export async function OPTIONS() {
   return corsPreflight();
@@ -58,19 +58,17 @@ export async function POST(req: NextRequest) {
   const context = normalizeContextHint(body.context);
 
   let premiumDeck = false;
-  if (context) {
-    if (user) {
-      const view = await getSubscriptionViewForClerkId(user.clerkId);
-      premiumDeck = Boolean(view?.isPremium);
-    }
-    // Dev DX : contexte envoyé + clé IA / OSM sans abo factice
-    if (
-      !premiumDeck &&
-      isDevPremiumAllowed() &&
-      process.env.ALLOW_DEV_AI_DECK !== "0"
-    ) {
-      premiumDeck = true;
-    }
+  if (user) {
+    const view = await getSubscriptionViewForClerkId(user.clerkId);
+    premiumDeck = Boolean(view?.isPremium);
+  }
+  // Dev DX : autorise le deck IA même sans contexte GPS local.
+  if (
+    !premiumDeck &&
+    isDevPremiumAllowed() &&
+    process.env.ALLOW_DEV_AI_DECK !== "0"
+  ) {
+    premiumDeck = true;
   }
 
   const room = await createRoom(

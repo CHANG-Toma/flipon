@@ -44,7 +44,21 @@ function shuffleInPlace<T>(arr: T[]): T[] {
 }
 
 function geminiModel(): string {
-  return process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash-lite";
+  return process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash";
+}
+
+function geminiModelCandidates(): string[] {
+  const preferred = geminiModel();
+  const fallbacks = ["gemini-2.0-flash", "gemini-1.5-flash"];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const model of [preferred, ...fallbacks]) {
+    const key = model.trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(key);
+  }
+  return out;
 }
 
 const ANGLE_HINTS = [
@@ -135,61 +149,66 @@ async function callGemini(
 ): Promise<Plan[]> {
   const key = process.env.GEMINI_API_KEY?.trim();
   if (!key) return [];
+  for (const model of geminiModelCandidates()) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 18000);
 
-  const model = geminiModel();
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 12000);
-
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      signal: controller.signal,
-      body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: buildPrompt(constraints, context, pois, seed) }],
-          },
-        ],
-        generationConfig: {
-          temperature: 1.05,
-          topP: 0.95,
-          maxOutputTokens: 8192,
-          responseMimeType: "application/json",
-        },
-      }),
-    });
-
-    if (!res.ok) {
-      return [];
-    }
-
-    const data = (await res.json()) as {
-      candidates?: Array<{
-        content?: { parts?: Array<{ text?: string }> };
-      }>;
-    };
-    const text = data.candidates?.[0]?.content?.parts
-      ?.map((p) => p.text || "")
-      .join("")
-      .trim();
-    if (!text) return [];
-
-    let parsed: unknown;
     try {
-      parsed = JSON.parse(text);
-    } catch {
-      const match = text.match(/\{[\s\S]*\}/);
-      if (!match) return [];
-      parsed = JSON.parse(match[0]);
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: buildPrompt(constraints, context, pois, seed) }],
+            },
+          ],
+          generationConfig: {
+            temperature: 1.05,
+            topP: 0.95,
+            maxOutputTokens: 4096,
+            responseMimeType: "application/json",
+          },
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        console.error(`[FlipOn] Gemini ${model} → HTTP ${res.status}: ${body.slice(0, 400)}`);
+        // 404 = modèle indisponible pour ce compte/projet -> on tente le suivant.
+        if (res.status === 404) continue;
+        return [];
+      }
+
+      const data = (await res.json()) as {
+        candidates?: Array<{
+          content?: { parts?: Array<{ text?: string }> };
+        }>;
+      };
+      const text = data.candidates?.[0]?.content?.parts
+        ?.map((p) => p.text || "")
+        .join("")
+        .trim();
+      if (!text) continue;
+
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        const match = text.match(/\{[\s\S]*\}/);
+        if (!match) continue;
+        parsed = JSON.parse(match[0]);
+      }
+      const plans = normalizeAiDeck(parsed, constraints);
+      if (plans.length > 0) return plans;
+    } finally {
+      clearTimeout(timer);
     }
-    return normalizeAiDeck(parsed, constraints);
-  } finally {
-    clearTimeout(timer);
   }
+  return [];
 }
 
 async function callGroq(
@@ -205,7 +224,7 @@ async function callGroq(
     process.env.GROQ_MODEL?.trim() || "llama-3.1-8b-instant";
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 12000);
+  const timer = setTimeout(() => controller.abort(), 15000);
 
   try {
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {

@@ -500,7 +500,6 @@ function VoteCard({
   progress,
   fly,
   onVote,
-  privateLabel,
   lang,
 }: {
   current: Plan;
@@ -509,7 +508,6 @@ function VoteCard({
   progress: number;
   fly: "left" | "right" | null;
   onVote: (yes: boolean) => void;
-  privateLabel?: string;
   lang: Lang;
 }) {
   const isEn = lang === "en";
@@ -1170,11 +1168,6 @@ export function FlipDemo({ lang = "fr", compact = false }: { lang?: Lang; compac
             progress={progress}
             fly={fly}
             onVote={voteSolo}
-            privateLabel={
-              isEn
-                ? `Setup ${vibeLabel(constraints.vibe)}`
-                : `Cadre ${vibeLabel(constraints.vibe)}`
-            }
             lang={lang}
           />
         )}
@@ -1547,7 +1540,6 @@ export function FlipDemo({ lang = "fr", compact = false }: { lang?: Lang; compac
           progress={progress}
           fly={fly}
           onVote={voteDuo}
-          privateLabel={isEn ? "partner cannot see your choices" : "l’autre ne voit pas vos choix"}
           lang={lang}
         />
       )}

@@ -109,6 +109,23 @@ function makeCode(): string {
   return code;
 }
 
+function fallbackMomentFromNow(): ContextHint["moment"] {
+  const hour = new Date().getHours();
+  if (hour < 6) return "night";
+  if (hour < 12) return "morning";
+  if (hour < 18) return "afternoon";
+  if (hour < 22) return "evening";
+  return "night";
+}
+
+function ensurePremiumContext(context?: ContextHint | null): ContextHint {
+  if (context) return context;
+  return {
+    weather: "unknown",
+    moment: fallbackMomentFromNow(),
+  };
+}
+
 // Permet de vérifier si la room a dépassé l'âge maximum de 2 jours
 function isPastMaxAge(room: DuoRoom): boolean {
   return Date.now() - room.createdAt > MAX_AGE_MS;
@@ -228,8 +245,11 @@ export async function createRoom(
   let deck: Plan[];
   let deckSource: DeckSource = "catalogue";
 
-  if (opts?.premiumDeck && context) {
-    const generated = await generatePremiumDeck(constraints, context);
+  if (opts?.premiumDeck) {
+    const generated = await generatePremiumDeck(
+      constraints,
+      ensurePremiumContext(context),
+    );
     deck = generated.plans;
     deckSource = generated.source;
   } else {

@@ -1050,3 +1050,388 @@ body {
     transform: none;
   }
 }
+
+/* ── Marketing iPhone mockups (GoWod-style) ── */
+
+.marketing-phone {
+  width: min(100%, 220px);
+  filter: drop-shadow(0 28px 48px rgb(0 0 0 / 45%));
+}
+
+.marketing-phone-body {
+  border-radius: 2.35rem;
+  border: 2.5px solid #1a1a1a;
+  background: linear-gradient(155deg, #2a2a2a 0%, #0f0f0f 55%, #050505 100%);
+  padding: 0.45rem 0.45rem 0.5rem;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 8%),
+    inset 0 12px 24px rgb(255 255 255 / 3%);
+}
+
+.marketing-phone-island {
+  position: absolute;
+  left: 50%;
+  top: 0.55rem;
+  z-index: 3;
+  height: 1.15rem;
+  width: 4.2rem;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #000;
+}
+
+.marketing-phone-body {
+  position: relative;
+}
+
+.marketing-phone-screen {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.85rem;
+  background: #090b12;
+  min-height: 420px;
+}
+
+.marketing-phone-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.85rem 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: rgb(245 247 251 / 92%);
+}
+
+.marketing-phone-signal {
+  width: 2.75rem;
+  height: 0.55rem;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    rgb(245 247 251 / 90%) 0 72%,
+    rgb(245 247 251 / 25%) 72% 100%
+  );
+}
+
+.marketing-phone-home {
+  position: absolute;
+  bottom: 0.35rem;
+  left: 50%;
+  width: 5rem;
+  height: 0.22rem;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgb(245 247 251 / 35%);
+}
+
+.preview-app {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-height: 360px;
+  padding: 0 0.75rem 1.75rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.preview-kicker {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(154 163 183 / 90%);
+}
+
+.preview-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.preview-title-lg {
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.preview-title {
+  margin-top: 0.15rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.preview-blurb {
+  margin-top: 0.15rem;
+  font-size: 0.68rem;
+}
+
+.preview-card {
+  margin-top: 0.15rem;
+  border: 1px solid;
+  border-radius: 0.85rem;
+  padding: 0.65rem 0.7rem;
+}
+
+.preview-tag {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.preview-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: rgb(154 163 183 / 95%);
+}
+
+.preview-meta span {
+  border-radius: 999px;
+  background: rgb(255 255 255 / 6%);
+  padding: 0.15rem 0.4rem;
+}
+
+.preview-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.preview-btn-secondary,
+.preview-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  border-radius: 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.preview-btn-secondary {
+  border: 1px solid;
+}
+
+.preview-btn-primary {
+  color: #fff;
+}
+
+.preview-btn-block {
+  display: flex;
+  margin-top: 0.35rem;
+  min-height: 2.15rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.preview-hint {
+  margin-top: 0.15rem;
+  font-size: 0.58rem;
+  text-align: center;
+}
+
+.preview-context {
+  border: 1px solid;
+  border-radius: 0.75rem;
+  padding: 0.55rem 0.65rem;
+}
+
+.preview-context-title {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.preview-context-text {
+  margin-top: 0.2rem;
+  font-size: 0.65rem;
+}
+
+.preview-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.preview-chip {
+  border: 1px solid;
+  border-radius: 999px;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+}
+
+.preview-roadmap {
+  margin-top: 0.25rem;
+  border: 1px solid;
+  border-radius: 0.85rem;
+  padding: 0.55rem 0.65rem;
+}
+
+.preview-roadmap-title {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgb(154 163 183 / 90%);
+}
+
+.preview-roadmap-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.45rem;
+  align-items: start;
+  margin-top: 0.45rem;
+}
+
+.preview-roadmap-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-top: 0.2rem;
+  border-radius: 999px;
+}
+
+.preview-roadmap-phase {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.preview-roadmap-step {
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.preview-roadmap-min {
+  font-size: 0.58rem;
+  font-weight: 600;
+}
+
+.phone-showcase {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
+}
+
+.phone-showcase--hero {
+  min-height: clamp(380px, 52vw, 520px);
+  padding: 0.5rem 0 1rem;
+}
+
+.phone-showcase--section {
+  flex-direction: column;
+  gap: 2.5rem;
+  padding: 1rem 0 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .phone-showcase--section {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 0;
+    min-height: 460px;
+  }
+}
+
+.phone-showcase-slot {
+  position: relative;
+  margin: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease;
+}
+
+.phone-showcase--hero .phone-showcase-slot--back {
+  transform: rotateY(14deg) rotateX(6deg) translateX(28px) translateY(12px)
+    translateZ(-48px);
+}
+
+.phone-showcase--hero .phone-showcase-slot--front {
+  transform: rotateY(-10deg) rotateX(-4deg) translateX(-36px) translateY(-8px)
+    translateZ(32px);
+}
+
+.phone-showcase--section .phone-showcase-slot--back {
+  transform: rotateY(10deg) rotateX(4deg) translateX(18px) translateZ(-24px);
+}
+
+.phone-showcase--section .phone-showcase-slot--center {
+  transform: translateY(-12px) translateZ(8px);
+}
+
+.phone-showcase--section .phone-showcase-slot--front {
+  transform: rotateY(-10deg) rotateX(-3deg) translateX(-18px) translateZ(24px);
+}
+
+@media (max-width: 767px) {
+  .phone-showcase--hero .phone-showcase-slot--back,
+  .phone-showcase--hero .phone-showcase-slot--front {
+    transform: none;
+  }
+
+  .phone-showcase--hero {
+    flex-direction: column;
+    gap: 1.25rem;
+    min-height: auto;
+  }
+
+  .phone-showcase--section .phone-showcase-slot--back,
+  .phone-showcase--section .phone-showcase-slot--center,
+  .phone-showcase--section .phone-showcase-slot--front {
+    transform: none;
+  }
+}
+
+.phone-showcase-label {
+  position: absolute;
+  top: -1.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--coral);
+}
+
+.phone-showcase-caption {
+  margin: 0.75rem auto 0;
+  max-width: 14rem;
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.phone-showcase--hero .marketing-phone {
+  width: min(100%, 240px);
+}
+
+@media (min-width: 640px) {
+  .phone-showcase--hero .marketing-phone {
+    width: min(100%, 260px);
+  }
+
+  .marketing-phone-screen {
+    min-height: 440px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phone-showcase-slot {
+    transition: none;
+  }
+}

@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { AnimatedHeading } from "@/components/AnimatedHeading";
 import { LandingHero } from "@/components/LandingHero";
+import { AppPhoneShowcase } from "@/components/marketing/AppPhoneShowcase";
 import { getLang, withLang } from "@/lib/i18n";
 
 const WaitlistForm = dynamic(
@@ -151,6 +152,27 @@ export default async function HomePage({
               </article>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="content-auto page-gutter py-12 sm:py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-wide text-coral">
+              {isEn ? "In the app" : "Dans l’app"}
+            </p>
+            <h2 className="mt-2 text-xl font-bold tracking-tight text-ink sm:text-3xl">
+              {isEn
+                ? "See exactly what you get before you start."
+                : "Vois concrètement ce que tu obtiens avant de commencer."}
+            </h2>
+            <p className="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-base">
+              {isEn
+                ? "Setup, private vote, then one shared plan with a step-by-step roadmap."
+                : "Cadre, vote privé, puis un plan commun avec feuille de route."}
+            </p>
+          </div>
+          <AppPhoneShowcase lang={lang} variant="section" className="mt-10" />
         </div>
       </section>
 

@@ -1,5 +1,5 @@
 /**
- * Validation / normalisation d’un deck Plan issu de l’IA ou des POIs.
+ * Validation / normalisation d'un deck Plan issu de l'IA ou des POIs.
  */
 import type {
   Constraints,
@@ -107,7 +107,7 @@ export function normalizeAiPlan(
     : constraints.energy;
 
   const durationCap = durationToMin(constraints.duration);
-  const durationMin =
+  const durationMinVal =
     typeof o.durationMin === "number" && Number.isFinite(o.durationMin)
       ? Math.min(durationCap + 30, Math.max(20, Math.round(o.durationMin)))
       : Math.min(durationCap, 90);
@@ -127,7 +127,7 @@ export function normalizeAiPlan(
     blurb,
     steps,
     roadmap,
-    durationMin,
+    durationMin: durationMinVal,
     budgetMax,
     energy,
     place,
@@ -162,13 +162,13 @@ export function normalizeAiDeck(
   return out;
 }
 
-/** Filet sans IA : idées ancrées sur de vrais POIs, templates variés. */
+/** Filet sans IA : idées ancrées sur de vrais POIs, adaptées à la catégorie. */
 export function plansFromPois(
   pois: { name: string; category: string }[],
   constraints: Constraints,
   cityLabel: string,
 ): Plan[] {
-  const placeDefault =
+  const placeDefault: Plan["place"] =
     constraints.place === "dedans"
       ? "dedans"
       : constraints.place === "dehors"
@@ -176,14 +176,10 @@ export function plansFromPois(
         : "dehors";
 
   const indoorCats = new Set([
-    "café",
-    "restaurant",
-    "bar",
-    "cinéma",
-    "musée",
-    "bibliothèque",
-    "boulangerie",
+    "café", "restaurant", "bar", "cinéma", "musée", "bibliothèque", "boulangerie",
   ]);
+  const foodCats = new Set(["café", "restaurant", "bar", "boulangerie"]);
+  const cultureCats = new Set(["musée", "bibliothèque", "cinéma", "attraction"]);
 
   type Tpl = {
     title: string;
@@ -194,167 +190,87 @@ export function plansFromPois(
     place: Plan["place"];
   };
 
-  const builders: Array<(p: { name: string; category: string }) => Tpl> = [
-    (p) => ({
-      title: `Escapade express : ${p.name}`,
-      blurb: `Un vrai spot (${p.category}) près de ${cityLabel}, rythme court et concret.`,
-      steps: [
-        `Te rendre à ${p.name}`,
-        "Poser les téléphones 25 min",
-        "Choisir 1 moment à prolonger ou à refaire",
-      ],
+  function tplForPoi(p: { name: string; category: string }): Tpl {
+    if (foodCats.has(p.category)) {
+      return {
+        title: `Dégustation à ${p.name}`,
+        blurb: `Goûter le meilleur de ${p.name} : commander un truc chacun, échanger et noter.`,
+        steps: [`Arriver à ${p.name}`, "Commander chacun un truc différent", "Goûter les deux, noter sur 10"],
+        roadmap: [
+          { phase: "Avant", title: "Choisir le créneau", detail: `Se retrouver à ${p.name} à l'heure qui arrange.`, minutes: 5 },
+          { phase: "Sur place", title: "Commander", detail: "Chacun choisit un truc différent — pas le même !", minutes: 10 },
+          { phase: "Sur place", title: "Dégustation croisée", detail: "Échanger les assiettes / verres, goûter et noter sur 10.", minutes: 25 },
+          { phase: "Après", title: "Verdict", detail: "Élire le gagnant. Photo du plat primé.", minutes: 5 },
+        ],
+        category: "food",
+        place: "dedans",
+      };
+    }
+    if (cultureCats.has(p.category)) {
+      return {
+        title: `Culture flash : ${p.name}`,
+        blurb: `Visite rapide de ${p.name} avec un défi : chacun choisit son coup de cœur.`,
+        steps: [`Entrer à ${p.name}`, "Se séparer 15 min, chacun explore", "Se retrouver : présenter son coup de cœur"],
+        roadmap: [
+          { phase: "Avant", title: "Vérifier horaires", detail: `Confirmer que ${p.name} est ouvert.`, minutes: 5 },
+          { phase: "Sur place", title: "Exploration solo", detail: "Chacun son chemin pendant 15–20 min.", minutes: 20 },
+          { phase: "Sur place", title: "Pitch coup de cœur", detail: "Se retrouver, chacun décrit sa trouvaille préférée.", minutes: 10 },
+          { phase: "Après", title: "Débrief café", detail: "Café en sortant pour en reparler.", minutes: 15 },
+        ],
+        category: "culture",
+        place: "dedans",
+      };
+    }
+    if (p.category === "parc") {
+      return {
+        title: `Session plein air : ${p.name}`,
+        blurb: `Profiter de ${p.name} avec une vraie activité — pas juste marcher.`,
+        steps: [`Rendez-vous à ${p.name}`, "Choisir : pique-nique, frisbee ou jeu de cartes", "Timer 1h sans téléphone"],
+        roadmap: [
+          { phase: "Avant", title: "Préparer le matos", detail: "Couverture, snacks, jeu de cartes ou ballon.", minutes: 10 },
+          { phase: "Sur place", title: "Installation", detail: `Trouver un coin tranquille dans ${p.name}.`, minutes: 10 },
+          { phase: "Sur place", title: "Activité principale", detail: "Jouer, manger ou lire ensemble.", minutes: 45 },
+          { phase: "Après", title: "Note de sortie", detail: "L'endroit vaut un retour ? Se donner une note.", minutes: 5 },
+        ],
+        category: "plein air",
+        place: "dehors",
+      };
+    }
+    if (p.category === "sport") {
+      return {
+        title: `Défi sportif : ${p.name}`,
+        blurb: `Une séance à ${p.name} — on transpire un peu, on rigole beaucoup.`,
+        steps: [`Se retrouver à ${p.name}`, "Choisir une activité dispo", "Mini-tournoi ou session libre"],
+        roadmap: [
+          { phase: "Avant", title: "Tenue de sport", detail: "Vérifier les horaires et emmener de quoi boire.", minutes: 5 },
+          { phase: "Sur place", title: "Échauffement", detail: `Arriver à ${p.name}, s'échauffer 10 min.`, minutes: 15 },
+          { phase: "Sur place", title: "Session", detail: "Jouer sérieusement pendant 30–45 min.", minutes: 40 },
+          { phase: "Après", title: "Récup", detail: "Smoothie ou café, débriefer la performance.", minutes: 15 },
+        ],
+        category: "sport",
+        place: "dedans",
+      };
+    }
+    return {
+      title: `Sortie ${p.category} : ${p.name}`,
+      blurb: `Tester ${p.name} à ${cityLabel} — téléphones rangés, on profite vraiment.`,
+      steps: [`Se retrouver à ${p.name}`, "Une seule activité : pas de multitâche", "Verdict en sortant"],
       roadmap: [
-        {
-          phase: "Avant",
-          title: "Se mettre d’accord",
-          detail: `Fixer un horaire et un budget pour ${p.name}.`,
-          minutes: 10,
-        },
-        {
-          phase: "Sur place",
-          title: `Arrivée à ${p.name}`,
-          detail: "Commander / entrer, téléphones en mode silencieux.",
-          minutes: 15,
-        },
-        {
-          phase: "Sur place",
-          title: "Moment principal",
-          detail: "Une seule activité ici : manger, regarder ou discuter sans scroll.",
-          minutes: 30,
-        },
-        {
-          phase: "Après",
-          title: "Verdict express",
-          detail: "Noter : à refaire / à éviter. Photo souvenir optionnelle.",
-          minutes: 5,
-        },
-      ],
-      category: p.category,
-      place: indoorCats.has(p.category) ? "dedans" : "dehors",
-    }),
-    (p) => ({
-      title: `Parcours départ ${p.name}`,
-      blurb: `Utiliser ${p.name} comme point A pour une mini-exploration de quartier.`,
-      steps: [
-        `Point de départ : ${p.name}`,
-        "Marcher 15–20 min en mode découverte",
-        "Élire le moment préféré du trajet",
-      ],
-      roadmap: [
-        {
-          phase: "Avant",
-          title: "Check météo & chaussures",
-          detail: "Prévoir une couche + 1 règle : pas de réseaux pendant la marche.",
-          minutes: 5,
-        },
-        {
-          phase: "Sur place",
-          title: `Départ ${p.name}`,
-          detail: "Choisir une direction au hasard (pile ou face).",
-          minutes: 10,
-        },
-        {
-          phase: "Sur place",
-          title: "Boucle découverte",
-          detail: "S’arrêter 2 fois pour observer / goûter / photographier.",
-          minutes: 40,
-        },
-        {
-          phase: "Après",
-          title: "Retour & classement",
-          detail: "Classer 1 coup de cœur du parcours.",
-          minutes: 10,
-        },
-      ],
-      category: "sortie",
-      place: "dehors",
-    }),
-    (p) => ({
-      title: `Mission duo autour de ${p.name}`,
-      blurb: `Petit challenge local ancré sur ${p.name}, puis conclusion claire.`,
-      steps: [
-        `Se retrouver à ${p.name}`,
-        "Tirer une micro-mission (photo, question, goûter)",
-        "Comparer les résultats en 5 min",
-      ],
-      roadmap: [
-        {
-          phase: "Avant",
-          title: "Tirer la mission",
-          detail: "3 options écrites, une seule tirée au sort.",
-          minutes: 5,
-        },
-        {
-          phase: "Sur place",
-          title: `Base ${p.name}`,
-          detail: "Lancer le chrono et exécuter la mission.",
-          minutes: 35,
-        },
-        {
-          phase: "Après",
-          title: "Débrief",
-          detail: "Qui a gagné / ce qu’on refait la prochaine fois.",
-          minutes: 10,
-        },
-      ],
-      category: "jeu",
-      place: indoorCats.has(p.category) ? "dedans" : placeDefault,
-    }),
-    (p) => ({
-      title: `Slow time à ${p.name}`,
-      blurb: `Version cosy : ${p.name} comme bulle, zéro performance.`,
-      steps: [
-        `S’installer à ${p.name}`,
-        "Une seule conversation ou activité partagée",
-        "Partir avant d’être saturé",
-      ],
-      roadmap: [
-        {
-          phase: "Avant",
-          title: "Intention",
-          detail: "Choisir le sujet ou le silence assumé.",
-          minutes: 5,
-        },
-        {
-          phase: "Sur place",
-          title: "Installation",
-          detail: `À ${p.name}, trouver un coin confortable.`,
-          minutes: 10,
-        },
-        {
-          phase: "Sur place",
-          title: "Temps partagé",
-          detail: "Rester présent·e : pas de scroll, une boisson max si budget serré.",
-          minutes: 40,
-        },
-        {
-          phase: "Après",
-          title: "Clôture douce",
-          detail: "Noter l’humeur (1–5) et rentrer.",
-          minutes: 5,
-        },
+        { phase: "Avant", title: "Organisation", detail: `Confirmer l'heure et le budget pour ${p.name}.`, minutes: 5 },
+        { phase: "Sur place", title: "Arrivée", detail: "S'installer, commander ou explorer.", minutes: 10 },
+        { phase: "Sur place", title: "Moment principal", detail: "Se concentrer sur l'activité, profiter du lieu.", minutes: 35 },
+        { phase: "Après", title: "Bilan express", detail: "On y retourne ? Oui / non / peut-être.", minutes: 5 },
       ],
       category: p.category,
       place: indoorCats.has(p.category) ? "dedans" : placeDefault,
-    }),
-  ];
+    };
+  }
 
   const out: Plan[] = [];
-  const usedBuilders = new Set<number>();
 
   for (let i = 0; i < pois.length && out.length < 6; i++) {
     const p = pois[i]!;
-    let builderIdx = i % builders.length;
-    // Prefer unused template when possible
-    for (let k = 0; k < builders.length; k++) {
-      const candidate = (i + k) % builders.length;
-      if (!usedBuilders.has(candidate)) {
-        builderIdx = candidate;
-        break;
-      }
-    }
-    usedBuilders.add(builderIdx);
-    const tpl = builders[builderIdx]!(p);
+    const tpl = tplForPoi(p);
     if (constraints.place !== "peu-importe" && tpl.place !== constraints.place) {
       continue;
     }
