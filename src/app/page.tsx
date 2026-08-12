@@ -32,14 +32,14 @@ export default async function HomePage({
   const isEn = lang === "en";
   const steps = isEn
     ? [
-        { t: "1. Setup", d: "Day or evening: time, budget, vibe." },
-        { t: "2. Vote", d: "Yes or pass: private choices." },
-        { t: "3. Go", d: "One shared idea + next steps." },
+        { t: "1. Join", d: "Enter a code and jump into a session." },
+        { t: "2. Start", d: "Private vote, one shared plan." },
+        { t: "3. Nearby", d: "Premium context around you." },
       ]
     : [
-        { t: "1. Cadre", d: "Journée ou soirée : temps, budget, ambiance." },
-        { t: "2. Vote", d: "Oui ou passer: l’autre ne voit pas." },
-        { t: "3. Go", d: "Une idée commune + les prochaines étapes." },
+        { t: "1. Rejoindre", d: "Entre un code et rejoins une session." },
+        { t: "2. Lancer", d: "Vote privé, un plan commun." },
+        { t: "3. Autour", d: "Contexte Premium près de toi." },
       ];
 
   return (
@@ -168,8 +168,8 @@ export default async function HomePage({
             </h2>
             <p className="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-base">
               {isEn
-                ? "Setup, private vote, then one shared plan with a step-by-step roadmap."
-                : "Cadre, vote privé, puis un plan commun avec feuille de route."}
+                ? "Join a session, start a private vote, or explore what’s nearby."
+                : "Rejoins une session, lance un vote privé, ou explore ce qu’il y a autour."}
             </p>
           </div>
           <AppPhoneShowcase lang={lang} variant="section" className="mt-10" />

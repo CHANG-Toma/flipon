@@ -1,35 +1,40 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { MarketingPhoneFrame } from "@/components/marketing/MarketingPhoneFrame";
-import {
-  PreviewResultScreen,
-  PreviewSetupScreen,
-  PreviewVoteScreen,
-} from "@/components/marketing/AppPreviewScreens";
+import { MarketingPhoneShot } from "@/components/marketing/MarketingPhoneShot";
 import type { Lang } from "@/lib/i18n";
 
 type Variant = "hero" | "section";
 
 type Props = {
   lang?: Lang;
-  /** hero = 2 phones (vote + result) · section = 3 phones avec légendes */
+  /** hero = 2 phones · section = 3 phones avec légendes */
   variant?: Variant;
   className?: string;
 };
 
+const SHOTS = {
+  session: "/marketing/home-session.webp",
+  join: "/marketing/home-join.webp",
+  nearby: "/marketing/home-nearby.webp",
+  history: "/marketing/history.webp",
+} as const;
+
 function PhoneSlot({
   tilt,
   zIndex,
-  children,
+  src,
+  alt,
   label,
   caption,
+  priority,
 }: {
   tilt: "back" | "front" | "center";
   zIndex: number;
-  children: ReactNode;
+  src: string;
+  alt: string;
   label?: string;
   caption?: string;
+  priority?: boolean;
 }) {
   return (
     <figure
@@ -39,10 +44,8 @@ function PhoneSlot({
       {label ? (
         <figcaption className="phone-showcase-label">{label}</figcaption>
       ) : null}
-      <MarketingPhoneFrame>{children}</MarketingPhoneFrame>
-      {caption ? (
-        <p className="phone-showcase-caption">{caption}</p>
-      ) : null}
+      <MarketingPhoneShot src={src} alt={alt} priority={priority} />
+      {caption ? <p className="phone-showcase-caption">{caption}</p> : null}
     </figure>
   );
 }
@@ -62,16 +65,27 @@ export function AppPhoneShowcase({
           .join(" ")}
         aria-label={
           isEn
-            ? "FlipOn app previews: vote and shared result"
-            : "Aperçus FlipOn : vote et résultat commun"
+            ? "FlipOn app screenshots: home and history"
+            : "Captures FlipOn : accueil et historique"
         }
       >
-        <PhoneSlot tilt="back" zIndex={1}>
-          <PreviewVoteScreen lang={lang} />
-        </PhoneSlot>
-        <PhoneSlot tilt="front" zIndex={2}>
-          <PreviewResultScreen lang={lang} />
-        </PhoneSlot>
+        <PhoneSlot
+          tilt="back"
+          zIndex={1}
+          src={SHOTS.history}
+          alt={isEn ? "FlipOn history screen" : "Écran historique FlipOn"}
+        />
+        <PhoneSlot
+          tilt="front"
+          zIndex={2}
+          src={SHOTS.session}
+          alt={
+            isEn
+              ? "FlipOn home — new session"
+              : "Accueil FlipOn — nouvelle session"
+          }
+          priority
+        />
       </div>
     );
   }
@@ -85,39 +99,39 @@ export function AppPhoneShowcase({
       <PhoneSlot
         tilt="back"
         zIndex={1}
-        label={isEn ? "1. Setup" : "1. Cadre"}
+        src={SHOTS.join}
+        alt={isEn ? "FlipOn — join with code" : "FlipOn — rejoindre avec un code"}
+        label={isEn ? "1. Join" : "1. Rejoindre"}
         caption={
           isEn
-            ? "Filters + Premium context (place, weather, time)"
-            : "Filtres + contexte Premium (lieu, météo, moment)"
+            ? "Enter a 4-letter code and jump into a friend’s session"
+            : "Entre un code à 4 lettres et rejoins une session"
         }
-      >
-        <PreviewSetupScreen lang={lang} />
-      </PhoneSlot>
+      />
       <PhoneSlot
         tilt="center"
         zIndex={2}
-        label={isEn ? "2. Vote" : "2. Vote"}
+        src={SHOTS.session}
+        alt={isEn ? "FlipOn — new session" : "FlipOn — nouvelle session"}
+        label={isEn ? "2. Start" : "2. Lancer"}
         caption={
           isEn
-            ? "Private yes/no on real activities"
-            : "Oui / passer en privé sur de vraies idées"
+            ? "Private vote · one shared plan for the group"
+            : "Vote privé · un plan commun pour le groupe"
         }
-      >
-        <PreviewVoteScreen lang={lang} />
-      </PhoneSlot>
+      />
       <PhoneSlot
         tilt="front"
         zIndex={3}
-        label={isEn ? "3. Go" : "3. Go"}
+        src={SHOTS.nearby}
+        alt={isEn ? "FlipOn — around you" : "FlipOn — autour de toi"}
+        label={isEn ? "3. Nearby" : "3. Autour"}
         caption={
           isEn
-            ? "One shared plan + step-by-step roadmap"
-            : "Un plan commun + feuille de route étape par étape"
+            ? "Premium context: place, weather, and nearby ideas"
+            : "Contexte Premium : lieu, météo et idées près de toi"
         }
-      >
-        <PreviewResultScreen lang={lang} />
-      </PhoneSlot>
+      />
     </div>
   );
 }
