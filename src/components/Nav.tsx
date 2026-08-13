@@ -2,30 +2,94 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import type { ReactNode } from "react";
+import { LangSwitcher } from "@/components/LangSwitcher";
 import { normalizeLang, type Lang, withLang } from "@/lib/i18n";
 
-const links = [
-  { href: "/", label: { fr: "Accueil", en: "Home" }, short: { fr: "Accueil", en: "Home" } },
+type Tab = {
+  href: string;
+  label: { fr: string; en: string };
+  match: (path: string) => boolean;
+  icon: (active: boolean) => ReactNode;
+};
+
+function IconHome({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M4.5 10.5 12 4l7.5 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5.5a1 1 0 0 1-1-1v-9.5Z"
+        stroke="currentColor"
+        strokeWidth={active ? 2.1 : 1.8}
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconSpark({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 3.5 13.6 9H19l-4.4 3.3L16.2 18 12 14.8 7.8 18l1.6-5.7L5 9h5.4L12 3.5Z"
+        stroke="currentColor"
+        strokeWidth={active ? 2.1 : 1.8}
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconTag({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M4 12.5V6.2A1.2 1.2 0 0 1 5.2 5h6.3L20 13.5 13.5 20 4 12.5Z"
+        stroke="currentColor"
+        strokeWidth={active ? 2.1 : 1.8}
+        strokeLinejoin="round"
+      />
+      <circle cx="8.2" cy="8.2" r="1.1" fill="currentColor" />
+    </svg>
+  );
+}
+
+function IconPlay({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M8.5 6.8v10.4L18 12 8.5 6.8Z"
+        stroke="currentColor"
+        strokeWidth={active ? 2.1 : 1.8}
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+const tabs: Tab[] = [
+  {
+    href: "/",
+    label: { fr: "Accueil", en: "Home" },
+    match: (path) => path === "/",
+    icon: (active) => <IconHome active={active} />,
+  },
   {
     href: "/presentation",
     label: { fr: "Présentation", en: "Overview" },
-    short: { fr: "Info", en: "Info" },
+    match: (path) => path.startsWith("/presentation"),
+    icon: (active) => <IconSpark active={active} />,
   },
-  { href: "/tarifs", label: { fr: "Tarifs", en: "Pricing" }, short: { fr: "Prix", en: "Price" } },
   {
-    href: "/download",
-    label: { fr: "Télécharger", en: "Download" },
-    short: { fr: "Téléch.", en: "App" },
+    href: "/tarifs",
+    label: { fr: "Tarifs", en: "Pricing" },
+    match: (path) => path.startsWith("/tarifs"),
+    icon: (active) => <IconTag active={active} />,
   },
   {
     href: "/test",
     label: { fr: "Essayer", en: "Try" },
-    short: { fr: "Essayer", en: "Try" },
-  },
-  {
-    href: "/join",
-    label: { fr: "Rejoindre", en: "Join" },
-    short: { fr: "Rejoindre", en: "Join" },
+    match: (path) => path.startsWith("/test"),
+    icon: (active) => <IconPlay active={active} />,
   },
 ];
 
@@ -34,69 +98,42 @@ export function Nav() {
   const searchParams = useSearchParams();
   const lang: Lang = normalizeLang(searchParams.get("lang"));
   const onHome = pathname === "/";
+  const isEn = lang === "en";
 
   return (
-    <header
-      className={[
-        "sticky top-0 z-50 border-b backdrop-blur-md",
-        "pt-[env(safe-area-inset-top)]",
-        onHome
-          ? "border-white/10 bg-[#0a0a0a]/90"
-          : "border-line/80 bg-petal/95",
-      ].join(" ")}
-    >
-      <div className="page-gutter mx-auto flex h-12 max-w-5xl items-center justify-between gap-2 sm:h-14 sm:gap-4">
+    <header className="site-nav">
+      <div className="site-nav-inner page-gutter">
         <Link
           href={withLang("/", lang)}
-          className={[
-            "shrink-0 font-[family-name:var(--font-display)] text-base font-extrabold tracking-tight sm:text-lg",
-            onHome ? "text-white" : "text-ink",
-          ].join(" ")}
+          className={["site-nav-logo", onHome ? "is-home" : ""].filter(Boolean).join(" ")}
         >
-          Flip<span className="text-coral">On</span>
+          Flip<span>On</span>
         </Link>
 
-        <nav
-          className="flex min-w-0 items-center gap-0.5"
-          aria-label="Principal"
-        >
-          {links.map((link) => {
-            const active = pathname === link.href;
-            const isJoin = link.href === "/join";
-            if (isJoin) {
-              return (
-                <Link
-                  key={link.href}
-                  href={withLang(link.href, lang)}
-                  prefetch
-                  className="ml-1 inline-flex min-h-10 items-center rounded-[var(--radius-ui)] border-2 border-coral px-3 py-2 text-sm font-bold text-coral transition-colors hover:bg-coral hover:text-white sm:min-h-9 sm:px-3.5"
-                >
-                  {link.label[lang]}
-                </Link>
-              );
-            }
+        <nav className="site-tabbar-pill" aria-label={isEn ? "Main" : "Principal"}>
+          {tabs.map((tab) => {
+            const active = tab.match(pathname);
             return (
               <Link
-                key={link.href}
-                href={withLang(link.href, lang)}
-                className={[
-                  "inline-flex min-h-10 items-center rounded-[var(--radius-ui)] px-2.5 py-2 text-xs font-medium transition-colors sm:min-h-9 sm:px-3 sm:text-sm",
-                  onHome
-                    ? active
-                      ? "text-white"
-                      : "text-white/60 hover:text-white"
-                    : active
-                      ? "bg-sky text-coral-deep"
-                      : "text-ink-soft hover:bg-foam hover:text-ink",
-                ].join(" ")}
+                key={tab.href}
+                href={withLang(tab.href, lang)}
+                prefetch
+                className={["site-tab", active ? "is-active" : ""].filter(Boolean).join(" ")}
                 aria-current={active ? "page" : undefined}
               >
-                <span className="sm:hidden">{link.short[lang]}</span>
-                <span className="hidden sm:inline">{link.label[lang]}</span>
+                {tab.icon(active)}
+                <span>{tab.label[lang]}</span>
               </Link>
             );
           })}
         </nav>
+
+        <div className="site-nav-actions">
+          <LangSwitcher />
+          <Link href={withLang("/join", lang)} prefetch className="site-nav-cta">
+            {isEn ? "Join" : "Rejoindre"}
+          </Link>
+        </div>
       </div>
     </header>
   );

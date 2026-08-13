@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { Nav } from "@/components/Nav";
-import { LangSwitcher } from "@/components/LangSwitcher";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -130,9 +129,6 @@ export default function RootLayout({
         </a>
         <Suspense fallback={null}>
           <Nav />
-        </Suspense>
-        <Suspense fallback={null}>
-          <LangSwitcher />
         </Suspense>
         <div id="contenu">{children}</div>
       </body>

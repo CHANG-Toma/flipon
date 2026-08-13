@@ -31,7 +31,7 @@ export function LandingHero({ lang = "fr" }: { lang?: Lang }) {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto grid min-h-[88svh] max-w-6xl items-center gap-12 page-gutter pb-16 pt-24 sm:pb-20 sm:pt-28 lg:grid-cols-2 lg:gap-16 lg:pb-24">
+      <div className="relative z-10 mx-auto grid min-h-[88svh] max-w-6xl items-center gap-12 page-gutter pb-16 pt-28 sm:pb-20 sm:pt-32 lg:grid-cols-2 lg:gap-16 lg:pb-24 lg:pt-28">
         <div className="max-w-xl">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#ff4d00]">
             {copy.kicker}

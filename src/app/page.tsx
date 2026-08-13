@@ -109,7 +109,7 @@ export default async function HomePage({
   };
 
   return (
-    <main>
+    <main data-nav-overlay>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
