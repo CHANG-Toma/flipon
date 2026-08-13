@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { AppPhoneShowcase } from "@/components/marketing/AppPhoneShowcase";
 import { type Lang, withLang } from "@/lib/i18n";

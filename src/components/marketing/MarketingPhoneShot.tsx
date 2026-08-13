@@ -1,18 +1,23 @@
 import Image from "next/image";
+import type { PhoneShot } from "@/components/marketing/phone-shots";
 
 type Props = {
-  src: string;
+  shot: PhoneShot;
   alt: string;
   /** Priorité LCP (hero uniquement) */
   priority?: boolean;
+  sizes?: string;
   className?: string;
 };
 
-/** Capture app réelle (WebP) — pas de mock DOM. */
+const DEFAULT_SIZES = "(max-width: 767px) 70vw, 240px";
+
+/** Mockup iPhone réel (WebP). Pas de cadre DOM. */
 export function MarketingPhoneShot({
-  src,
+  shot,
   alt,
   priority = false,
+  sizes = DEFAULT_SIZES,
   className = "",
 }: Props) {
   return (
@@ -21,17 +26,18 @@ export function MarketingPhoneShot({
         .filter(Boolean)
         .join(" ")}
     >
-      <div className="marketing-phone-shot-frame">
-        <Image
-          src={src}
-          alt={alt}
-          width={900}
-          height={1946}
-          sizes="(max-width: 1024px) 42vw, 260px"
-          priority={priority}
-          className="marketing-phone-shot-img"
-        />
-      </div>
+      <Image
+        src={shot.src}
+        alt={alt}
+        width={shot.width}
+        height={shot.height}
+        sizes={sizes}
+        quality={80}
+        priority={priority}
+        placeholder="blur"
+        blurDataURL={shot.blurDataURL}
+        className="marketing-phone-shot-img"
+      />
     </div>
   );
 }

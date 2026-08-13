@@ -21,6 +21,19 @@ export const metadata: Metadata = {
   description:
     "Cadre, vote privé, une idée : FlipOn aide un groupe à trancher une activité, en journée ou le soir.",
   alternates: { canonical: "/" },
+  openGraph: {
+    title: "FlipOn : Une activité validée par tout le groupe",
+    description:
+      "Cadre, vote privé, une idée : FlipOn aide un groupe à trancher une activité, en journée ou le soir.",
+    images: [
+      {
+        url: "/marketing/og-home.jpg",
+        width: 1200,
+        height: 630,
+        alt: "iPhone affichant FlipOn : nouvelle session, vote privé, plan commun",
+      },
+    ],
+  },
 };
 
 export default async function HomePage({

@@ -51,12 +51,21 @@ export const metadata: Metadata = {
     title: "FlipOn : Fini le « on fait quoi ? »",
     description:
       "Votes privés. Une activité que tout le monde accepte.",
+    images: [
+      {
+        url: "/marketing/og-home.jpg",
+        width: 1200,
+        height: 630,
+        alt: "iPhone affichant FlipOn : nouvelle session, vote privé, plan commun",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "FlipOn : Fini le « on fait quoi ? »",
     description:
       "Votes privés. Une activité que tout le monde accepte.",
+    images: ["/marketing/og-home.jpg"],
   },
   robots: {
     index: true,
@@ -89,6 +98,12 @@ const jsonLd = {
     "Chacun vote de son côté. FlipOn sort l’idée d’activité qui passe pour le groupe.",
   url: siteUrl,
   inLanguage: "fr-FR",
+  image: `${siteUrl}/marketing/og-home.jpg`,
+  screenshot: [
+    `${siteUrl}/marketing/mockup/new-session-portrait.webp`,
+    `${siteUrl}/marketing/mockup/join-session-portrait.webp`,
+    `${siteUrl}/marketing/mockup/nearby-portrait.webp`,
+  ],
 };
 
 export default function RootLayout({

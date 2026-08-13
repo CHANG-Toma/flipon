@@ -1051,19 +1051,11 @@ body {
   }
 }
 
-/* ── Marketing phone shots (WebP réels, pas de mock DOM) ── */
+/* ── Marketing phone shots (mockups iPhone WebP, pas de cadre DOM) ── */
 
 .marketing-phone {
   width: min(100%, 220px);
-  filter: drop-shadow(0 28px 48px rgb(0 0 0 / 45%));
-}
-
-.marketing-phone-shot-frame {
-  overflow: hidden;
-  border-radius: 1.65rem;
-  border: 2px solid #1a1a1a;
-  background: #090b12;
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 8%);
+  filter: drop-shadow(0 22px 40px rgb(0 0 0 / 38%));
 }
 
 .marketing-phone-shot-img {
@@ -1076,12 +1068,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  perspective: 1400px;
-  perspective-origin: 50% 40%;
 }
 
 .phone-showcase--hero {
-  min-height: clamp(380px, 52vw, 520px);
+  min-height: clamp(380px, 52vw, 540px);
   padding: 0.5rem 0 1rem;
 }
 
@@ -1089,6 +1079,8 @@ body {
   flex-direction: column;
   gap: 2.5rem;
   padding: 1rem 0 0.5rem;
+  content-visibility: auto;
+  contain-intrinsic-size: 720px;
 }
 
 @media (min-width: 768px) {
@@ -1096,49 +1088,47 @@ body {
     flex-direction: row;
     align-items: flex-end;
     gap: 0;
-    min-height: 460px;
+    min-height: 480px;
   }
 }
 
 .phone-showcase-slot {
   position: relative;
   margin: 0;
-  transform-style: preserve-3d;
   transition: transform 0.35s ease;
 }
 
 .phone-showcase--hero .phone-showcase-slot--back {
-  transform: rotateY(14deg) rotateX(6deg) translateX(28px) translateY(12px)
-    translateZ(-48px);
+  transform: translate(22%, 6%) scale(0.92);
 }
 
 .phone-showcase--hero .phone-showcase-slot--front {
-  transform: rotateY(-10deg) rotateX(-4deg) translateX(-36px) translateY(-8px)
-    translateZ(32px);
+  transform: translate(-18%, -4%);
 }
 
 .phone-showcase--section .phone-showcase-slot--back {
-  transform: rotateY(10deg) rotateX(4deg) translateX(18px) translateZ(-24px);
+  transform: translateX(14px) scale(0.94);
 }
 
 .phone-showcase--section .phone-showcase-slot--center {
-  transform: translateY(-12px) translateZ(8px);
+  transform: translateY(-18px) scale(1.04);
 }
 
 .phone-showcase--section .phone-showcase-slot--front {
-  transform: rotateY(-10deg) rotateX(-3deg) translateX(-18px) translateZ(24px);
+  transform: translateX(-14px) scale(0.94);
 }
 
 @media (max-width: 767px) {
-  .phone-showcase--hero .phone-showcase-slot--back,
-  .phone-showcase--hero .phone-showcase-slot--front {
-    transform: none;
+  .phone-showcase--hero {
+    min-height: auto;
   }
 
-  .phone-showcase--hero {
-    flex-direction: column;
-    gap: 1.25rem;
-    min-height: auto;
+  .phone-showcase--hero .phone-showcase-slot--back {
+    display: none;
+  }
+
+  .phone-showcase--hero .phone-showcase-slot--front {
+    transform: none;
   }
 
   .phone-showcase--section .phone-showcase-slot--back,
