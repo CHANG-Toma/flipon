@@ -85,8 +85,12 @@ export default async function DownloadPage({
 }: {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const lang = getLang(await searchParams);
+  const params = await searchParams;
+  const lang = getLang(params);
   const isEn = lang === "en";
+  const fromStart =
+    (Array.isArray(params?.from) ? params?.from[0] : params?.from) ===
+    "commencer";
   const platforms: Array<{
     name: "iOS" | "Android";
     icon: string;
@@ -146,15 +150,31 @@ export default async function DownloadPage({
       <div className="page-gutter mx-auto max-w-5xl">
         <header className="mx-auto max-w-2xl animate-rise text-center">
           <p className="premium-kicker">
-            {isEn ? "Download" : "Téléchargement"}
+            {fromStart
+              ? isEn
+                ? "Finish in the app"
+                : "Finaliser dans l’app"
+              : isEn
+                ? "Download"
+                : "Téléchargement"}
           </p>
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-ink sm:text-5xl">
-            {isEn ? "Choose your platform" : "Choisis ta plateforme"}
+            {fromStart
+              ? isEn
+                ? "Your 7-day trial starts in FlipOn."
+                : "Ton essai 7 jours commence dans FlipOn."
+              : isEn
+                ? "Choose your platform"
+                : "Choisis ta plateforme"}
           </h1>
           <p className="mx-auto mt-3 max-w-lg text-[15px] leading-relaxed text-ink-soft sm:text-base">
-            {isEn
-              ? "FlipOn helps you enjoy your best moments with less friction. Download on iOS or Android."
-              : "FlipOn t’aide à passer vos meilleurs moments en toute simplicité. Télécharge l’app sur iOS ou Android."}
+            {fromStart
+              ? isEn
+                ? "Create your account on iOS or Android to start the trial. The stores are not open yet — leave your email and we’ll notify you."
+                : "Crée ton compte sur iOS ou Android pour lancer l’essai. Les stores ne sont pas encore ouverts — laisse ton e-mail, on te prévient."
+              : isEn
+                ? "FlipOn helps you enjoy your best moments with less friction. Download on iOS or Android."
+                : "FlipOn t’aide à passer vos meilleurs moments en toute simplicité. Télécharge l’app sur iOS ou Android."}
           </p>
           <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-coral/25 bg-coral/10 px-3 py-1.5 text-xs font-semibold text-coral">
             <span className="h-1.5 w-1.5 rounded-full bg-coral" />
@@ -243,8 +263,8 @@ export default async function DownloadPage({
             >
               {isEn ? "Try web demo" : "Essayer la démo web"}
             </Link>
-            <Link href={withLang("/tarifs", lang)} className="btn-primary w-full sm:w-auto">
-              {isEn ? "Back to pricing" : "Retour aux tarifs"}
+            <Link href={withLang("/commencer", lang)} className="btn-primary w-full sm:w-auto">
+              {isEn ? "Back to start" : "Retour à Commencer"}
             </Link>
           </div>
         </section>

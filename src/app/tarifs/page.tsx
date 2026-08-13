@@ -3,12 +3,12 @@ import Link from "next/link";
 import { getLang, withLang } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Tarifs",
+  title: "Premium",
   description:
     "Basique : catalogue FlipOn + vote. Premium 3,99 € : pour passer vos meilleurs moments en toute simplicité.",
   alternates: { canonical: "/tarifs" },
   openGraph: {
-    title: "Tarifs FlipOn",
+    title: "Premium FlipOn",
     description:
       "Basique 0 € (catalogue) · Premium 3,99 € pour passer vos meilleurs moments en toute simplicité.",
     url: "/tarifs",
@@ -93,9 +93,7 @@ export default async function TarifsPage({
     <main className="safe-bottom overflow-x-hidden pb-14 pt-6 sm:pb-20 sm:pt-10">
       <div className="page-gutter mx-auto max-w-5xl">
         <header className="mx-auto max-w-2xl animate-rise text-center">
-          <p className="premium-kicker">
-            {isEn ? "Pricing" : "Tarifs"}
-          </p>
+          <p className="premium-kicker">Premium</p>
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl font-extrabold tracking-tight text-ink sm:text-5xl">
             {isEn
               ? "Premium for your best moments."

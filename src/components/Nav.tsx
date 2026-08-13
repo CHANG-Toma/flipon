@@ -39,20 +39,6 @@ function IconSpark({ active }: { active: boolean }) {
   );
 }
 
-function IconTag({ active }: { active: boolean }) {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M4 12.5V6.2A1.2 1.2 0 0 1 5.2 5h6.3L20 13.5 13.5 20 4 12.5Z"
-        stroke="currentColor"
-        strokeWidth={active ? 2.1 : 1.8}
-        strokeLinejoin="round"
-      />
-      <circle cx="8.2" cy="8.2" r="1.1" fill="currentColor" />
-    </svg>
-  );
-}
-
 function IconPlay({ active }: { active: boolean }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -61,6 +47,24 @@ function IconPlay({ active }: { active: boolean }) {
         stroke="currentColor"
         strokeWidth={active ? 2.1 : 1.8}
         strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconUser({ active }: { active: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
+        stroke="currentColor"
+        strokeWidth={active ? 2.1 : 1.8}
+      />
+      <path
+        d="M5.5 19.2c.9-2.4 3.3-4 6.5-4s5.6 1.6 6.5 4"
+        stroke="currentColor"
+        strokeWidth={active ? 2.1 : 1.8}
+        strokeLinecap="round"
       />
     </svg>
   );
@@ -80,16 +84,16 @@ const tabs: Tab[] = [
     icon: (active) => <IconSpark active={active} />,
   },
   {
-    href: "/tarifs",
-    label: { fr: "Tarifs", en: "Pricing" },
-    match: (path) => path.startsWith("/tarifs"),
-    icon: (active) => <IconTag active={active} />,
-  },
-  {
     href: "/test",
     label: { fr: "Essayer", en: "Try" },
     match: (path) => path.startsWith("/test"),
     icon: (active) => <IconPlay active={active} />,
+  },
+  {
+    href: "/join",
+    label: { fr: "Rejoindre", en: "Join" },
+    match: (path) => path.startsWith("/join"),
+    icon: (active) => <IconUser active={active} />,
   },
 ];
 
@@ -98,14 +102,21 @@ export function Nav() {
   const searchParams = useSearchParams();
   const lang: Lang = normalizeLang(searchParams.get("lang"));
   const onHome = pathname === "/";
+  const onStart = pathname.startsWith("/commencer");
+  const isLogin = onStart && searchParams.get("mode") === "login";
   const isEn = lang === "en";
 
   return (
-    <header className="site-nav">
+    <header className={["site-nav", onStart ? "is-auth" : ""].filter(Boolean).join(" ")}>
       <div className="site-nav-inner page-gutter">
         <Link
           href={withLang("/", lang)}
-          className={["site-nav-logo", onHome ? "is-home" : ""].filter(Boolean).join(" ")}
+          className={[
+            "site-nav-logo",
+            onStart ? "is-auth-logo" : onHome ? "is-home" : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           Flip<span>On</span>
         </Link>
@@ -130,9 +141,19 @@ export function Nav() {
 
         <div className="site-nav-actions">
           <LangSwitcher />
-          <Link href={withLang("/join", lang)} prefetch className="site-nav-cta">
-            {isEn ? "Join" : "Rejoindre"}
-          </Link>
+          {onStart ? (
+            <Link
+              href={withLang(isLogin ? "/commencer" : "/commencer?mode=login", lang)}
+              prefetch
+              className="site-nav-cta site-nav-cta--ghost"
+            >
+              {isEn ? "Log in" : "Se connecter"}
+            </Link>
+          ) : (
+            <Link href={withLang("/commencer", lang)} prefetch className="site-nav-cta">
+              {isEn ? "Start" : "Commencer"}
+            </Link>
+          )}
         </div>
       </div>
     </header>

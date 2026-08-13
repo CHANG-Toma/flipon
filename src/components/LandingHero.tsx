@@ -10,9 +10,9 @@ export function LandingHero({ lang = "fr" }: { lang?: Lang }) {
         title: "One activity the whole group wants.",
         support:
           "Day or evening: FlipOn ends the loop and locks one shared plan — after a private vote.",
-        ctaTry: "Try it",
+        ctaTry: "Start",
         ctaHow: "How it works",
-        proof: "Free to start · A plan in 2 minutes",
+        proof: "Private vote · A plan in 2 minutes",
       }
     : {
         kicker: "Fini le « on fait quoi ? »",
@@ -21,7 +21,7 @@ export function LandingHero({ lang = "fr" }: { lang?: Lang }) {
           "Journée ou soirée : FlipOn coupe la boucle et verrouille un plan commun — après un vote privé.",
         ctaTry: "Commencer",
         ctaHow: "Comment ça marche",
-        proof: "Gratuit pour commencer · Un plan en 2 minutes",
+        proof: "Vote privé · Un plan en 2 minutes",
       };
 
   return (
@@ -45,7 +45,7 @@ export function LandingHero({ lang = "fr" }: { lang?: Lang }) {
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
-              href={withLang("/test", lang)}
+              href={withLang("/commencer", lang)}
               prefetch
               className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#ff4d00] px-8 text-base font-bold text-white hover:bg-[#e04400]"
             >

@@ -23,7 +23,7 @@ const WaitlistForm = dynamic(
 export const metadata: Metadata = {
   title: "FlipOn : une activité que tout le groupe veut faire",
   description:
-    "Fini le « on fait quoi ? ». FlipOn aide amis, couples et colocs à trancher une activité : cadre en 30 secondes, vote privé, un plan commun. Gratuit.",
+    "Fini le « on fait quoi ? ». FlipOn aide amis, couples et colocs à trancher une activité : cadre en 30 secondes, vote privé, un plan commun.",
   keywords: [
     "idée activité entre amis",
     "on fait quoi ce soir",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "FlipOn : une activité que tout le groupe veut faire",
     description:
-      "Cadre, vote privé, une idée : FlipOn coupe le débat et verrouille un plan commun. Jour ou soir, gratuit pour commencer.",
+      "Cadre, vote privé, une idée : FlipOn coupe le débat et verrouille un plan commun. Jour ou soir.",
     url: "/",
     images: [
       {
@@ -142,7 +142,7 @@ export default async function HomePage({
                 : "Utilise FlipOn pour poser un cadre en 30 secondes, voter chacun de son côté, et partir avec une seule idée commune."}
             </p>
             <Link
-              href={withLang("/test", lang)}
+              href={withLang("/commencer", lang)}
               prefetch
               className="btn-primary mt-8 rounded-full px-8"
             >
@@ -175,8 +175,8 @@ export default async function HomePage({
             </h2>
             <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-ink-soft">
               {isEn
-                ? "Try the flow for free. In a few minutes you get a frame, a private vote, and one plan the group can keep."
-                : "Teste le flux gratuitement. En quelques minutes tu obtiens un cadre, un vote privé, et un plan que le groupe peut tenir."}
+                ? "Try the flow. In a few minutes you get a frame, a private vote, and one plan the group can keep."
+                : "Teste le flux. En quelques minutes tu obtiens un cadre, un vote privé, et un plan que le groupe peut tenir."}
             </p>
             <ul className="mt-8 space-y-3">
               {copy.checks.map((item) => (
@@ -191,7 +191,7 @@ export default async function HomePage({
               prefetch
               className="btn-primary mt-8 rounded-full px-8"
             >
-              {isEn ? "Try it for free" : "Essayer gratuitement"}
+              {isEn ? "Try it" : "Essayer"}
             </Link>
           </div>
           <AppPhoneShowcase lang={lang} variant="hero" className="lg:justify-end" />
@@ -239,7 +239,7 @@ export default async function HomePage({
             ))}
           </div>
           <Link
-            href={withLang("/test", lang)}
+            href={withLang("/commencer", lang)}
             prefetch
             className="btn-primary mt-12 rounded-full px-8"
           >
@@ -301,7 +301,34 @@ export default async function HomePage({
         </div>
       </section>
 
-      <section className="content-auto border-y border-line bg-petal page-gutter py-16 sm:py-24">
+      <section className="content-auto border-y border-line page-gutter py-16 sm:py-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          <div>
+            <p className="landing-kicker">{copy.premium.kicker}</p>
+            <h2 className="landing-h2 mt-4">{copy.premium.title}</h2>
+            <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-ink-soft">
+              {copy.premium.body}
+            </p>
+            <Link
+              href={withLang("/commencer", lang)}
+              prefetch
+              className="btn-primary mt-8 rounded-full px-8"
+            >
+              {copy.premium.cta}
+            </Link>
+          </div>
+          <ul className="space-y-3">
+            {copy.premium.points.map((item) => (
+              <li key={item} className="flex items-start gap-3 text-[15px] text-ink">
+                <Check />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="content-auto bg-petal page-gutter py-16 sm:py-24">
         <div className="mx-auto max-w-6xl">
           <p className="landing-kicker">
             {isEn ? "Your context" : "Ton contexte"}
@@ -347,7 +374,7 @@ export default async function HomePage({
             ))}
           </ol>
           <Link
-            href={withLang("/test", lang)}
+            href={withLang("/commencer", lang)}
             prefetch
             className="mt-12 inline-flex min-h-12 items-center justify-center rounded-full bg-[#ff4d00] px-8 text-base font-bold text-white hover:bg-[#e04400]"
           >
@@ -419,8 +446,8 @@ export default async function HomePage({
             <Link className="hover:text-white" href={withLang("/presentation", lang)}>
               {isEn ? "How it works" : "Présentation"}
             </Link>
-            <Link className="hover:text-white" href={withLang("/tarifs", lang)}>
-              {isEn ? "Pricing" : "Tarifs"}
+            <Link className="hover:text-white" href={withLang("/commencer", lang)}>
+              {isEn ? "Start" : "Commencer"}
             </Link>
             <Link className="hover:text-white" href={withLang("/download", lang)}>
               {isEn ? "Download" : "Télécharger"}

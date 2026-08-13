@@ -239,8 +239,8 @@ function TestModeSwitcherInner({ lang }: { lang: Lang }) {
                 ? "Same vote — but the result is a step-by-step itinerary, not just an idea."
                 : "Même vote — mais le résultat est un itinéraire étape par étape, pas juste une idée."}
             </p>
-            <Link href={withLang("/tarifs", lang)} className="btn-secondary mt-5 w-full">
-              {isEn ? "See pricing" : "Voir les tarifs"}
+            <Link href={withLang("/commencer", lang)} className="btn-secondary mt-5 w-full">
+              {isEn ? "Start 7-day trial" : "Essayer 7 jours"}
             </Link>
           </aside>
 

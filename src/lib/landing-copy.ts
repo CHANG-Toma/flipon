@@ -10,6 +10,7 @@ export type LandingCopy = {
   startSteps: { title: string; body: string }[];
   faqs: { q: string; a: string }[];
   pullQuote: { lineA: string; lineB: string };
+  premium: { kicker: string; title: string; body: string; points: string[]; cta: string };
 };
 
 export function getLandingCopy(lang: Lang): LandingCopy {
@@ -19,7 +20,7 @@ export function getLandingCopy(lang: Lang): LandingCopy {
         { to: 30, suffix: "s", label: "to set the frame" },
         { to: 2, suffix: " min", label: "to get a plan" },
         { to: 1, suffix: "", label: "shared activity" },
-        { to: 0, suffix: "€", label: "to start" },
+        { to: 4, suffix: "", label: "letters to join" },
       ],
       pains: [
         {
@@ -119,8 +120,8 @@ export function getLandingCopy(lang: Lang): LandingCopy {
           a: "Each person likes or skips ideas on their own phone. Nobody sees the others’ votes live, so there is no social pressure. FlipOn then outputs the idea that works for the group.",
         },
         {
-          q: "Is FlipOn free?",
-          a: "Yes. Basic is free: catalog, filters, and private vote. Premium (optional) adds nearby context, weather, and AI ideas.",
+          q: "What is Premium?",
+          a: "Premium adds context around you: place, weather, and ideas that fit the moment. The core flow stays the same — private vote, one shared plan — with more signal when you want it.",
         },
         {
           q: "Do we need to be in the same place?",
@@ -135,6 +136,17 @@ export function getLandingCopy(lang: Lang): LandingCopy {
         lineA: "A plan doesn’t need to be perfect.",
         lineB: "It just needs to happen.",
       },
+      premium: {
+        kicker: "Premium",
+        title: "When you want more than the catalog.",
+        body: "The vote stays private. Premium just reads the moment better: where you are, the weather, what’s actually around.",
+        points: [
+          "Ideas that fit your place and the time of day",
+          "Weather-aware suggestions",
+          "Nearby activities, without another group debate",
+        ],
+        cta: "Try 7 days free",
+      },
     };
   }
 
@@ -143,7 +155,7 @@ export function getLandingCopy(lang: Lang): LandingCopy {
       { to: 30, suffix: " s", label: "pour poser le cadre" },
       { to: 2, suffix: " min", label: "pour un plan" },
       { to: 1, suffix: "", label: "activité commune" },
-      { to: 0, suffix: " €", label: "pour commencer" },
+      { to: 4, suffix: "", label: "lettres pour rejoindre" },
     ],
     pains: [
       {
@@ -243,8 +255,8 @@ export function getLandingCopy(lang: Lang): LandingCopy {
         a: "Chacun like ou passe les idées sur son téléphone. Personne ne voit les votes des autres en direct, donc pas de pression sociale. FlipOn sort ensuite l’idée qui passe pour le groupe.",
       },
       {
-        q: "FlipOn est-il gratuit ?",
-        a: "Oui. L’offre Basique est gratuite : catalogue, filtres et vote privé. Premium (en option) ajoute le contexte autour de vous, la météo et des idées IA.",
+        q: "C’est quoi Premium ?",
+        a: "Premium ajoute le contexte autour de vous : le lieu, la météo, et des idées qui collent au moment. Le flux reste le même — vote privé, un plan commun — avec plus de signal quand vous le voulez.",
       },
       {
         q: "Faut-il être au même endroit ?",
@@ -258,6 +270,17 @@ export function getLandingCopy(lang: Lang): LandingCopy {
     pullQuote: {
       lineA: "Un plan n’a pas besoin d’être parfait.",
       lineB: "Il doit juste avoir lieu.",
+    },
+    premium: {
+      kicker: "Premium",
+      title: "Quand vous voulez plus que le catalogue.",
+      body: "Le vote reste privé. Premium lit juste mieux le moment : où vous êtes, la météo, ce qu’il y a vraiment autour.",
+      points: [
+        "Des idées qui collent au lieu et à l’heure",
+        "Des suggestions qui tiennent compte de la météo",
+        "Des activités autour de vous, sans un nouveau débat de groupe",
+      ],
+      cta: "Essayer 7 jours",
     },
   };
 }
