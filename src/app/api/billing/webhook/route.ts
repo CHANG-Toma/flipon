@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * Webhook RevenueCat → upsert Subscription.
- * Configurer Authorization: Bearer <REVENUECAT_WEBHOOK_SECRET> dans le dashboard RC.
+ * Authorization: Bearer <REVENUECAT_WEBHOOK_SECRET>
  */
 export async function POST(req: Request) {
   if (!verifyRevenueCatWebhookAuth(req)) {
@@ -37,6 +37,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: result.error }, { status: 503 });
   }
 
-  // Ne pas renvoyer clerkId (surface d’info inutile)
   return NextResponse.json({ ok: true });
 }

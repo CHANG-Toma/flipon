@@ -33,7 +33,13 @@ Application disponible sur [http://localhost:3000](http://localhost:3000).
 - `/presentation` : presentation produit
 - `/tarifs` : offres
 - `/test` : demo interactive
+- `/commencer` : inscription / connexion Clerk (essai 7 jours)
 - `/download` : redirection iOS / Android
+
+Dans le dashboard Clerk (même appli que le mobile), ajouter les redirects :
+
+- `http://localhost:3000/sso-callback`
+- `https://TON_DOMAINE/sso-callback`
 
 ## Variables d environnement
 
@@ -70,6 +76,7 @@ Variables importantes:
 - `REDIS_URL` : lobby duo (Docker local / Upstash / Vercel Storage)
 - `DATABASE_URL` : Postgres (Docker local, o2switch, Neon, …) pour users / sessions / historique
 - `CLERK_SECRET_KEY` : vérif JWT mobile + upsert user
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` : connexion web (même instance que l’app)
 - `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` : formulaire de feedback
 
 Base de données:
@@ -86,7 +93,7 @@ Deploiement recommande: Vercel.
 Etapes:
 
 1. Connecter le repository au projet Vercel
-2. Ajouter les variables d environnement (`REDIS_URL`, `DATABASE_URL`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`)
+2. Ajouter les variables d environnement (`REDIS_URL`, `DATABASE_URL`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY`)
 3. Lancer le deploy, puis promouvoir en production si necessaire
 
 ## Notes produit

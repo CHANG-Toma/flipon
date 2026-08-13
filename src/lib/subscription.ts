@@ -2,6 +2,7 @@
  * Abonnement Premium (serveur)
  * ----------------------------
  * Source de vérité : table Prisma `Subscription` (webhook RevenueCat).
+ * Essai web 7 jours au premier login, jusqu’au premier event RC.
  * Dev : `DEV_PREMIUM_CLERK_IDS` uniquement hors production (ou ALLOW_DEV_PREMIUM=1).
  */
 import { createHash, timingSafeEqual } from "node:crypto";
@@ -14,12 +15,25 @@ import {
 import { getAuthUserId, resolveDbUser } from "@/lib/auth";
 import { getPrisma } from "@/lib/db";
 
-export const PREMIUM_ENTITLEMENT_ID = "premium";
+export const PREMIUM_ENTITLEMENT_ID = "Flipon Pro";
+export const WEB_TRIAL_STORE = "web_trial";
+export const WEB_TRIAL_DAYS = 7;
 
-/** Clerk user ids look like `user_2abc…` — refuse garbage from forged webhooks. */
+function sourceFromSubscription(
+  sub: Subscription | null | undefined,
+  premium: boolean,
+): SubscriptionSource {
+  if (!premium) return "none";
+  if (sub?.store === WEB_TRIAL_STORE) return "trial";
+  return "paid";
+}
+
+/** Clerk user ids look like `user_2abc…`. */
 const CLERK_USER_ID_RE = /^user_[a-zA-Z0-9_-]{8,128}$/;
 
 export type FlipOnPlan = "basique" | "premium";
+
+export type SubscriptionSource = "trial" | "paid" | "none";
 
 export type SubscriptionView = {
   plan: FlipOnPlan;
@@ -27,6 +41,7 @@ export type SubscriptionView = {
   status: SubscriptionStatus | null;
   expiresAt: string | null;
   store: string | null;
+  source: SubscriptionSource;
 };
 
 let cachedDevPremiumIds: Set<string> | null = null;
@@ -88,6 +103,7 @@ export function toSubscriptionView(
       status: SubscriptionStatus.ACTIVE,
       expiresAt: null,
       store: "dev_override",
+      source: "paid",
     };
   }
   const premium = isSubscriptionPremium(sub);
@@ -97,6 +113,7 @@ export function toSubscriptionView(
     status: sub?.status ?? null,
     expiresAt: sub?.expiresAt?.toISOString() ?? null,
     store: sub?.store ?? null,
+    source: sourceFromSubscription(sub, premium),
   };
 }
 
@@ -104,6 +121,26 @@ export async function getSubscriptionForUserId(userId: string) {
   const prisma = getPrisma();
   if (!prisma) return null;
   return prisma.subscription.findUnique({ where: { userId } });
+}
+
+/** Premier login web : Premium 7 jours, sans écraser un abo RevenueCat. */
+export async function ensureWebTrial(userId: string) {
+  const prisma = getPrisma();
+  if (!prisma) return null;
+
+  const existing = await prisma.subscription.findUnique({ where: { userId } });
+  if (existing) return existing;
+
+  const expiresAt = new Date(Date.now() + WEB_TRIAL_DAYS * 24 * 60 * 60 * 1000);
+  return prisma.subscription.create({
+    data: {
+      userId,
+      plan: SubscriptionPlan.PREMIUM,
+      status: SubscriptionStatus.ACTIVE,
+      store: WEB_TRIAL_STORE,
+      expiresAt,
+    },
+  });
 }
 
 export async function getSubscriptionViewForClerkId(
@@ -232,8 +269,9 @@ const ACTIVE_EVENT_TYPES = new Set([
 ]);
 
 function hasPremiumEntitlement(event: NonNullable<RevenueCatEventBody["event"]>) {
-  if (event.entitlement_ids?.includes(PREMIUM_ENTITLEMENT_ID)) return true;
-  if (event.entitlements && PREMIUM_ENTITLEMENT_ID in event.entitlements) {
+  const ids = [PREMIUM_ENTITLEMENT_ID, "premium"];
+  if (event.entitlement_ids?.some((id) => ids.includes(id))) return true;
+  if (event.entitlements && ids.some((id) => id in event.entitlements)) {
     return true;
   }
   return false;
@@ -245,7 +283,9 @@ function resolveExpiresAt(
   if (typeof event.expiration_at_ms === "number" && event.expiration_at_ms > 0) {
     return new Date(event.expiration_at_ms);
   }
-  const ent = event.entitlements?.[PREMIUM_ENTITLEMENT_ID];
+  const ent =
+    event.entitlements?.[PREMIUM_ENTITLEMENT_ID] ??
+    event.entitlements?.premium;
   if (ent?.expires_date) {
     const d = new Date(ent.expires_date);
     if (!Number.isNaN(d.getTime())) return d;
@@ -294,11 +334,9 @@ export async function applyRevenueCatWebhook(
     plan = SubscriptionPlan.PREMIUM;
     status = SubscriptionStatus.ACTIVE;
   } else if (type === "BILLING_ISSUE" && premiumRelated) {
-    // Ne donne plus l’accès Premium (isSubscriptionPremium refuse BILLING_ISSUE)
     plan = SubscriptionPlan.PREMIUM;
     status = SubscriptionStatus.BILLING_ISSUE;
   } else if (type === "CANCELLATION" && premiumRelated) {
-    // Sans expiresAt → expiré (évite Premium à vie)
     if (expiresAt && expiresAt.getTime() > Date.now()) {
       plan = SubscriptionPlan.PREMIUM;
       status = SubscriptionStatus.CANCELLED;
@@ -377,7 +415,6 @@ export function verifyRevenueCatWebhookAuth(req: Request): boolean {
     : header.trim();
   if (!token) return false;
 
-  // timing-safe même si longueurs différentes (hash fixe)
   const a = createHash("sha256").update(token).digest();
   const b = createHash("sha256").update(secret).digest();
   return timingSafeEqual(a, b);

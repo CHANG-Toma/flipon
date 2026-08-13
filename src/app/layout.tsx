@@ -1,6 +1,8 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { ClerkUserSync } from "@/components/ClerkUserSync";
 import { Nav } from "@/components/Nav";
 import "./globals.css";
 
@@ -121,16 +123,19 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full font-sans antialiased">
-        <a
-          href="#contenu"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-[var(--radius-ui)] focus:bg-coral focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white"
-        >
-          Aller au contenu
-        </a>
-        <Suspense fallback={null}>
-          <Nav />
-        </Suspense>
-        <div id="contenu">{children}</div>
+        <ClerkProvider>
+          <ClerkUserSync />
+          <a
+            href="#contenu"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-[var(--radius-ui)] focus:bg-coral focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white"
+          >
+            Aller au contenu
+          </a>
+          <Suspense fallback={null}>
+            <Nav />
+          </Suspense>
+          <div id="contenu">{children}</div>
+        </ClerkProvider>
       </body>
     </html>
   );

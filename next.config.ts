@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
   },
   experimental: {
-    optimizePackageImports: ["motion"],
+    optimizePackageImports: ["motion", "@clerk/nextjs"],
   },
 };
 

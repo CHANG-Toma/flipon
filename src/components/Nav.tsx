@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
+import { useAuth, useClerk } from "@clerk/nextjs";
 import { LangSwitcher } from "@/components/LangSwitcher";
 import { normalizeLang, type Lang, withLang } from "@/lib/i18n";
 
@@ -103,8 +104,9 @@ export function Nav() {
   const lang: Lang = normalizeLang(searchParams.get("lang"));
   const onHome = pathname === "/";
   const onStart = pathname.startsWith("/commencer");
-  const isLogin = onStart && searchParams.get("mode") === "login";
   const isEn = lang === "en";
+  const { isSignedIn, isLoaded: authLoaded } = useAuth();
+  const { signOut } = useClerk();
 
   return (
     <header className={["site-nav", onStart ? "is-auth" : ""].filter(Boolean).join(" ")}>
@@ -141,15 +143,21 @@ export function Nav() {
 
         <div className="site-nav-actions">
           <LangSwitcher />
-          {onStart ? (
-            <Link
-              href={withLang(isLogin ? "/commencer" : "/commencer?mode=login", lang)}
-              prefetch
-              className="site-nav-cta site-nav-cta--ghost"
-            >
-              {isEn ? "Log in" : "Se connecter"}
-            </Link>
-          ) : (
+          {authLoaded && isSignedIn ? (
+            onStart ? (
+              <button
+                type="button"
+                className="site-nav-cta site-nav-cta--ghost"
+                onClick={() => void signOut({ redirectUrl: withLang("/commencer", lang) })}
+              >
+                {isEn ? "Sign out" : "Se déconnecter"}
+              </button>
+            ) : (
+              <Link href={withLang("/commencer", lang)} prefetch className="site-nav-cta">
+                {isEn ? "My Premium" : "Mon Premium"}
+              </Link>
+            )
+          ) : onStart ? null : (
             <Link href={withLang("/commencer", lang)} prefetch className="site-nav-cta">
               {isEn ? "Start" : "Commencer"}
             </Link>

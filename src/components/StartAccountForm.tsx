@@ -3,6 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useId, useState } from "react";
+import { useAuth, useSignIn, useSignUp } from "@clerk/nextjs";
+import { PremiumAccountPanel } from "@/components/PremiumAccountPanel";
+import {
+  humanClerkError,
+  MIN_PASSWORD_LENGTH,
+  normalizeEmail,
+  validateEmail,
+} from "@/lib/clerk-web";
 import { type Lang, withLang } from "@/lib/i18n";
 
 function AppleMark() {
@@ -36,6 +44,8 @@ function GoogleMark() {
   );
 }
 
+type Step = "email" | "password" | "verify";
+
 export function StartAccountForm({
   lang = "fr",
   mode = "signup",
@@ -46,23 +56,306 @@ export function StartAccountForm({
   const isEn = lang === "en";
   const isLogin = mode === "login";
   const router = useRouter();
-  const id = useId();
-  const [email, setEmail] = useState("");
+  const emailId = useId();
+  const passwordId = useId();
+  const confirmId = useId();
+  const codeId = useId();
 
-  function goToAccount(provider?: "apple" | "google") {
-    const params = new URLSearchParams();
-    params.set("from", "commencer");
-    if (email.trim()) params.set("email", email.trim());
-    if (provider) params.set("provider", provider);
-    if (isLogin) params.set("mode", "login");
-    if (lang === "en") params.set("lang", "en");
-    router.push(`/download?${params.toString()}`);
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { signIn, setActive: setActiveSignIn, isLoaded: signInLoaded } = useSignIn();
+  const { signUp, setActive: setActiveSignUp, isLoaded: signUpLoaded } = useSignUp();
+
+  const [step, setStep] = useState<Step>("email");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const clerkReady = authLoaded && signInLoaded && signUpLoaded;
+  const afterAuth = withLang("/commencer", lang);
+
+  async function finishSession(sessionId: string | null) {
+    if (!sessionId) return false;
+    if (isLogin) {
+      await setActiveSignIn?.({ session: sessionId });
+    } else {
+      await setActiveSignUp?.({ session: sessionId });
+    }
+    router.push(afterAuth);
+    return true;
   }
 
-  function onSubmit(e: FormEvent) {
+  async function onOAuth(strategy: "oauth_google" | "oauth_apple") {
+    const origin = window.location.origin;
+    const redirectUrl = `${origin}/sso-callback`;
+    const redirectUrlComplete = `${origin}${afterAuth}`;
+    const params = {
+      strategy,
+      redirectUrl,
+      redirectUrlComplete,
+    } as const;
+
+    try {
+      setLoading(true);
+      setError(null);
+      if (isLogin) {
+        if (!signIn) return;
+        await signIn.authenticateWithRedirect(params);
+        return;
+      }
+      if (!signUp) return;
+      await signUp.authenticateWithRedirect(params);
+    } catch (e) {
+      setError(
+        humanClerkError(
+          e,
+          isEn ? "Could not continue with this provider." : "Impossible de continuer avec ce compte.",
+        ),
+      );
+      setLoading(false);
+    }
+  }
+
+  async function onEmailNext(e: FormEvent) {
     e.preventDefault();
-    if (!email.trim()) return;
-    goToAccount();
+    const emailErr = validateEmail(email, isEn);
+    if (emailErr) {
+      setError(emailErr);
+      return;
+    }
+    setError(null);
+    setStep("password");
+  }
+
+  async function onPasswordSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (loading || !clerkReady) return;
+
+    const emailErr = validateEmail(email, isEn);
+    if (emailErr) {
+      setError(emailErr);
+      return;
+    }
+    if (!password) {
+      setError(isEn ? "Password is required." : "Le mot de passe est requis.");
+      return;
+    }
+
+    const trimmed = normalizeEmail(email);
+
+    if (!isLogin) {
+      if (password.length < MIN_PASSWORD_LENGTH) {
+        setError(
+          isEn
+            ? `Use at least ${MIN_PASSWORD_LENGTH} characters.`
+            : `Au moins ${MIN_PASSWORD_LENGTH} caractères.`,
+        );
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError(isEn ? "Passwords don’t match." : "Les mots de passe ne correspondent pas.");
+        return;
+      }
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      if (isLogin) {
+        if (!signIn || !setActiveSignIn) return;
+        const result = await signIn.create({ identifier: trimmed, password });
+        if (result.status === "complete") {
+          await setActiveSignIn({ session: result.createdSessionId });
+          router.push(afterAuth);
+          return;
+        }
+        setError(
+          isEn
+            ? "Could not sign in. Check your email and password."
+            : "Connexion impossible. Vérifie l’e-mail et le mot de passe.",
+        );
+        return;
+      }
+
+      if (!signUp || !setActiveSignUp) return;
+      await signUp.create({ emailAddress: trimmed, password });
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      setPassword("");
+      setConfirmPassword("");
+      setStep("verify");
+    } catch (e) {
+      setError(
+        isLogin
+          ? isEn
+            ? "Could not sign in. Check your email and password."
+            : "Connexion impossible. Vérifie l’e-mail et le mot de passe."
+          : humanClerkError(
+              e,
+              isEn ? "Could not create the account." : "Impossible de créer le compte.",
+            ),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function onVerify(e: FormEvent) {
+    e.preventDefault();
+    if (!signUp || !setActiveSignUp) return;
+    const trimmed = code.trim();
+    if (!/^\d{4,8}$/.test(trimmed)) {
+      setError(isEn ? "Enter the 6-digit code." : "Entre le code à 6 chiffres.");
+      return;
+    }
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await signUp.attemptEmailAddressVerification({ code: trimmed });
+      if (result.status === "complete") {
+        await finishSession(result.createdSessionId);
+        return;
+      }
+      setError(isEn ? "Verification is not complete yet." : "La vérification n’est pas terminée.");
+    } catch (e) {
+      setError(
+        humanClerkError(e, isEn ? "Invalid code." : "Code invalide."),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (authLoaded && isSignedIn) {
+    return <PremiumAccountPanel lang={lang} />;
+  }
+
+  if (step === "verify") {
+    return (
+      <div className="start-form">
+        <p className="start-form-kicker">{isEn ? "Confirm email" : "Confirme l’e-mail"}</p>
+        <h1 className="start-form-title">
+          {isEn ? "Enter the code we sent you." : "Entre le code reçu par e-mail."}
+        </h1>
+        <p className="start-form-support">{normalizeEmail(email)}</p>
+        <form onSubmit={(e) => void onVerify(e)} className="mt-8 space-y-3">
+          <label htmlFor={codeId} className="sr-only">
+            {isEn ? "Verification code" : "Code de vérification"}
+          </label>
+          <input
+            id={codeId}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            value={code}
+            onChange={(e) => {
+              setCode(e.target.value);
+              if (error) setError(null);
+            }}
+            placeholder={isEn ? "6-digit code" : "Code à 6 chiffres"}
+            className="start-form-input start-form-input--plain"
+          />
+          {error ? <p className="start-form-error">{error}</p> : null}
+          <button type="submit" className="start-form-submit" disabled={loading}>
+            {loading ? "…" : isEn ? "Validate" : "Valider"}
+          </button>
+        </form>
+        <button
+          type="button"
+          className="start-form-text-btn"
+          onClick={() => {
+            setStep("password");
+            setCode("");
+            setError(null);
+          }}
+        >
+          {isEn ? "Back" : "Retour"}
+        </button>
+      </div>
+    );
+  }
+
+  if (step === "password") {
+    return (
+      <div className="start-form">
+        <p className="start-form-kicker">
+          {isLogin ? (isEn ? "Welcome back" : "Bon retour") : isEn ? "Create account" : "Créer le compte"}
+        </p>
+        <h1 className="start-form-title">
+          {isLogin
+            ? isEn
+              ? "Enter your password."
+              : "Entre ton mot de passe."
+            : isEn
+              ? "Choose a password."
+              : "Choisis un mot de passe."}
+        </h1>
+        <p className="start-form-support">{normalizeEmail(email)}</p>
+        <form onSubmit={(e) => void onPasswordSubmit(e)} className="mt-8 space-y-3">
+          <label htmlFor={passwordId} className="sr-only">
+            {isEn ? "Password" : "Mot de passe"}
+          </label>
+          <input
+            id={passwordId}
+            type="password"
+            required
+            autoComplete={isLogin ? "current-password" : "new-password"}
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (error) setError(null);
+            }}
+            placeholder={
+              isLogin
+                ? isEn
+                  ? "Password"
+                  : "Mot de passe"
+                : isEn
+                  ? `Password (${MIN_PASSWORD_LENGTH}+ characters)`
+                  : `Mot de passe (${MIN_PASSWORD_LENGTH}+ caractères)`
+            }
+            className="start-form-input start-form-input--plain"
+          />
+          {!isLogin ? (
+            <>
+              <label htmlFor={confirmId} className="sr-only">
+                {isEn ? "Confirm password" : "Confirmer le mot de passe"}
+              </label>
+              <input
+                id={confirmId}
+                type="password"
+                required
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (error) setError(null);
+                }}
+                placeholder={isEn ? "Confirm password" : "Confirmer le mot de passe"}
+                className="start-form-input start-form-input--plain"
+              />
+            </>
+          ) : null}
+          {error ? <p className="start-form-error">{error}</p> : null}
+          <button type="submit" className="start-form-submit" disabled={loading || !clerkReady}>
+            {loading ? "…" : isLogin ? (isEn ? "Log in" : "Se connecter") : isEn ? "Create account" : "Créer le compte"}
+          </button>
+        </form>
+        <button
+          type="button"
+          className="start-form-text-btn"
+          onClick={() => {
+            setStep("email");
+            setPassword("");
+            setConfirmPassword("");
+            setError(null);
+          }}
+        >
+          {isEn ? "Back" : "Retour"}
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -85,8 +378,7 @@ export function StartAccountForm({
           )
         ) : isEn ? (
           <>
-            Try FlipOn{" "}
-            <span className="start-form-accent">free for 7 days</span>
+            Try FlipOn <span className="start-form-accent">free for 7 days</span>
           </>
         ) : (
           <>
@@ -98,15 +390,15 @@ export function StartAccountForm({
       <p className="start-form-support">
         {isLogin
           ? isEn
-            ? "Enter your email to continue in the app."
-            : "Entrez votre e-mail pour continuer dans l’app."
+            ? "Same account as the FlipOn app."
+            : "Le même compte que l’app FlipOn."
           : isEn
-            ? "Create your FlipOn account — it’s free to start."
-            : "Créez votre compte FlipOn, c’est gratuit."}
+            ? "Create your FlipOn account — same login as the app."
+            : "Créez votre compte FlipOn — le même que dans l’app."}
       </p>
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-3">
-        <label htmlFor={id} className="sr-only">
+      <form onSubmit={(e) => void onEmailNext(e)} className="mt-8 space-y-3">
+        <label htmlFor={emailId} className="sr-only">
           {isEn ? "Email address" : "Adresse e-mail"}
         </label>
         <div className="start-form-field">
@@ -136,18 +428,22 @@ export function StartAccountForm({
             />
           </svg>
           <input
-            id={id}
+            id={emailId}
             type="email"
             required
             autoComplete="email"
             inputMode="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (error) setError(null);
+            }}
             placeholder="Email"
             className="start-form-input"
           />
         </div>
-        <button type="submit" className="start-form-submit">
+        {error ? <p className="start-form-error">{error}</p> : null}
+        <button type="submit" className="start-form-submit" disabled={loading}>
           {isEn ? "Next" : "Suivant"}
         </button>
       </form>
@@ -165,7 +461,8 @@ export function StartAccountForm({
         <button
           type="button"
           className="start-form-social-btn"
-          onClick={() => goToAccount("apple")}
+          disabled={loading || !clerkReady}
+          onClick={() => void onOAuth("oauth_apple")}
           aria-label={isEn ? "Continue with Apple" : "Continuer avec Apple"}
         >
           <AppleMark />
@@ -173,7 +470,8 @@ export function StartAccountForm({
         <button
           type="button"
           className="start-form-social-btn"
-          onClick={() => goToAccount("google")}
+          disabled={loading || !clerkReady}
+          onClick={() => void onOAuth("oauth_google")}
           aria-label={isEn ? "Continue with Google" : "Continuer avec Google"}
         >
           <GoogleMark />
@@ -184,8 +482,7 @@ export function StartAccountForm({
         {isLogin ? (
           isEn ? (
             <>
-              New here?{" "}
-              <Link href={withLang("/commencer", lang)}>Create an account</Link>
+              New here? <Link href={withLang("/commencer", lang)}>Create an account</Link>
             </>
           ) : (
             <>

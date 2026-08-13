@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { resolveDbUser } from "@/lib/auth";
 import { corsPreflight, withCors } from "@/lib/cors";
-import { hasDatabase, getPrisma } from "@/lib/db";
+import { hasDatabase } from "@/lib/db";
 import {
+  ensureWebTrial,
   isDevPremiumClerkId,
   toSubscriptionView,
 } from "@/lib/subscription";
@@ -40,14 +41,14 @@ export async function POST(req: Request) {
         isPremium: view.isPremium,
         subscriptionStatus: view.status,
         subscriptionExpiresAt: view.expiresAt,
+        store: view.store,
+        source: view.source,
+        expiresAt: view.expiresAt,
       }),
     );
   }
 
-  const prisma = getPrisma();
-  const sub = prisma
-    ? await prisma.subscription.findUnique({ where: { userId: user.id } })
-    : null;
+  const sub = await ensureWebTrial(user.id);
   const view = toSubscriptionView(sub);
 
   return withCors(
@@ -60,6 +61,9 @@ export async function POST(req: Request) {
       isPremium: view.isPremium,
       subscriptionStatus: view.status,
       subscriptionExpiresAt: view.expiresAt,
+      store: view.store,
+      source: view.source,
+      expiresAt: view.expiresAt,
     }),
   );
 }

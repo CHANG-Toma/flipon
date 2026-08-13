@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { createClerkClient, verifyToken } from "@clerk/backend";
 import { getPrisma } from "@/lib/db";
 
@@ -18,11 +19,18 @@ export async function getAuthUserId(req: Request): Promise<string | null> {
 
   const header = req.headers.get("authorization") || "";
   const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
-  if (!token) return null;
+  if (token) {
+    try {
+      const payload = await verifyToken(token, { secretKey: secret });
+      return typeof payload.sub === "string" ? payload.sub : null;
+    } catch {
+      return null;
+    }
+  }
 
   try {
-    const payload = await verifyToken(token, { secretKey: secret });
-    return typeof payload.sub === "string" ? payload.sub : null;
+    const { userId } = await auth();
+    return userId ?? null;
   } catch {
     return null;
   }

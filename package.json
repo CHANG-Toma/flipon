@@ -15,10 +15,12 @@
     "db:down": "docker compose --env-file .env.docker down",
     "db:reset": "docker compose --env-file .env.docker down -v && docker compose --env-file .env.docker up -d",
     "db:logs": "docker compose --env-file .env.docker logs -f --tail=100",
-    "db:ps": "docker compose --env-file .env.docker ps"
+    "db:ps": "docker compose --env-file .env.docker ps",
+    "test:rc-webhook": "node --env-file=.env scripts/test-revenuecat-webhook.mjs"
   },
   "dependencies": {
     "@clerk/backend": "^3.15.1",
+    "@clerk/nextjs": "^7.7.4",
     "@prisma/client": "6.19.0",
     "gsap": "^3.15.0",
     "motion": "^12.43.0",
