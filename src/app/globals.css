@@ -1093,17 +1093,18 @@ body {
 
 .phone-showcase--section {
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 1.25rem;
   padding: 1rem 0 0.5rem;
   content-visibility: auto;
-  contain-intrinsic-size: 720px;
+  contain-intrinsic-size: 640px;
 }
 
 @media (min-width: 768px) {
   .phone-showcase--section {
     flex-direction: row;
-    align-items: flex-end;
-    gap: 0;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.25rem, 3.5vw, 2.5rem);
     min-height: 480px;
   }
 }
@@ -1124,15 +1125,15 @@ body {
 }
 
 .phone-showcase--section .phone-showcase-slot--back {
-  transform: translateX(14px) scale(0.94);
-}
-
-.phone-showcase--section .phone-showcase-slot--center {
-  transform: translateY(-18px) scale(1.04);
+  transform: scale(0.94);
 }
 
 .phone-showcase--section .phone-showcase-slot--front {
-  transform: translateX(-14px) scale(0.94);
+  transform: scale(0.94) translateX(-1.35rem);
+}
+
+.phone-showcase--section .phone-showcase-slot--center {
+  transform: scale(1.02);
 }
 
 @media (max-width: 479px) {
@@ -1158,28 +1159,6 @@ body {
   }
 }
 
-.phone-showcase-label {
-  position: absolute;
-  top: -1.75rem;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--coral);
-}
-
-.phone-showcase-caption {
-  margin: 0.75rem auto 0;
-  max-width: 14rem;
-  text-align: center;
-  font-size: 0.8rem;
-  line-height: 1.45;
-  color: var(--ink-soft);
-}
-
 .phone-showcase--hero .marketing-phone {
   width: var(--hero-phone);
 }
@@ -1188,8 +1167,92 @@ body {
   width: var(--hero-phone-back);
 }
 
+.phone-showcase--section .marketing-phone {
+  filter: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .phone-showcase-slot {
     transition: none;
   }
+}
+
+.landing-aurora canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.landing-spot {
+  position: relative;
+  overflow: hidden;
+  --spot-x: 50%;
+  --spot-y: 50%;
+}
+
+.landing-spot-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(
+    420px circle at var(--spot-x) var(--spot-y),
+    var(--spot-color, rgb(255 77 0 / 0.16)),
+    transparent 55%
+  );
+  transition: opacity 0.25s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .landing-spot:hover .landing-spot-glow {
+    opacity: 1;
+  }
+}
+
+.landing-gradient-text {
+  background: linear-gradient(90deg, #ff4d00, #ffc4a8, #ff4d00);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: landing-grad 9s ease-in-out infinite;
+}
+
+@keyframes landing-grad {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-gradient-text {
+    animation: none;
+    background: none;
+    color: #ff4d00;
+  }
+}
+
+.landing-kicker {
+  font-size: 0.69rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--coral);
+}
+
+.landing-h2 {
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.landing-faq summary::-webkit-details-marker {
+  display: none;
 }

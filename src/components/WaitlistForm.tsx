@@ -42,10 +42,10 @@ export function WaitlistForm({ lang = "fr" }: { lang?: Lang }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={isEn ? "you@email.com" : "ton@email.fr"}
-          className="h-12 w-full rounded-[var(--radius-ui)] border border-line bg-white px-3.5 text-base text-ink outline-none transition placeholder:text-ink-soft/50 focus:border-coral sm:h-11 sm:text-[15px]"
+          className="h-12 w-full rounded-full border border-line bg-white px-4 text-base text-ink outline-none transition placeholder:text-ink-soft/50 focus:border-coral sm:h-12 sm:text-[15px]"
         />
       </div>
-      <button type="submit" className="btn-primary w-full shrink-0 sm:w-auto sm:min-w-[9.5rem]">
+      <button type="submit" className="btn-primary w-full shrink-0 rounded-full sm:w-auto sm:min-w-[9.5rem]">
         {isEn ? "Notify me" : "Me prévenir"}
       </button>
     </form>
