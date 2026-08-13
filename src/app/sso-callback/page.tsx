@@ -5,6 +5,8 @@ export default function SsoCallbackPage() {
     <main className="grid min-h-[70svh] place-items-center page-gutter">
       <p className="text-sm font-medium text-ink-soft">Connexion…</p>
       <AuthenticateWithRedirectCallback
+        signInUrl="/commencer?mode=login"
+        signUpUrl="/commencer"
         signInForceRedirectUrl="/commencer"
         signUpForceRedirectUrl="/commencer"
       />

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { type Lang, withLang } from "@/lib/i18n";
 
 type AccountView = {
@@ -25,8 +25,10 @@ function formatDate(iso: string | null, lang: Lang) {
 
 export function PremiumAccountPanel({ lang = "fr" }: { lang?: Lang }) {
   const isEn = lang === "en";
+  const titleId = useId();
   const [view, setView] = useState<AccountView | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [appModalOpen, setAppModalOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,6 +62,15 @@ export function PremiumAccountPanel({ lang = "fr" }: { lang?: Lang }) {
       cancelled = true;
     };
   }, [isEn]);
+
+  useEffect(() => {
+    if (!appModalOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setAppModalOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [appModalOpen]);
 
   const dateLabel = formatDate(view?.expiresAt ?? null, lang);
   const isTrial = view?.source === "trial";
@@ -109,19 +120,59 @@ export function PremiumAccountPanel({ lang = "fr" }: { lang?: Lang }) {
       </div>
 
       {active ? (
-        <>
-          <Link href={withLang("/tarifs", lang)} className="start-form-submit">
-            {isEn ? "Manage your subscription" : "Gérez votre abonnement"}
-          </Link>
-          <Link href={withLang("/test", lang)} className="start-form-outline">
-            {isEn ? "Start a session" : "Lancer une session"}
-          </Link>
-        </>
+        <button
+          type="button"
+          className="start-form-submit"
+          onClick={() => setAppModalOpen(true)}
+        >
+          {isEn ? "Manage your subscription" : "Gérez votre abonnement"}
+        </button>
       ) : (
-        <Link href={withLang("/tarifs", lang)} className="start-form-submit">
+        <button
+          type="button"
+          className="start-form-submit"
+          onClick={() => setAppModalOpen(true)}
+        >
           {isEn ? "Get Premium" : "Passer Premium"}
-        </Link>
+        </button>
       )}
+
+      {appModalOpen ? (
+        <div
+          className="account-app-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+        >
+          <button
+            type="button"
+            className="account-app-modal-backdrop"
+            aria-label={isEn ? "Close" : "Fermer"}
+            onClick={() => setAppModalOpen(false)}
+          />
+          <div className="account-app-modal-card">
+            <p className="account-app-modal-kicker">FlipOn</p>
+            <h2 id={titleId} className="account-app-modal-title">
+              {isEn ? "Open the mobile app" : "Ouvre l’application mobile"}
+            </h2>
+            <p className="account-app-modal-text">
+              {isEn
+                ? "Subscriptions are managed in the FlipOn app — subscribe, restore, or cancel from there."
+                : "L’abonnement se gère dans l’app FlipOn — pour t’abonner, restaurer ou annuler, ouvre l’application."}
+            </p>
+            <Link href={withLang("/download", lang)} className="start-form-submit">
+              {isEn ? "Get the app" : "Télécharger l’app"}
+            </Link>
+            <button
+              type="button"
+              className="start-form-outline"
+              onClick={() => setAppModalOpen(false)}
+            >
+              {isEn ? "Close" : "Fermer"}
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

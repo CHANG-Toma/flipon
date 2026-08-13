@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useId, useState } from "react";
-import { useAuth, useSignIn, useSignUp } from "@clerk/nextjs";
+import { useAuth, useClerk, useSignIn, useSignUp } from "@clerk/nextjs";
 import { PremiumAccountPanel } from "@/components/PremiumAccountPanel";
 import {
   humanClerkError,
@@ -46,6 +46,66 @@ function GoogleMark() {
 
 type Step = "email" | "password" | "verify";
 
+function PasswordField({
+  id,
+  value,
+  onChange,
+  placeholder,
+  autoComplete,
+  showLabel,
+  hideLabel,
+}: {
+  id: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  autoComplete: string;
+  showLabel: string;
+  hideLabel: string;
+}) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="start-form-password">
+      <input
+        id={id}
+        type={visible ? "text" : "password"}
+        required
+        autoComplete={autoComplete}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="start-form-input start-form-input--plain start-form-input--password"
+      />
+      <button
+        type="button"
+        className="start-form-eye"
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? hideLabel : showLabel}
+      >
+        {visible ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+              d="M3 3l18 18M10.6 10.6A2 2 0 0 0 12 14a2 2 0 0 0 1.4-.6M9.9 5.1A10.6 10.6 0 0 1 12 5c5 0 9.3 3.1 11 7.5a11.7 11.7 0 0 1-4.1 4.8M6.1 6.1A11.6 11.6 0 0 0 1 12.5a11.7 11.7 0 0 0 6.2 5.2"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+          </svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+              d="M2 12.5C3.7 8.1 8 5 12 5s8.3 3.1 10 7.5c-1.7 4.4-6 7.5-10 7.5S3.7 16.9 2 12.5Z"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            />
+            <circle cx="12" cy="12.5" r="2.6" stroke="currentColor" strokeWidth="1.8" />
+          </svg>
+        )}
+      </button>
+    </div>
+  );
+}
+
 export function StartAccountForm({
   lang = "fr",
   mode = "signup",
@@ -62,8 +122,9 @@ export function StartAccountForm({
   const codeId = useId();
 
   const { isLoaded: authLoaded, isSignedIn } = useAuth();
-  const { signIn, setActive: setActiveSignIn, isLoaded: signInLoaded } = useSignIn();
-  const { signUp, setActive: setActiveSignUp, isLoaded: signUpLoaded } = useSignUp();
+  const { signIn } = useSignIn();
+  const { signUp } = useSignUp();
+  const clerk = useClerk();
 
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
@@ -73,40 +134,32 @@ export function StartAccountForm({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const clerkReady = authLoaded && signInLoaded && signUpLoaded;
+  const clerkReady = authLoaded && clerk.loaded && Boolean(signIn) && Boolean(signUp);
   const afterAuth = withLang("/commencer", lang);
 
-  async function finishSession(sessionId: string | null) {
-    if (!sessionId) return false;
-    if (isLogin) {
-      await setActiveSignIn?.({ session: sessionId });
-    } else {
-      await setActiveSignUp?.({ session: sessionId });
-    }
+  async function goAfterAuth() {
     router.push(afterAuth);
-    return true;
   }
 
   async function onOAuth(strategy: "oauth_google" | "oauth_apple") {
-    const origin = window.location.origin;
-    const redirectUrl = `${origin}/sso-callback`;
-    const redirectUrlComplete = `${origin}${afterAuth}`;
-    const params = {
-      strategy,
-      redirectUrl,
-      redirectUrlComplete,
-    } as const;
-
+    if (!signIn) return;
     try {
       setLoading(true);
       setError(null);
-      if (isLogin) {
-        if (!signIn) return;
-        await signIn.authenticateWithRedirect(params);
-        return;
+      const { error } = await signIn.sso({
+        strategy,
+        redirectCallbackUrl: "/sso-callback",
+        redirectUrl: afterAuth,
+      });
+      if (error) {
+        setError(
+          humanClerkError(
+            error,
+            isEn ? "Could not continue with this provider." : "Impossible de continuer avec ce compte.",
+          ),
+        );
+        setLoading(false);
       }
-      if (!signUp) return;
-      await signUp.authenticateWithRedirect(params);
     } catch (e) {
       setError(
         humanClerkError(
@@ -165,11 +218,22 @@ export function StartAccountForm({
       setError(null);
 
       if (isLogin) {
-        if (!signIn || !setActiveSignIn) return;
-        const result = await signIn.create({ identifier: trimmed, password });
-        if (result.status === "complete") {
-          await setActiveSignIn({ session: result.createdSessionId });
-          router.push(afterAuth);
+        const clientSignIn = clerk.client?.signIn;
+        if (!clientSignIn) return;
+        let result = await clientSignIn.create({
+          strategy: "password",
+          identifier: trimmed,
+          password,
+        });
+        if (result.status === "needs_first_factor") {
+          result = await result.attemptFirstFactor({
+            strategy: "password",
+            password,
+          });
+        }
+        if (result.status === "complete" && result.createdSessionId) {
+          await clerk.setActive({ session: result.createdSessionId });
+          await goAfterAuth();
           return;
         }
         setError(
@@ -180,22 +244,25 @@ export function StartAccountForm({
         return;
       }
 
-      if (!signUp || !setActiveSignUp) return;
-      await signUp.create({ emailAddress: trimmed, password });
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      const clientSignUp = clerk.client?.signUp;
+      if (!clientSignUp) return;
+      await clientSignUp.create({ emailAddress: trimmed, password });
+      await clientSignUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPassword("");
       setConfirmPassword("");
       setStep("verify");
     } catch (e) {
       setError(
-        isLogin
-          ? isEn
-            ? "Could not sign in. Check your email and password."
-            : "Connexion impossible. Vérifie l’e-mail et le mot de passe."
-          : humanClerkError(
-              e,
-              isEn ? "Could not create the account." : "Impossible de créer le compte.",
-            ),
+        humanClerkError(
+          e,
+          isLogin
+            ? isEn
+              ? "Could not sign in. Check your email and password."
+              : "Connexion impossible. Vérifie l’e-mail et le mot de passe."
+            : isEn
+              ? "Could not create the account."
+              : "Impossible de créer le compte.",
+        ),
       );
     } finally {
       setLoading(false);
@@ -204,7 +271,8 @@ export function StartAccountForm({
 
   async function onVerify(e: FormEvent) {
     e.preventDefault();
-    if (!signUp || !setActiveSignUp) return;
+    const clientSignUp = clerk.client?.signUp;
+    if (!clientSignUp) return;
     const trimmed = code.trim();
     if (!/^\d{4,8}$/.test(trimmed)) {
       setError(isEn ? "Enter the 6-digit code." : "Entre le code à 6 chiffres.");
@@ -213,9 +281,12 @@ export function StartAccountForm({
     try {
       setLoading(true);
       setError(null);
-      const result = await signUp.attemptEmailAddressVerification({ code: trimmed });
-      if (result.status === "complete") {
-        await finishSession(result.createdSessionId);
+      const result = await clientSignUp.attemptEmailAddressVerification({
+        code: trimmed,
+      });
+      if (result.status === "complete" && result.createdSessionId) {
+        await clerk.setActive({ session: result.createdSessionId });
+        await goAfterAuth();
         return;
       }
       setError(isEn ? "Verification is not complete yet." : "La vérification n’est pas terminée.");
@@ -296,16 +367,14 @@ export function StartAccountForm({
           <label htmlFor={passwordId} className="sr-only">
             {isEn ? "Password" : "Mot de passe"}
           </label>
-          <input
+          <PasswordField
             id={passwordId}
-            type="password"
-            required
-            autoComplete={isLogin ? "current-password" : "new-password"}
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
+            onChange={(value) => {
+              setPassword(value);
               if (error) setError(null);
             }}
+            autoComplete={isLogin ? "current-password" : "new-password"}
             placeholder={
               isLogin
                 ? isEn
@@ -315,25 +384,25 @@ export function StartAccountForm({
                   ? `Password (${MIN_PASSWORD_LENGTH}+ characters)`
                   : `Mot de passe (${MIN_PASSWORD_LENGTH}+ caractères)`
             }
-            className="start-form-input start-form-input--plain"
+            showLabel={isEn ? "Show password" : "Afficher le mot de passe"}
+            hideLabel={isEn ? "Hide password" : "Masquer le mot de passe"}
           />
           {!isLogin ? (
             <>
               <label htmlFor={confirmId} className="sr-only">
                 {isEn ? "Confirm password" : "Confirmer le mot de passe"}
               </label>
-              <input
+              <PasswordField
                 id={confirmId}
-                type="password"
-                required
-                autoComplete="new-password"
                 value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
+                onChange={(value) => {
+                  setConfirmPassword(value);
                   if (error) setError(null);
                 }}
+                autoComplete="new-password"
                 placeholder={isEn ? "Confirm password" : "Confirmer le mot de passe"}
-                className="start-form-input start-form-input--plain"
+                showLabel={isEn ? "Show password" : "Afficher le mot de passe"}
+                hideLabel={isEn ? "Hide password" : "Masquer le mot de passe"}
               />
             </>
           ) : null}
@@ -447,6 +516,7 @@ export function StartAccountForm({
           {isEn ? "Next" : "Suivant"}
         </button>
       </form>
+      <div id="clerk-captcha" className="mt-3" />
 
       <p className="start-form-or">
         {isLogin

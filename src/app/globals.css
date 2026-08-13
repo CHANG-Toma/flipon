@@ -1604,6 +1604,34 @@ button.site-nav-cta {
   padding-left: 1rem;
 }
 
+.start-form-input--password {
+  padding-right: 3rem;
+}
+
+.start-form-password {
+  position: relative;
+}
+
+.start-form-eye {
+  position: absolute;
+  top: 50%;
+  right: 0.55rem;
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: none;
+  color: rgba(255, 255, 255, 0.55);
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.start-form-eye:hover {
+  color: #fff;
+}
+
 .start-form-error {
   margin: 0;
   font-size: 0.85rem;
@@ -1637,6 +1665,7 @@ button.site-nav-cta {
   border-radius: 0.7rem;
   background: #ff4d00;
   color: #fff;
+  font-family: inherit;
   font-size: 1rem;
   font-weight: 800;
   cursor: pointer;
@@ -1658,8 +1687,10 @@ button.site-nav-cta {
   border-radius: 0.7rem;
   background: transparent;
   color: #ff4d00;
+  font-family: inherit;
   font-size: 1rem;
   font-weight: 800;
+  cursor: pointer;
 }
 
 .start-form-outline:hover {
@@ -1685,6 +1716,59 @@ button.site-nav-cta {
   margin: 0.35rem 0 0;
   font-size: 0.88rem;
   color: rgba(255, 255, 255, 0.5);
+}
+
+.account-app-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.account-app-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(0 0 0 / 62%);
+  cursor: pointer;
+}
+
+.account-app-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 22.5rem);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.1rem;
+  background: #141414;
+  padding: 1.35rem 1.25rem 1.2rem;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 45%);
+}
+
+.account-app-modal-kicker {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ff4d00;
+}
+
+.account-app-modal-title {
+  margin: 0.55rem 0 0;
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.account-app-modal-text {
+  margin: 0.7rem 0 1.15rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .start-form-or {
