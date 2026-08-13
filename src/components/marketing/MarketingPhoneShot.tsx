@@ -32,8 +32,10 @@ export function MarketingPhoneShot({
         width={shot.width}
         height={shot.height}
         sizes={sizes}
-        quality={80}
+        quality={75}
         priority={priority}
+        fetchPriority={priority ? "high" : "low"}
+        decoding="async"
         placeholder="blur"
         blurDataURL={shot.blurDataURL}
         className="marketing-phone-shot-img"

@@ -70,17 +70,6 @@ export function AppPhoneShowcase({
         }
       >
         <PhoneSlot
-          tilt="back"
-          zIndex={1}
-          shot={PHONE_SHOTS.historyLeft}
-          alt={
-            isEn
-              ? "iPhone showing FlipOn history of validated group activities"
-              : "iPhone affichant l’historique FlipOn des activités validées"
-          }
-          sizes="(max-width: 767px) 0px, 240px"
-        />
-        <PhoneSlot
           tilt="front"
           zIndex={2}
           shot={PHONE_SHOTS.sessionPortrait}
@@ -90,7 +79,18 @@ export function AppPhoneShowcase({
               : "iPhone affichant l’accueil FlipOn : lancer une session à vote privé"
           }
           priority
-          sizes="(max-width: 767px) 68vw, 260px"
+          sizes="(max-width: 479px) 70vw, (max-width: 1023px) 42vw, 252px"
+        />
+        <PhoneSlot
+          tilt="back"
+          zIndex={1}
+          shot={PHONE_SHOTS.historyLeft}
+          alt={
+            isEn
+              ? "iPhone showing FlipOn history of validated group activities"
+              : "iPhone affichant l’historique FlipOn des activités validées"
+          }
+          sizes="(max-width: 479px) 0px, (max-width: 1023px) 38vw, 232px"
         />
       </div>
     );
