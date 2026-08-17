@@ -81,12 +81,12 @@ export function PremiumAccountPanel({ lang = "fr" }: { lang?: Lang }) {
     ? "…"
     : isTrial
       ? isEn
-        ? "FlipOn Premium — 7-day trial"
-        : "FlipOn Premium — essai 7 jours"
+        ? "FlipOn — 7-day trial"
+        : "FlipOn — essai 7 jours"
       : isPaid
         ? isEn
-          ? "FlipOn Premium monthly"
-          : "FlipOn Premium mensuel"
+          ? "FlipOn monthly"
+          : "FlipOn mensuel"
         : isEn
           ? "No active plan"
           : "Aucun abonnement actif";
@@ -106,12 +106,12 @@ export function PremiumAccountPanel({ lang = "fr" }: { lang?: Lang }) {
           ? `Ended on ${dateLabel}`
           : `Terminé le ${dateLabel}`
         : isEn
-          ? "Start Premium to keep going."
-          : "Passe Premium pour continuer.";
+          ? "Subscribe to keep using FlipOn."
+          : "Abonne-toi pour continuer.";
 
   return (
     <div className="start-form">
-      <h1 className="start-form-title">{isEn ? "My Premium" : "Mon Premium"}</h1>
+      <h1 className="start-form-title">{isEn ? "My subscription" : "Mon abonnement"}</h1>
       <p className="start-form-support">{isEn ? "Your subscription" : "Votre abonnement"}</p>
 
       <div className="account-sub-card">
@@ -133,7 +133,7 @@ export function PremiumAccountPanel({ lang = "fr" }: { lang?: Lang }) {
           className="start-form-submit"
           onClick={() => setAppModalOpen(true)}
         >
-          {isEn ? "Get Premium" : "Passer Premium"}
+          {isEn ? "Subscribe" : "S’abonner"}
         </button>
       )}
 

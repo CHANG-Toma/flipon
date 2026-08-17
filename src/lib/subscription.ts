@@ -271,7 +271,8 @@ const ACTIVE_EVENT_TYPES = new Set([
 function hasPremiumEntitlement(event: NonNullable<RevenueCatEventBody["event"]>) {
   const ids = [PREMIUM_ENTITLEMENT_ID, "premium"];
   if (event.entitlement_ids?.some((id) => ids.includes(id))) return true;
-  if (event.entitlements && ids.some((id) => id in event.entitlements)) {
+  const entitlements = event.entitlements;
+  if (entitlements && ids.some((id) => id in entitlements)) {
     return true;
   }
   return false;

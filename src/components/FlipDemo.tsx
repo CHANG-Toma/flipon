@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Constraints,
@@ -16,7 +17,7 @@ import {
 } from "@/data/plans";
 import type { DuoPublicSnapshot, DuoRole } from "@/lib/duo-types";
 import { FeedbackForm } from "@/components/FeedbackForm";
-import type { Lang } from "@/lib/i18n";
+import { type Lang, withLang } from "@/lib/i18n";
 
 type Mode = "pick" | "solo" | "duo";
 type SoloStep = "constraints" | "swipe" | "match";
@@ -388,12 +389,12 @@ function DemoBanner({ lang }: { lang: Lang }) {
       </span>
       <div className="min-w-0 text-sm leading-relaxed text-ink-soft">
         <p className="font-semibold text-ink">
-          {isEn ? "Web demo · Basic plan" : "Démo web · offre Basique"}
+          {isEn ? "Vote preview" : "Aperçu du vote"}
         </p>
         <p className="mt-0.5 text-xs sm:text-sm">
           {isEn
-            ? "Same vote logic as the mobile app. Your session stays on this device."
-            : "Même logique de vote que l’app mobile. Ta session reste sur cet appareil."}
+            ? "Same private vote as the app. AI plans — place, weather, step-by-step — stay in FlipOn."
+            : "Même vote privé que l’app. Les plans IA — lieu, météo, étapes — restent dans FlipOn."}
         </p>
       </div>
     </div>
@@ -625,6 +626,27 @@ function MatchView({
                 </li>
               ))}
             </ol>
+            <p className="mt-5 rounded-[var(--radius-ui)] border border-coral/20 bg-coral/[0.04] px-3.5 py-3 text-xs leading-relaxed text-ink-soft">
+              {isEn ? (
+                <>
+                  <span className="font-semibold text-ink">In the app,</span> AI
+                  turns this idea into a detailed plan: nearby spots, weather,
+                  times, and steps.
+                </>
+              ) : (
+                <>
+                  <span className="font-semibold text-ink">Dans l’app,</span>{" "}
+                  l’IA transforme cette idée en plan détaillé : lieux autour,
+                  météo, horaires et étapes.
+                </>
+              )}
+            </p>
+            <Link
+              href={withLang("/commencer", lang)}
+              className="btn-primary mt-3 w-full"
+            >
+              {isEn ? "Try 7 days" : "Essayer 7 jours"}
+            </Link>
           </div>
         </div>
       ) : (

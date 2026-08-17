@@ -7,7 +7,7 @@ import { getLang } from "@/lib/i18n";
 export const metadata: Metadata = {
   title: "Commencer",
   description:
-    "Créez votre compte FlipOn et essayez Premium gratuitement pendant 7 jours.",
+    "Créez votre compte FlipOn et essayez pendant 7 jours — vote privé, un plan commun.",
   alternates: { canonical: "/commencer" },
   openGraph: {
     title: "Essayez FlipOn pendant 7 jours",

@@ -2,7 +2,7 @@
 
 Site vitrine et demo web de FlipOn.
 
-Objectif: presenter le concept, expliquer les offres Basique/Boost, et permettre de tester le flow vote + resultat avant la version mobile complete.
+Objectif: presenter le concept, expliquer l’abonnement unique, et permettre de tester le flow vote + resultat avant la version mobile complete.
 
 ## Positionnement du projet
 
@@ -13,7 +13,7 @@ Objectif: presenter le concept, expliquer les offres Basique/Boost, et permettre
 
 - Landing page avec proposition de valeur
 - Page presentation du produit
-- Page tarifs Basique vs Boost
+- Page tarifs (abonnement unique, essai 7 jours)
 - Page test pour simuler une session et un resultat
 - Formulaire de feedback utilisateur
 
@@ -31,7 +31,7 @@ Application disponible sur [http://localhost:3000](http://localhost:3000).
 
 - `/` : accueil
 - `/presentation` : presentation produit
-- `/tarifs` : offres
+- `/tarifs` : abonnement unique
 - `/test` : demo interactive
 - `/commencer` : inscription / connexion Clerk (essai 7 jours)
 - `/download` : redirection iOS / Android

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function CguPage() {
   return (
-    <LegalDoc title="Conditions générales d’utilisation" updated="7 août 2026">
+    <LegalDoc title="Conditions générales d’utilisation" updated="17 août 2026">
       <LegalSection title="1. Objet">
         <p>
           FlipOn aide un duo (ou un groupe, selon disponibilité) à choisir une
@@ -27,14 +27,10 @@ export default function CguPage() {
       <LegalSection title="2. Accès au service">
         <p>
           L’usage de l’application mobile suppose un compte (e-mail ou Google
-          via Clerk). Un invité peut rejoindre une session via le site web sans
-          télécharger l’app, dans les limites techniques du moment.
-        </p>
-        <p>
-          L’offre <strong className="text-[var(--ink)]">Basique</strong> est
-          gratuite et s’appuie sur un catalogue d’idées filtrées. Des offres
-          payantes (ex. Premium) pourront être proposées séparément, avec leurs
-          conditions.
+          via Clerk). FlipOn est un service payant : un essai de 7 jours, puis
+          un abonnement mensuel géré dans l’application. La démo web permet
+          de tester le flux de vote sans compte. Un invité peut rejoindre une
+          session via le site, dans les limites techniques du moment.
         </p>
       </LegalSection>
 
@@ -51,8 +47,9 @@ export default function CguPage() {
       <LegalSection title="4. Votes et résultat">
         <p>
           Les votes sont privés : les autres participants ne voient pas tes
-          choix individuels. Le résultat Basique est l’idée retenue (titre et
-          description courte), pas un plan d’exécution détaillé.
+          choix individuels. Le résultat est l’idée retenue (titre et
+          description courte), éventuellement complétée d’un plan d’exécution
+          selon les fonctionnalités disponibles.
         </p>
         <p>
           Les idées sont des suggestions. FlipOn ne garantit pas la

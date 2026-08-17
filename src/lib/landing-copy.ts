@@ -120,8 +120,12 @@ export function getLandingCopy(lang: Lang): LandingCopy {
           a: "Each person likes or skips ideas on their own phone. Nobody sees the others’ votes live, so there is no social pressure. FlipOn then outputs the idea that works for the group.",
         },
         {
-          q: "What is Premium?",
-          a: "Premium adds context around you: place, weather, and ideas that fit the moment. The core flow stays the same — private vote, one shared plan — with more signal when you want it.",
+          q: "Is FlipOn free?",
+          a: "No limited free plan. FlipOn is a paid app: 7 days to try, then €3.99 a month. The web demo lets you try the vote flow without an account.",
+        },
+        {
+          q: "What’s included?",
+          a: "The full product: private vote, one shared plan, plus context around you — place, weather, and ideas that fit the moment.",
         },
         {
           q: "Do we need to be in the same place?",
@@ -137,13 +141,13 @@ export function getLandingCopy(lang: Lang): LandingCopy {
         lineB: "It just needs to happen.",
       },
       premium: {
-        kicker: "Premium",
-        title: "When you want more than the catalog.",
-        body: "The vote stays private. Premium just reads the moment better: where you are, the weather, what’s actually around.",
+        kicker: "The subscription",
+        title: "One plan. The whole product.",
+        body: "No stripped-down version. Private vote, ideas that fit where you are and the weather, one shared plan — 7 days to try, then €3.99 a month.",
         points: [
+          "Private vote and one shared result",
           "Ideas that fit your place and the time of day",
-          "Weather-aware suggestions",
-          "Nearby activities, without another group debate",
+          "Weather-aware suggestions, nearby activities",
         ],
         cta: "Try 7 days free",
       },
@@ -255,8 +259,12 @@ export function getLandingCopy(lang: Lang): LandingCopy {
         a: "Chacun like ou passe les idées sur son téléphone. Personne ne voit les votes des autres en direct, donc pas de pression sociale. FlipOn sort ensuite l’idée qui passe pour le groupe.",
       },
       {
-        q: "C’est quoi Premium ?",
-        a: "Premium ajoute le contexte autour de vous : le lieu, la météo, et des idées qui collent au moment. Le flux reste le même — vote privé, un plan commun — avec plus de signal quand vous le voulez.",
+        q: "FlipOn est-il gratuit ?",
+        a: "Pas de version limitée. FlipOn est une app payante : 7 jours pour essayer, puis 3,99 € par mois. La démo web permet de tester le vote sans compte.",
+      },
+      {
+        q: "Qu’est-ce qui est inclus ?",
+        a: "Tout le produit : vote privé, un plan commun, plus le contexte autour de vous — le lieu, la météo, et des idées qui collent au moment.",
       },
       {
         q: "Faut-il être au même endroit ?",
@@ -272,13 +280,13 @@ export function getLandingCopy(lang: Lang): LandingCopy {
       lineB: "Il doit juste avoir lieu.",
     },
     premium: {
-      kicker: "Premium",
-      title: "Quand vous voulez plus que le catalogue.",
-      body: "Le vote reste privé. Premium lit juste mieux le moment : où vous êtes, la météo, ce qu’il y a vraiment autour.",
+      kicker: "L’abonnement",
+      title: "Un seul plan. Tout le produit.",
+      body: "Pas de version limitée. Vote privé, idées selon le lieu et la météo, un plan commun — 7 jours pour essayer, puis 3,99 € par mois.",
       points: [
+        "Vote privé et un seul résultat commun",
         "Des idées qui collent au lieu et à l’heure",
-        "Des suggestions qui tiennent compte de la météo",
-        "Des activités autour de vous, sans un nouveau débat de groupe",
+        "Météo, activités autour, sans un nouveau débat",
       ],
       cta: "Essayer 7 jours",
     },

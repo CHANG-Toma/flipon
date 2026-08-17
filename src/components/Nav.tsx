@@ -154,7 +154,7 @@ export function Nav() {
               </button>
             ) : (
               <Link href={withLang("/commencer", lang)} prefetch className="site-nav-cta">
-                {isEn ? "My Premium" : "Mon Premium"}
+                {isEn ? "My subscription" : "Mon abonnement"}
               </Link>
             )
           ) : onStart ? null : (

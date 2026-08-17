@@ -84,8 +84,8 @@ export default async function PresentationPage({
             <Link href={withLang("/test", lang)} className="btn-primary w-full sm:w-auto">
               {isEn ? "Start demo" : "Lancer la démo"}
             </Link>
-            <Link href={withLang("/commencer", lang)} className="btn-secondary w-full sm:w-auto">
-              {isEn ? "Start 7-day trial" : "Essayer 7 jours"}
+            <Link href={withLang("/tarifs", lang)} className="btn-secondary w-full sm:w-auto">
+              {isEn ? "See pricing" : "Voir le tarif"}
             </Link>
           </div>
         </section>

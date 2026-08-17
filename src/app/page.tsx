@@ -449,6 +449,9 @@ export default async function HomePage({
             <Link className="hover:text-white" href={withLang("/commencer", lang)}>
               {isEn ? "Start" : "Commencer"}
             </Link>
+            <Link className="hover:text-white" href={withLang("/tarifs", lang)}>
+              {isEn ? "Pricing" : "Tarifs"}
+            </Link>
             <Link className="hover:text-white" href={withLang("/download", lang)}>
               {isEn ? "Download" : "Télécharger"}
             </Link>

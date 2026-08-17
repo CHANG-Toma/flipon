@@ -5,12 +5,12 @@ import { getLang } from "@/lib/i18n";
 export const metadata: Metadata = {
   title: "Essayer",
   description:
-    "Teste FlipOn en solo ou à deux téléphones : cadre (ambiance, temps, budget), vote privé, une idée commune.",
+    "Aperçu du vote FlipOn. Dans l’app, l’IA construit un plan détaillé selon le lieu et la météo.",
   alternates: { canonical: "/test" },
   openGraph: {
     title: "Essayer FlipOn",
     description:
-      "Cadre → vote privé → une idée. Solo ou duo sur deux téléphones.",
+      "Cadre → vote privé → une idée. Le plan IA détaillé est dans l’app.",
     url: "/test",
   },
 };

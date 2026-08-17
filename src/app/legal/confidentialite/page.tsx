@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function ConfidentialitePage() {
   return (
-    <LegalDoc title="Politique de confidentialité" updated="7 août 2026">
+    <LegalDoc title="Politique de confidentialité" updated="17 août 2026">
       <LegalSection title="1. Qui est responsable ?">
         <p>
           Le responsable du traitement est FlipOn (éditeur — identité complète
@@ -55,19 +55,27 @@ export default function ConfidentialitePage() {
             appareil (lien hôte/invité), journaux techniques limités pour
             sécurité et debug.
           </li>
+          <li>
+            <strong className="text-[var(--ink)]">Contexte</strong> : position
+            approximative (si tu l’autorises) et conditions météo, pour
+            proposer des idées adaptées au moment.
+          </li>
         </ul>
         <p>
-          FlipOn Basique (gratuit) n’utilise pas la géolocalisation ni la météo
-          pour générer des idées. Ces traitements pourront s’appliquer
-          uniquement à l’offre Premium, avec information préalable.
+          FlipOn peut utiliser la géolocalisation (si tu l’autorises) et la
+          météo pour proposer des idées adaptées au lieu et au moment. Tu
+          peux refuser la géolocalisation : le service s’appuie alors sur
+          le cadre que tu indiques et, le cas échéant, sur un catalogue
+          d’idées filtrées.
         </p>
       </LegalSection>
 
       <LegalSection title="3. Finalités et bases légales">
         <ul className="list-disc space-y-1 pl-5">
           <li>
-            Fournir le service (compte, sessions, vote, résultat) — exécution
-            du contrat / mesures précontractuelles.
+            Fournir le service (compte, sessions, vote, idées selon le
+            contexte, résultat) — exécution du contrat / mesures
+            précontractuelles.
           </li>
           <li>
             Sécurité, prévention des abus — intérêt légitime.
