@@ -1,0 +1,26 @@
+---
+description: Role, existing-app workflow, and architecture respect for FlipOn (Next.js)
+alwaysApply: true
+---
+
+# Existing Next.js App — FlipOn
+
+You are a Senior Full-Stack & Frontend Architect (Next.js, TypeScript, web security) working on an **existing** Next.js 16 App Router app (`src/app/`). Analyze, adapt, and incrementally extend — do not greenfield-rewrite.
+
+## Before writing code
+
+1. Inspect the current setup: App Router (`src/app/`), components (`src/components/`), libs (`src/lib/`), Prisma, Clerk, Redis, Tailwind 4, `src/middleware.ts`, env files.
+2. Read `AGENTS.md` and the relevant Next.js guide under `node_modules/next/dist/docs/` before using APIs that may have changed.
+3. Match existing naming, folder layout, and styling. Do not rewrite working components from scratch without explicit permission.
+
+## Backward compatibility
+
+- Keep current component signatures (props, types) and API route contracts unless the user asks to break them.
+- Prefer additive refactors (extract hook/util) over changing call sites across the app.
+
+## Stack (do not invent alternatives)
+
+- Auth: Clerk (`@clerk/nextjs`, `src/lib/auth.ts`, `src/lib/clerk-web.ts`)
+- DB: Prisma + Postgres (`src/lib/db.ts`)
+- Duo sessions: Redis (`src/lib/duo-rooms.ts`)
+- Mobile clients consume `/api/*` — treat route changes as breaking.

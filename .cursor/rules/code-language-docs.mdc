@@ -1,0 +1,36 @@
+---
+description: English-only identifiers/comments and TSDoc for shared code
+alwaysApply: true
+---
+
+# Language & Documentation
+
+## English only (code)
+
+All of the following MUST be English:
+
+- Identifiers: variables, functions, components, files
+- Comments and TSDoc
+- Commit messages (when you write them)
+
+UI copy shown to users may stay French (or follow `src/lib/i18n.ts` / `src/lib/landing-copy.ts`). Do not mix French into code identifiers.
+
+```ts
+// ❌ BAD
+/** Crée une salle duo */
+export function creerSalle(duree: number) {}
+
+// ✅ GOOD
+/** Creates a duo room with the given duration in minutes. */
+export function createDuoRoom(durationMinutes: number) {}
+```
+
+## TSDoc
+
+Add `/** ... */` on complex utilities, hooks, and shared components. Cover:
+
+- Intent (why it exists)
+- Parameter constraints
+- Security notes (auth, secrets, user-controlled input)
+
+Skip TSDoc on trivial presentational components and obvious one-liners.

@@ -1,0 +1,29 @@
+---
+description: CI/CD readiness — types, lint, tests, zero-warning changes
+globs: src/**/*.{ts,tsx,css},prisma/**/*.prisma,*.{ts,json}
+alwaysApply: false
+---
+
+# CI/CD & Production Readiness
+
+## Deterministic quality gates
+
+New or modified code must pass without errors or warnings:
+
+- Typecheck: `npx tsc --noEmit`
+- Lint: `npm run lint` (`next` ESLint)
+- Format consistently (Prettier if present)
+
+Do not leave unused imports, `eslint-disable` without justification, or `@ts-expect-error` without a comment.
+
+## Testable structure
+
+- Keep pure logic in `src/lib/*` so it can be unit-tested (Vitest/Jest) without rendering the full app.
+- Hooks should return typed values and accept dependencies (fetchers, clocks) when it helps testing.
+- Route Handlers: parse → authorize → call a lib function → map to HTTP. Do not bury business rules inside `route.ts`.
+
+## Zero-warning tolerance
+
+- Do not commit types that only work because of `any` or unchecked `!`.
+- If a change would break `next build` (Prisma client, env, Clerk), fix it in the same change.
+- Mobile app (`flipon-app`) depends on these APIs — do not ship breaking JSON shapes without updating both sides.

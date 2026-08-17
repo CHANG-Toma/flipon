@@ -1,0 +1,36 @@
+---
+description: Web security — env vars, input validation, OWASP, authz on API routes
+globs: src/app/api/**/*.{ts,tsx},src/lib/**/*.ts,src/middleware.ts,src/**/actions*.ts
+alwaysApply: false
+---
+
+# Web Security
+
+## Environment variables
+
+- Validate `process.env` at runtime (Zod or equivalent). Fail fast if required secrets are missing.
+- Only `NEXT_PUBLIC_*` may reach the browser. Never expose Clerk secret keys, DB URLs, Redis URLs, or webhook secrets.
+
+## Input validation
+
+- Validate API bodies, query params, and Server Action payloads with a schema (Zod) **before** processing.
+- Reject unknown fields; return `400` with a generic message (no stack traces, no internals).
+
+```ts
+// ❌ BAD
+const { id } = await req.json();
+await db.user.delete({ where: { id } });
+
+// ✅ GOOD
+const body = schema.parse(await req.json());
+const user = await requireAuth();
+if (body.id !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+```
+
+## OWASP
+
+- Authorize **server-side** on every `/api/*` route (Clerk). Prevent IDOR: a user may only access their own resources unless the route is an explicit shared-session flow (duo rooms).
+- Never use `dangerouslySetInnerHTML` without sanitization.
+- Use parameterized Prisma queries only (no raw SQL string interpolation).
+- Preserve CORS rules in `src/lib/cors.ts` and security headers via Next.js config/middleware (CSP, HSTS, X-Frame-Options).
+- Webhooks (`src/app/api/billing/webhook`) must verify signatures before mutating data.

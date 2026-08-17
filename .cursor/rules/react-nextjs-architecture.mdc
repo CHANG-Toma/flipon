@@ -1,0 +1,40 @@
+---
+description: React/Next.js architecture, SOLID, Server vs Client, strict TypeScript
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# React & Next.js Architecture
+
+## Server vs Client
+
+- Default to Server Components. Add `'use client'` only when the file needs state, effects, event handlers, or browser APIs.
+- Keep Client Components small and declarative. Fetch data and handle secrets on the server (Route Handlers, Server Actions, server utils).
+- Never import server-only modules (`prisma`, Redis, Clerk backend secrets) into Client Components.
+
+## SOLID & SRP
+
+- UI components stay presentational. Extract business logic, mutations, and fetching into hooks, Server Actions, or `src/lib/*`.
+- One reason to change per module. Do not grow page files into god components.
+
+```tsx
+// ❌ BAD — fetch + secret + UI in a client page
+'use client';
+export default function Page() {
+  const [data, setData] = useState<any>(null);
+  useEffect(() => { fetch('/api/me').then(r => r.json()).then(setData); }, []);
+  return <pre>{JSON.stringify(data)}</pre>;
+}
+
+// ✅ GOOD — server fetch, typed, thin UI
+export default async function Page() {
+  const me = await getCurrentUser();
+  return <ProfileView user={me} />;
+}
+```
+
+## Strict TypeScript
+
+- No `any`. Use interfaces, generics, `Omit` / `Pick`, and discriminated unions.
+- Explicitly type component props, hook returns, and Route Handler inputs/outputs.
+- Prefer existing types in `src/lib/duo-types.ts` and Prisma models over duplicating shapes.
